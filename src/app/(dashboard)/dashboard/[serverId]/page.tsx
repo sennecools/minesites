@@ -1335,7 +1335,8 @@ function SettingsPanel({
                 </div>
                 <input
                   type="text"
-                  value={section.settings.hero?.backgroundColor || "#ffffff"}
+                  placeholder="#ffffff"
+                  value={section.settings.hero?.backgroundColor ?? ""}
                   onChange={(e) => onUpdate({
                     settings: {
                       ...section.settings,
@@ -1372,7 +1373,8 @@ function SettingsPanel({
                   </div>
                   <input
                     type="text"
-                    value={section.settings.hero?.gradientFrom || "#f0f9ff"}
+                    placeholder="#f0f9ff"
+                    value={section.settings.hero?.gradientFrom ?? ""}
                     onChange={(e) => onUpdate({
                       settings: {
                         ...section.settings,
@@ -1404,7 +1406,8 @@ function SettingsPanel({
                   </div>
                   <input
                     type="text"
-                    value={section.settings.hero?.gradientTo || "#ecfdf5"}
+                    placeholder="#ecfdf5"
+                    value={section.settings.hero?.gradientTo ?? ""}
                     onChange={(e) => onUpdate({
                       settings: {
                         ...section.settings,

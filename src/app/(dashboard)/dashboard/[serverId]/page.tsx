@@ -1560,8 +1560,8 @@ function SettingsPanel({
             {section.settings.hero?.showDiscordButton !== false && (
               <input
                 type="text"
-                placeholder="Button text"
-                value={section.settings.hero?.discordButtonText || "Join Discord"}
+                placeholder="Join Discord"
+                value={section.settings.hero?.discordButtonText ?? ""}
                 onChange={(e) => onUpdate({
                   settings: {
                     ...section.settings,
@@ -1596,8 +1596,8 @@ function SettingsPanel({
             {section.settings.hero?.showCopyIpButton !== false && (
               <input
                 type="text"
-                placeholder="Button text"
-                value={section.settings.hero?.copyIpButtonText || "Copy IP"}
+                placeholder="Copy IP"
+                value={section.settings.hero?.copyIpButtonText ?? ""}
                 onChange={(e) => onUpdate({
                   settings: {
                     ...section.settings,

@@ -339,12 +339,12 @@ function PreviewHero({ section }: { section: Section }) {
             </div>
           )}
 
-          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${textColor}`}>
-            {section.title}
+          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${textColor} ${!section.title ? "opacity-40 italic" : ""}`}>
+            {section.title || "Your title here..."}
           </h1>
 
-          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : ""} ${subtextColor}`}>
-            {section.subtitle}
+          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : ""} ${subtextColor} ${!section.subtitle ? "opacity-40 italic" : ""}`}>
+            {section.subtitle || "Add a subtitle to describe your server..."}
           </p>
 
           {/* Player badge - bottom (before buttons) */}

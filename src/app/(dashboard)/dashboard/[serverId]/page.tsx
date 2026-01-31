@@ -1316,7 +1316,7 @@ function SettingsPanel({
               <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Color</label>
               <div className="flex gap-2 items-center">
                 <div
-                  className="w-10 h-10 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative"
+                  className="w-7 h-7 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative flex-shrink-0"
                   style={{ backgroundColor: section.settings.hero?.backgroundColor || "#ffffff" }}
                 >
                   <input
@@ -1353,7 +1353,7 @@ function SettingsPanel({
                 <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">From</label>
                 <div className="flex gap-2 items-center">
                   <div
-                    className="w-10 h-10 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative"
+                    className="w-7 h-7 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative flex-shrink-0"
                     style={{ backgroundColor: section.settings.hero?.gradientFrom || "#f0f9ff" }}
                   >
                     <input
@@ -1385,7 +1385,7 @@ function SettingsPanel({
                 <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">To</label>
                 <div className="flex gap-2 items-center">
                   <div
-                    className="w-10 h-10 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative"
+                    className="w-7 h-7 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative flex-shrink-0"
                     style={{ backgroundColor: section.settings.hero?.gradientTo || "#ecfdf5" }}
                   >
                     <input

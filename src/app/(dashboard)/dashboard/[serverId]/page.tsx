@@ -1589,13 +1589,9 @@ export default function ServerEditorPage() {
                 {/* Navbar - clickable to edit */}
                 <div
                   onClick={() => setSelectedSection("navbar")}
-                  className={`relative flex items-center ${
+                  className={`group relative flex items-center ${
                     navbarSettings.style === "centered" ? "justify-center" : "justify-between"
-                  } px-4 py-2.5 border-b border-zinc-200 bg-white sticky top-0 cursor-pointer transition-all ${
-                    selectedSection === "navbar"
-                      ? "outline outline-2 outline-cyan-400 -outline-offset-2"
-                      : "hover:outline hover:outline-2 hover:outline-cyan-300 hover:-outline-offset-2"
-                  }`}
+                  } px-4 py-2.5 border-b border-zinc-200 bg-white sticky top-0 cursor-pointer`}
                 >
                   {navbarSettings.style !== "minimal" && navbarSettings.showLogo && (
                     <div className={`flex items-center gap-2 ${navbarSettings.style === "centered" ? "absolute left-4" : ""}`}>
@@ -1614,8 +1610,14 @@ export default function ServerEditorPage() {
                       ))}
                     </div>
                   )}
+                  {/* Hover/Selected border overlay */}
+                  <div className={`absolute inset-0 pointer-events-none transition-all border-2 ${
+                    selectedSection === "navbar"
+                      ? "border-cyan-400"
+                      : "border-transparent group-hover:border-cyan-300"
+                  }`} />
                   {selectedSection === "navbar" && (
-                    <div className="absolute top-1 right-2 px-2 py-0.5 bg-cyan-500 text-white text-[10px] rounded font-medium">
+                    <div className="absolute top-1 right-2 px-2 py-0.5 bg-cyan-500 text-white text-[10px] rounded font-medium z-10">
                       Editing
                     </div>
                   )}
@@ -1644,15 +1646,17 @@ export default function ServerEditorPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         onClick={() => setSelectedSection(section.id)}
-                        className={`relative cursor-pointer transition-all overflow-hidden ${
-                          selectedSection === section.id
-                            ? "outline outline-2 outline-cyan-400 -outline-offset-2 z-10"
-                            : "hover:outline hover:outline-2 hover:outline-cyan-300 hover:-outline-offset-2"
-                        }`}
+                        className="relative cursor-pointer overflow-hidden group"
                       >
                         <SectionPreview section={section} />
+                        {/* Hover/Selected border overlay */}
+                        <div className={`absolute inset-0 pointer-events-none transition-all border-2 ${
+                          selectedSection === section.id
+                            ? "border-cyan-400"
+                            : "border-transparent group-hover:border-cyan-300"
+                        }`} />
                         {selectedSection === section.id && (
-                          <div className="absolute top-2 right-2 px-2 py-1 bg-cyan-500 text-white text-xs rounded-md font-medium shadow-lg">
+                          <div className="absolute top-2 right-2 px-2 py-1 bg-cyan-500 text-white text-xs rounded-md font-medium shadow-lg z-10">
                             Editing
                           </div>
                         )}

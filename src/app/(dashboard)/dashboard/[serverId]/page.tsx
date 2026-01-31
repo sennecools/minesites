@@ -1593,8 +1593,8 @@ export default function ServerEditorPage() {
                     navbarSettings.style === "centered" ? "justify-center" : "justify-between"
                   } px-4 py-2.5 border-b border-zinc-200 bg-white sticky top-0 cursor-pointer transition-all ${
                     selectedSection === "navbar"
-                      ? "ring-2 ring-cyan-400 ring-inset"
-                      : "hover:ring-2 hover:ring-cyan-200 hover:ring-inset"
+                      ? "ring-2 ring-cyan-400"
+                      : "hover:ring-2 hover:ring-cyan-300"
                   }`}
                 >
                   {navbarSettings.style !== "minimal" && navbarSettings.showLogo && (
@@ -1644,10 +1644,10 @@ export default function ServerEditorPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         onClick={() => setSelectedSection(section.id)}
-                        className={`relative cursor-pointer transition-all ${
+                        className={`relative cursor-pointer transition-all overflow-hidden ${
                           selectedSection === section.id
-                            ? "ring-2 ring-cyan-400 ring-inset z-10"
-                            : "hover:ring-2 hover:ring-cyan-200 hover:ring-inset"
+                            ? "ring-2 ring-cyan-400 z-10"
+                            : "hover:ring-2 hover:ring-cyan-300"
                         }`}
                       >
                         <SectionPreview section={section} />

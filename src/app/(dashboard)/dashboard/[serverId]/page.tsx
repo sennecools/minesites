@@ -1324,7 +1324,7 @@ function SettingsPanel({
                       hero: { ...section.settings.hero, backgroundColor: e.target.value }
                     }
                   })}
-                  className="w-10 h-10 rounded-lg border border-zinc-200 cursor-pointer"
+                  className="w-10 h-10 rounded-full border border-zinc-200 cursor-pointer overflow-hidden"
                 />
                 <input
                   type="text"
@@ -1356,7 +1356,7 @@ function SettingsPanel({
                         hero: { ...section.settings.hero, gradientFrom: e.target.value }
                       }
                     })}
-                    className="w-10 h-10 rounded-lg border border-zinc-200 cursor-pointer"
+                    className="w-10 h-10 rounded-full border border-zinc-200 cursor-pointer overflow-hidden"
                   />
                   <input
                     type="text"
@@ -1383,7 +1383,7 @@ function SettingsPanel({
                         hero: { ...section.settings.hero, gradientTo: e.target.value }
                       }
                     })}
-                    className="w-10 h-10 rounded-lg border border-zinc-200 cursor-pointer"
+                    className="w-10 h-10 rounded-full border border-zinc-200 cursor-pointer overflow-hidden"
                   />
                   <input
                     type="text"

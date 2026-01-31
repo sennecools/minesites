@@ -1314,18 +1314,23 @@ function SettingsPanel({
           {section.settings.hero?.backgroundType === "solid" && (
             <div>
               <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Color</label>
-              <div className="flex gap-2">
-                <input
-                  type="color"
-                  value={section.settings.hero?.backgroundColor || "#ffffff"}
-                  onChange={(e) => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, backgroundColor: e.target.value }
-                    }
-                  })}
-                  className="w-10 h-10 rounded-full border border-zinc-200 cursor-pointer overflow-hidden"
-                />
+              <div className="flex gap-2 items-center">
+                <div
+                  className="w-10 h-10 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative"
+                  style={{ backgroundColor: section.settings.hero?.backgroundColor || "#ffffff" }}
+                >
+                  <input
+                    type="color"
+                    value={section.settings.hero?.backgroundColor || "#ffffff"}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, backgroundColor: e.target.value }
+                      }
+                    })}
+                    className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer opacity-0"
+                  />
+                </div>
                 <input
                   type="text"
                   value={section.settings.hero?.backgroundColor || "#ffffff"}
@@ -1346,18 +1351,23 @@ function SettingsPanel({
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">From</label>
-                <div className="flex gap-2">
-                  <input
-                    type="color"
-                    value={section.settings.hero?.gradientFrom || "#f0f9ff"}
-                    onChange={(e) => onUpdate({
-                      settings: {
-                        ...section.settings,
-                        hero: { ...section.settings.hero, gradientFrom: e.target.value }
-                      }
-                    })}
-                    className="w-10 h-10 rounded-full border border-zinc-200 cursor-pointer overflow-hidden"
-                  />
+                <div className="flex gap-2 items-center">
+                  <div
+                    className="w-10 h-10 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative"
+                    style={{ backgroundColor: section.settings.hero?.gradientFrom || "#f0f9ff" }}
+                  >
+                    <input
+                      type="color"
+                      value={section.settings.hero?.gradientFrom || "#f0f9ff"}
+                      onChange={(e) => onUpdate({
+                        settings: {
+                          ...section.settings,
+                          hero: { ...section.settings.hero, gradientFrom: e.target.value }
+                        }
+                      })}
+                      className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer opacity-0"
+                    />
+                  </div>
                   <input
                     type="text"
                     value={section.settings.hero?.gradientFrom || "#f0f9ff"}
@@ -1373,18 +1383,23 @@ function SettingsPanel({
               </div>
               <div>
                 <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">To</label>
-                <div className="flex gap-2">
-                  <input
-                    type="color"
-                    value={section.settings.hero?.gradientTo || "#ecfdf5"}
-                    onChange={(e) => onUpdate({
-                      settings: {
-                        ...section.settings,
-                        hero: { ...section.settings.hero, gradientTo: e.target.value }
-                      }
-                    })}
-                    className="w-10 h-10 rounded-full border border-zinc-200 cursor-pointer overflow-hidden"
-                  />
+                <div className="flex gap-2 items-center">
+                  <div
+                    className="w-10 h-10 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative"
+                    style={{ backgroundColor: section.settings.hero?.gradientTo || "#ecfdf5" }}
+                  >
+                    <input
+                      type="color"
+                      value={section.settings.hero?.gradientTo || "#ecfdf5"}
+                      onChange={(e) => onUpdate({
+                        settings: {
+                          ...section.settings,
+                          hero: { ...section.settings.hero, gradientTo: e.target.value }
+                        }
+                      })}
+                      className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer opacity-0"
+                    />
+                  </div>
                   <input
                     type="text"
                     value={section.settings.hero?.gradientTo || "#ecfdf5"}

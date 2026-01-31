@@ -1593,8 +1593,8 @@ export default function ServerEditorPage() {
                     navbarSettings.style === "centered" ? "justify-center" : "justify-between"
                   } px-4 py-2.5 border-b border-zinc-200 bg-white sticky top-0 cursor-pointer transition-all ${
                     selectedSection === "navbar"
-                      ? "ring-2 ring-cyan-400"
-                      : "hover:ring-2 hover:ring-cyan-300"
+                      ? "outline outline-2 outline-cyan-400 -outline-offset-2"
+                      : "hover:outline hover:outline-2 hover:outline-cyan-300 hover:-outline-offset-2"
                   }`}
                 >
                   {navbarSettings.style !== "minimal" && navbarSettings.showLogo && (
@@ -1646,8 +1646,8 @@ export default function ServerEditorPage() {
                         onClick={() => setSelectedSection(section.id)}
                         className={`relative cursor-pointer transition-all overflow-hidden ${
                           selectedSection === section.id
-                            ? "ring-2 ring-cyan-400 z-10"
-                            : "hover:ring-2 hover:ring-cyan-300"
+                            ? "outline outline-2 outline-cyan-400 -outline-offset-2 z-10"
+                            : "hover:outline hover:outline-2 hover:outline-cyan-300 hover:-outline-offset-2"
                         }`}
                       >
                         <SectionPreview section={section} />

@@ -2270,21 +2270,10 @@ export default function ServerEditorPage() {
                   </div>
                 </div>
               ) : selectedSectionData ? (
-                <div className="space-y-4">
-                  <SettingsPanel
-                    section={selectedSectionData}
-                    onUpdate={(updates) => updateSection(selectedSectionData.id, updates)}
-                  />
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => deleteSection(selectedSectionData.id)}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete Section
-                  </motion.button>
-                </div>
+                <SettingsPanel
+                  section={selectedSectionData}
+                  onUpdate={(updates) => updateSection(selectedSectionData.id, updates)}
+                />
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center">
                   <div className="w-12 h-12 rounded-xl bg-zinc-100 mb-3 flex items-center justify-center">
@@ -2295,6 +2284,21 @@ export default function ServerEditorPage() {
                 </div>
               )}
             </div>
+
+            {/* Delete Section - at bottom */}
+            {selectedSectionData && (
+              <div className="pt-3 mt-3 border-t border-zinc-100">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => deleteSection(selectedSectionData.id)}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Section
+                </motion.button>
+              </div>
+            )}
           </div>
         </div>
       </div>

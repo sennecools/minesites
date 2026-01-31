@@ -1400,7 +1400,7 @@ export default function ServerEditorPage() {
         {/* Main Editor Container */}
         <div className="flex-1 flex rounded-2xl bg-white border border-zinc-200/80 shadow-sm overflow-hidden">
           {/* Sections List */}
-          <div className="w-80 flex-shrink-0 flex flex-col overflow-hidden px-3 py-3 border-r border-zinc-100">
+          <div className="w-56 xl:w-72 flex-shrink-0 flex flex-col overflow-hidden px-2.5 xl:px-3 py-3 border-r border-zinc-100">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-zinc-400" />
@@ -1677,7 +1677,7 @@ export default function ServerEditorPage() {
           </div>
 
           {/* Settings Panel */}
-          <div className="w-72 flex-shrink-0 flex flex-col overflow-hidden p-4">
+          <div className="w-56 xl:w-72 flex-shrink-0 flex flex-col overflow-hidden p-3 xl:p-4">
             <div className="flex items-center gap-2 mb-3">
               <Palette className="w-4 h-4 text-zinc-400" />
               <h2 className="font-semibold text-zinc-900 text-sm">Settings</h2>

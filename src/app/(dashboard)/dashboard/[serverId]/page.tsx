@@ -1242,50 +1242,57 @@ function SettingsPanel({
       {/* Hero Section Settings */}
       {section.type === "hero" && (
         <>
-          {/* Subtitle */}
-          <div>
-            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Subtitle</label>
-            <input
-              type="text"
-              placeholder="Enter subtitle..."
-              value={section.subtitle || ""}
-              onChange={(e) => onUpdate({ subtitle: e.target.value })}
-              className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
-            />
-          </div>
+          {/* Content Group */}
+          <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
+            <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Content</h3>
 
-          {/* Alignment */}
-          <div>
-            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Alignment</label>
-            <div className="flex gap-2">
-              {[
-                { value: "left", icon: AlignLeft },
-                { value: "center", icon: AlignCenter },
-                { value: "right", icon: AlignRight },
-              ].map(({ value, icon: Icon }) => (
-                <button
-                  key={value}
-                  onClick={() => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, alignment: value as "left" | "center" | "right" }
-                    }
-                  })}
-                  className={`flex-1 p-2.5 rounded-lg border transition-all ${
-                    section.settings.hero?.alignment === value
-                      ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                      : "border-zinc-200 hover:border-zinc-300 text-zinc-400"
-                  }`}
-                >
-                  <Icon className="w-4 h-4 mx-auto" />
-                </button>
-              ))}
+            {/* Subtitle */}
+            <div>
+              <label className="text-[11px] font-medium text-zinc-500 mb-1.5 block">Subtitle</label>
+              <input
+                type="text"
+                placeholder="Enter subtitle..."
+                value={section.subtitle || ""}
+                onChange={(e) => onUpdate({ subtitle: e.target.value })}
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
+              />
+            </div>
+
+            {/* Alignment */}
+            <div>
+              <label className="text-[11px] font-medium text-zinc-500 mb-1.5 block">Alignment</label>
+              <div className="flex gap-2">
+                {[
+                  { value: "left", icon: AlignLeft },
+                  { value: "center", icon: AlignCenter },
+                  { value: "right", icon: AlignRight },
+                ].map(({ value, icon: Icon }) => (
+                  <button
+                    key={value}
+                    onClick={() => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, alignment: value as "left" | "center" | "right" }
+                      }
+                    })}
+                    className={`flex-1 p-2 rounded-lg border transition-all ${
+                      section.settings.hero?.alignment === value
+                        ? "border-cyan-300 bg-cyan-50 text-cyan-600"
+                        : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-400"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 mx-auto" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Background Type */}
-          <div>
-            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Background</label>
+          {/* Background Group */}
+          <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
+            <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Background</h3>
+
+            {/* Background Type */}
             <div className="grid grid-cols-3 gap-2">
               {[
                 { value: "solid", label: "Solid" },
@@ -1303,19 +1310,16 @@ function SettingsPanel({
                   className={`p-2 rounded-lg border transition-all text-xs ${
                     section.settings.hero?.backgroundType === value
                       ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                      : "border-zinc-200 hover:border-zinc-300 text-zinc-500"
+                      : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-500"
                   }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Solid Color Picker */}
-          {section.settings.hero?.backgroundType === "solid" && (
-            <div>
-              <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Color</label>
+            {/* Solid Color Picker */}
+            {section.settings.hero?.backgroundType === "solid" && (
               <div className="flex gap-2 items-center">
                 <div
                   className="w-7 h-7 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative flex-shrink-0"
@@ -1343,18 +1347,16 @@ function SettingsPanel({
                       hero: { ...section.settings.hero, backgroundColor: e.target.value }
                     }
                   })}
-                  className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono"
+                  className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm font-mono"
                 />
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Gradient Colors */}
-          {section.settings.hero?.backgroundType === "gradient" && (
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">From</label>
+            {/* Gradient Colors */}
+            {section.settings.hero?.backgroundType === "gradient" && (
+              <div className="space-y-2">
                 <div className="flex gap-2 items-center">
+                  <span className="text-[11px] text-zinc-400 w-10">From</span>
                   <div
                     className="w-7 h-7 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative flex-shrink-0"
                     style={{ backgroundColor: section.settings.hero?.gradientFrom || "#f0f9ff" }}
@@ -1381,13 +1383,11 @@ function SettingsPanel({
                         hero: { ...section.settings.hero, gradientFrom: e.target.value }
                       }
                     })}
-                    className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono"
+                    className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm font-mono"
                   />
                 </div>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">To</label>
                 <div className="flex gap-2 items-center">
+                  <span className="text-[11px] text-zinc-400 w-10">To</span>
                   <div
                     className="w-7 h-7 rounded-full border-2 border-zinc-200 cursor-pointer overflow-hidden relative flex-shrink-0"
                     style={{ backgroundColor: section.settings.hero?.gradientTo || "#ecfdf5" }}
@@ -1414,18 +1414,15 @@ function SettingsPanel({
                         hero: { ...section.settings.hero, gradientTo: e.target.value }
                       }
                     })}
-                    className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono"
+                    className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm font-mono"
                   />
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Image Settings */}
-          {section.settings.hero?.backgroundType === "image" && (
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Image URL</label>
+            {/* Image Settings */}
+            {section.settings.hero?.backgroundType === "image" && (
+              <div className="space-y-3">
                 <input
                   type="text"
                   placeholder="https://example.com/image.jpg"
@@ -1436,51 +1433,55 @@ function SettingsPanel({
                       hero: { ...section.settings.hero, backgroundImage: e.target.value }
                     }
                   })}
-                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+                  className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm"
                 />
+                <div>
+                  <div className="flex justify-between text-[11px] text-zinc-500 mb-1">
+                    <span>Blur</span>
+                    <span>{section.settings.hero?.imageBlur || 0}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    value={section.settings.hero?.imageBlur || 0}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, imageBlur: parseInt(e.target.value) }
+                      }
+                    })}
+                    className="w-full accent-cyan-500"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between text-[11px] text-zinc-500 mb-1">
+                    <span>Darken</span>
+                    <span>{section.settings.hero?.imageDarken || 40}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="80"
+                    value={section.settings.hero?.imageDarken || 40}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, imageDarken: parseInt(e.target.value) }
+                      }
+                    })}
+                    className="w-full accent-cyan-500"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">
-                  Blur: {section.settings.hero?.imageBlur || 0}px
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="20"
-                  value={section.settings.hero?.imageBlur || 0}
-                  onChange={(e) => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, imageBlur: parseInt(e.target.value) }
-                    }
-                  })}
-                  className="w-full accent-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">
-                  Darken: {section.settings.hero?.imageDarken || 40}%
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="80"
-                  value={section.settings.hero?.imageDarken || 40}
-                  onChange={(e) => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, imageDarken: parseInt(e.target.value) }
-                    }
-                  })}
-                  className="w-full accent-cyan-500"
-                />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Player Badge Position */}
-          <div>
-            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Badge Position</label>
+          {/* Player Badge Group */}
+          <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
+            <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Player Badge</h3>
+
+            {/* Position */}
             <div className="grid grid-cols-3 gap-2">
               {[
                 { value: "top", label: "Top" },
@@ -1498,26 +1499,23 @@ function SettingsPanel({
                   className={`p-2 rounded-lg border transition-all text-xs ${
                     section.settings.hero?.playerBadge === value
                       ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                      : "border-zinc-200 hover:border-zinc-300 text-zinc-500"
+                      : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-500"
                   }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Badge Style */}
-          {section.settings.hero?.playerBadge !== "hidden" && (
-            <div>
-              <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Badge Style</label>
+            {/* Style */}
+            {section.settings.hero?.playerBadge !== "hidden" && (
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "pill", label: "Pill", desc: "Simple rounded" },
-                  { value: "minimal", label: "Minimal", desc: "Text only" },
-                  { value: "card", label: "Card", desc: "Large box" },
-                  { value: "glow", label: "Glow", desc: "Animated glow" },
-                ].map(({ value, label, desc }) => (
+                  { value: "pill", label: "Pill" },
+                  { value: "minimal", label: "Minimal" },
+                  { value: "card", label: "Card" },
+                  { value: "glow", label: "Glow" },
+                ].map(({ value, label }) => (
                   <button
                     key={value}
                     onClick={() => onUpdate({
@@ -1526,26 +1524,25 @@ function SettingsPanel({
                         hero: { ...section.settings.hero, badgeStyle: value as "pill" | "minimal" | "card" | "glow" }
                       }
                     })}
-                    className={`p-2 rounded-lg border transition-all text-left ${
+                    className={`p-2 rounded-lg border transition-all text-xs ${
                       (section.settings.hero?.badgeStyle || "pill") === value
-                        ? "border-cyan-300 bg-cyan-50"
-                        : "border-zinc-200 hover:border-zinc-300"
+                        ? "border-cyan-300 bg-cyan-50 text-cyan-600"
+                        : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-500"
                     }`}
                   >
-                    <span className={`text-xs font-medium block ${
-                      (section.settings.hero?.badgeStyle || "pill") === value ? "text-cyan-600" : "text-zinc-700"
-                    }`}>{label}</span>
-                    <span className="text-[10px] text-zinc-400">{desc}</span>
+                    {label}
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Discord Button */}
-          <div className="p-3 rounded-lg border border-zinc-200 space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-zinc-700">Discord Button</label>
+          {/* Buttons Group */}
+          <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
+            <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Buttons</h3>
+
+            {/* Discord Button */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => onUpdate({
                   settings: {
@@ -1553,7 +1550,7 @@ function SettingsPanel({
                     hero: { ...section.settings.hero, showDiscordButton: !section.settings.hero?.showDiscordButton }
                   }
                 })}
-                className={`w-8 h-5 rounded-full transition-all ${
+                className={`w-8 h-5 rounded-full transition-all flex-shrink-0 ${
                   section.settings.hero?.showDiscordButton !== false ? "bg-cyan-500" : "bg-zinc-300"
                 }`}
               >
@@ -1561,8 +1558,6 @@ function SettingsPanel({
                   section.settings.hero?.showDiscordButton !== false ? "translate-x-3.5" : "translate-x-0.5"
                 }`} />
               </button>
-            </div>
-            {section.settings.hero?.showDiscordButton !== false && (
               <input
                 type="text"
                 placeholder="Join Discord"
@@ -1573,15 +1568,15 @@ function SettingsPanel({
                     hero: { ...section.settings.hero, discordButtonText: e.target.value }
                   }
                 })}
-                className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+                disabled={section.settings.hero?.showDiscordButton === false}
+                className={`flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm ${
+                  section.settings.hero?.showDiscordButton === false ? "opacity-50" : ""
+                }`}
               />
-            )}
-          </div>
+            </div>
 
-          {/* Copy IP Button */}
-          <div className="p-3 rounded-lg border border-zinc-200 space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-zinc-700">Copy IP Button</label>
+            {/* Copy IP Button */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => onUpdate({
                   settings: {
@@ -1589,7 +1584,7 @@ function SettingsPanel({
                     hero: { ...section.settings.hero, showCopyIpButton: !section.settings.hero?.showCopyIpButton }
                   }
                 })}
-                className={`w-8 h-5 rounded-full transition-all ${
+                className={`w-8 h-5 rounded-full transition-all flex-shrink-0 ${
                   section.settings.hero?.showCopyIpButton !== false ? "bg-cyan-500" : "bg-zinc-300"
                 }`}
               >
@@ -1597,8 +1592,6 @@ function SettingsPanel({
                   section.settings.hero?.showCopyIpButton !== false ? "translate-x-3.5" : "translate-x-0.5"
                 }`} />
               </button>
-            </div>
-            {section.settings.hero?.showCopyIpButton !== false && (
               <input
                 type="text"
                 placeholder="Copy IP"
@@ -1609,9 +1602,12 @@ function SettingsPanel({
                     hero: { ...section.settings.hero, copyIpButtonText: e.target.value }
                   }
                 })}
-                className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+                disabled={section.settings.hero?.showCopyIpButton === false}
+                className={`flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm ${
+                  section.settings.hero?.showCopyIpButton === false ? "opacity-50" : ""
+                }`}
               />
-            )}
+            </div>
           </div>
         </>
       )}

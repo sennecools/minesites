@@ -72,9 +72,10 @@ type HeroSettings = {
   imageDarken?: number; // 0-100
   playerBadge?: "top" | "bottom" | "hidden";
   badgeStyle?: "pill" | "minimal" | "card" | "glow";
-  showButtons?: boolean;
-  primaryButtonText?: string;
-  secondaryButtonText?: string;
+  showDiscordButton?: boolean;
+  discordButtonText?: string;
+  showCopyIpButton?: boolean;
+  copyIpButtonText?: string;
 };
 
 type SectionSettings = {
@@ -111,9 +112,10 @@ const initialSections: Section[] = [
         gradientFrom: "#f0f9ff",
         gradientTo: "#ecfdf5",
         playerBadge: "top",
-        showButtons: true,
-        primaryButtonText: "Join Discord",
-        secondaryButtonText: "Copy IP",
+        showDiscordButton: true,
+        discordButtonText: "Join Discord",
+        showCopyIpButton: true,
+        copyIpButtonText: "Copy IP",
         imageBlur: 0,
         imageDarken: 40,
       }
@@ -207,9 +209,10 @@ function PreviewHero({ section }: { section: Section }) {
     imageDarken = 40,
     playerBadge = "top",
     badgeStyle = "pill",
-    showButtons = true,
-    primaryButtonText = "Join Discord",
-    secondaryButtonText = "Copy IP",
+    showDiscordButton = true,
+    discordButtonText = "Join Discord",
+    showCopyIpButton = true,
+    copyIpButtonText = "Copy IP",
   } = hero;
 
   const hasImage = backgroundType === "image" && backgroundImage;
@@ -351,20 +354,24 @@ function PreviewHero({ section }: { section: Section }) {
             </div>
           )}
 
-          {showButtons && (
+          {(showDiscordButton || showCopyIpButton) && (
             <div className={`flex gap-3 ${
               alignment === "center" ? "justify-center" : alignment === "right" ? "justify-end" : ""
             }`}>
-              <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all">
-                {primaryButtonText}
-              </button>
-              <button className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                hasImage || !isLight
-                  ? "bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm"
-                  : "bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200"
-              }`}>
-                {secondaryButtonText}
-              </button>
+              {showDiscordButton && (
+                <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all">
+                  {discordButtonText}
+                </button>
+              )}
+              {showCopyIpButton && (
+                <button className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  isDark
+                    ? "bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm"
+                    : "bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200"
+                }`}>
+                  {copyIpButtonText}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -1515,53 +1522,75 @@ function SettingsPanel({
             </div>
           )}
 
-          {/* Buttons */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Buttons</label>
+          {/* Discord Button */}
+          <div className="p-3 rounded-lg border border-zinc-200 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-zinc-700">Discord Button</label>
               <button
                 onClick={() => onUpdate({
                   settings: {
                     ...section.settings,
-                    hero: { ...section.settings.hero, showButtons: !section.settings.hero?.showButtons }
+                    hero: { ...section.settings.hero, showDiscordButton: !section.settings.hero?.showDiscordButton }
                   }
                 })}
                 className={`w-8 h-5 rounded-full transition-all ${
-                  section.settings.hero?.showButtons !== false ? "bg-cyan-500" : "bg-zinc-300"
+                  section.settings.hero?.showDiscordButton !== false ? "bg-cyan-500" : "bg-zinc-300"
                 }`}
               >
                 <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                  section.settings.hero?.showButtons !== false ? "translate-x-3.5" : "translate-x-0.5"
+                  section.settings.hero?.showDiscordButton !== false ? "translate-x-3.5" : "translate-x-0.5"
                 }`} />
               </button>
             </div>
-            {section.settings.hero?.showButtons !== false && (
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="Primary button text"
-                  value={section.settings.hero?.primaryButtonText || "Join Discord"}
-                  onChange={(e) => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, primaryButtonText: e.target.value }
-                    }
-                  })}
-                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Secondary button text"
-                  value={section.settings.hero?.secondaryButtonText || "Copy IP"}
-                  onChange={(e) => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, secondaryButtonText: e.target.value }
-                    }
-                  })}
-                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
-                />
-              </div>
+            {section.settings.hero?.showDiscordButton !== false && (
+              <input
+                type="text"
+                placeholder="Button text"
+                value={section.settings.hero?.discordButtonText || "Join Discord"}
+                onChange={(e) => onUpdate({
+                  settings: {
+                    ...section.settings,
+                    hero: { ...section.settings.hero, discordButtonText: e.target.value }
+                  }
+                })}
+                className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+              />
+            )}
+          </div>
+
+          {/* Copy IP Button */}
+          <div className="p-3 rounded-lg border border-zinc-200 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-zinc-700">Copy IP Button</label>
+              <button
+                onClick={() => onUpdate({
+                  settings: {
+                    ...section.settings,
+                    hero: { ...section.settings.hero, showCopyIpButton: !section.settings.hero?.showCopyIpButton }
+                  }
+                })}
+                className={`w-8 h-5 rounded-full transition-all ${
+                  section.settings.hero?.showCopyIpButton !== false ? "bg-cyan-500" : "bg-zinc-300"
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                  section.settings.hero?.showCopyIpButton !== false ? "translate-x-3.5" : "translate-x-0.5"
+                }`} />
+              </button>
+            </div>
+            {section.settings.hero?.showCopyIpButton !== false && (
+              <input
+                type="text"
+                placeholder="Button text"
+                value={section.settings.hero?.copyIpButtonText || "Copy IP"}
+                onChange={(e) => onUpdate({
+                  settings: {
+                    ...section.settings,
+                    hero: { ...section.settings.hero, copyIpButtonText: e.target.value }
+                  }
+                })}
+                className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+              />
             )}
           </div>
         </>

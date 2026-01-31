@@ -61,12 +61,29 @@ const mockServer = {
   version: "1.20.4",
 };
 
+type HeroSettings = {
+  alignment?: "left" | "center" | "right";
+  backgroundType?: "solid" | "gradient" | "image";
+  backgroundColor?: string;
+  gradientFrom?: string;
+  gradientTo?: string;
+  backgroundImage?: string;
+  imageBlur?: number; // 0-20
+  imageDarken?: number; // 0-100
+  playerBadge?: "top" | "bottom" | "hidden";
+  showButtons?: boolean;
+  primaryButtonText?: string;
+  secondaryButtonText?: string;
+};
+
 type SectionSettings = {
   alignment?: "left" | "center" | "right";
   layout?: "grid" | "list" | "cards";
   colorScheme?: "default" | "dark" | "accent";
   showBackground?: boolean;
   content?: Record<string, string | string[]>;
+  // Hero specific
+  hero?: HeroSettings;
 };
 
 type Section = {
@@ -85,7 +102,21 @@ const initialSections: Section[] = [
     title: mockServer.name,
     subtitle: "A community-driven Minecraft network for modded exploration and creativity.",
     visible: true,
-    settings: { alignment: "center", colorScheme: "default" }
+    settings: {
+      alignment: "center",
+      hero: {
+        alignment: "center",
+        backgroundType: "gradient",
+        gradientFrom: "#f0f9ff",
+        gradientTo: "#ecfdf5",
+        playerBadge: "top",
+        showButtons: true,
+        primaryButtonText: "Join Discord",
+        secondaryButtonText: "Copy IP",
+        imageBlur: 0,
+        imageDarken: 40,
+      }
+    }
   },
   {
     id: "2",
@@ -163,55 +194,129 @@ const sectionCategories = ["Essential", "Community", "Media", "Info", "Engagemen
 
 // Preview Components - Actual website sections with real styling
 function PreviewHero({ section }: { section: Section }) {
-  const { alignment = "center", colorScheme = "default" } = section.settings;
-  const isDark = colorScheme === "dark";
+  const hero = section.settings.hero || {};
+  const {
+    alignment = "center",
+    backgroundType = "gradient",
+    backgroundColor = "#ffffff",
+    gradientFrom = "#f0f9ff",
+    gradientTo = "#ecfdf5",
+    backgroundImage = "",
+    imageBlur = 0,
+    imageDarken = 40,
+    playerBadge = "top",
+    showButtons = true,
+    primaryButtonText = "Join Discord",
+    secondaryButtonText = "Copy IP",
+  } = hero;
+
+  const hasImage = backgroundType === "image" && backgroundImage;
+  const isLight = backgroundType === "solid" ? isLightColor(backgroundColor) : !hasImage;
+  const textColor = hasImage || !isLight ? "text-white" : "text-zinc-900";
+  const subtextColor = hasImage || !isLight ? "text-white/80" : "text-zinc-600";
+
+  // Helper to determine if a color is light
+  function isLightColor(hex: string): boolean {
+    const c = hex.replace("#", "");
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128;
+  }
+
+  // Background style
+  const getBackgroundStyle = () => {
+    if (backgroundType === "solid") {
+      return { backgroundColor };
+    }
+    if (backgroundType === "gradient") {
+      return { background: `linear-gradient(to bottom right, ${gradientFrom}, ${gradientTo})` };
+    }
+    return {};
+  };
+
+  const PlayerBadge = () => (
+    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+      hasImage || !isLight
+        ? "bg-white/10 backdrop-blur-sm text-white border border-white/20"
+        : "bg-white text-zinc-600 shadow-sm border border-zinc-200"
+    }`}>
+      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+      {mockServer.players} players online
+    </div>
+  );
 
   return (
-    <div className={`relative overflow-hidden ${isDark ? "bg-zinc-900" : "bg-gradient-to-b from-zinc-50 to-white"}`}>
-      {/* Background decoration */}
-      {!isDark && (
+    <div className="relative overflow-hidden" style={getBackgroundStyle()}>
+      {/* Background Image */}
+      {hasImage && (
         <>
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-indigo-100 rounded-full blur-3xl opacity-50" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-100 rounded-full blur-3xl opacity-40" />
-        </>
-      )}
-      {isDark && (
-        <>
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-indigo-900/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-900/20 rounded-full blur-3xl" />
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              filter: imageBlur > 0 ? `blur(${imageBlur}px)` : undefined,
+              transform: imageBlur > 0 ? "scale(1.1)" : undefined,
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-black"
+            style={{ opacity: imageDarken / 100 }}
+          />
         </>
       )}
 
-      <div className={`relative py-16 px-6 ${alignment === "center" ? "text-center" : alignment === "right" ? "text-right" : "text-left"}`}>
+      {/* Gradient decorations for non-image backgrounds */}
+      {!hasImage && backgroundType === "gradient" && (
+        <>
+          <div className="absolute top-0 left-1/4 w-72 h-72 bg-indigo-200/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
+        </>
+      )}
+
+      <div className={`relative py-16 px-6 ${
+        alignment === "center" ? "text-center" : alignment === "right" ? "text-right" : "text-left"
+      }`}>
         <div className="max-w-2xl mx-auto">
-          {/* Status badge */}
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-6 ${
-            isDark ? "bg-zinc-800 text-zinc-300 border border-zinc-700" : "bg-white text-zinc-600 shadow-sm border border-zinc-200"
-          }`}>
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            {mockServer.players} players online
-          </div>
+          {/* Player badge - top */}
+          {playerBadge === "top" && (
+            <div className="mb-6">
+              <PlayerBadge />
+            </div>
+          )}
 
-          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
+          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${textColor}`}>
             {section.title}
           </h1>
 
-          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : ""} ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
+          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : ""} ${subtextColor}`}>
             {section.subtitle}
           </p>
 
-          <div className={`flex gap-3 ${alignment === "center" ? "justify-center" : alignment === "right" ? "justify-end" : ""}`}>
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all">
-              Join Discord
-            </button>
-            <button className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              isDark
-                ? "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
-                : "bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200"
+          {/* Player badge - bottom (before buttons) */}
+          {playerBadge === "bottom" && (
+            <div className="mb-6">
+              <PlayerBadge />
+            </div>
+          )}
+
+          {showButtons && (
+            <div className={`flex gap-3 ${
+              alignment === "center" ? "justify-center" : alignment === "right" ? "justify-end" : ""
             }`}>
-              Copy Server IP
-            </button>
-          </div>
+              <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all">
+                {primaryButtonText}
+              </button>
+              <button className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                hasImage || !isLight
+                  ? "bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm"
+                  : "bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200"
+              }`}>
+                {secondaryButtonText}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -1076,47 +1181,309 @@ function SettingsPanel({
         />
       </div>
 
-      {/* Subtitle (for hero) */}
+      {/* Hero Section Settings */}
       {section.type === "hero" && (
-        <div>
-          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Subtitle</label>
-          <input
-            type="text"
-            value={section.subtitle || ""}
-            onChange={(e) => onUpdate({ subtitle: e.target.value })}
-            className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
-          />
-        </div>
-      )}
+        <>
+          {/* Subtitle */}
+          <div>
+            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Subtitle</label>
+            <input
+              type="text"
+              value={section.subtitle || ""}
+              onChange={(e) => onUpdate({ subtitle: e.target.value })}
+              className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
+            />
+          </div>
 
-      {/* Alignment (for hero) */}
-      {section.type === "hero" && (
-        <div>
-          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Alignment</label>
-          <div className="flex gap-2">
-            {[
-              { value: "left", icon: AlignLeft },
-              { value: "center", icon: AlignCenter },
-              { value: "right", icon: AlignRight },
-            ].map(({ value, icon: Icon }) => (
+          {/* Alignment */}
+          <div>
+            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Alignment</label>
+            <div className="flex gap-2">
+              {[
+                { value: "left", icon: AlignLeft },
+                { value: "center", icon: AlignCenter },
+                { value: "right", icon: AlignRight },
+              ].map(({ value, icon: Icon }) => (
+                <button
+                  key={value}
+                  onClick={() => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, alignment: value as "left" | "center" | "right" }
+                    }
+                  })}
+                  className={`flex-1 p-2.5 rounded-lg border transition-all ${
+                    section.settings.hero?.alignment === value
+                      ? "border-cyan-300 bg-cyan-50 text-cyan-600"
+                      : "border-zinc-200 hover:border-zinc-300 text-zinc-400"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mx-auto" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Background Type */}
+          <div>
+            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Background</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: "solid", label: "Solid" },
+                { value: "gradient", label: "Gradient" },
+                { value: "image", label: "Image" },
+              ].map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, backgroundType: value as "solid" | "gradient" | "image" }
+                    }
+                  })}
+                  className={`p-2 rounded-lg border transition-all text-xs ${
+                    section.settings.hero?.backgroundType === value
+                      ? "border-cyan-300 bg-cyan-50 text-cyan-600"
+                      : "border-zinc-200 hover:border-zinc-300 text-zinc-500"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Solid Color Picker */}
+          {section.settings.hero?.backgroundType === "solid" && (
+            <div>
+              <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Color</label>
+              <div className="flex gap-2">
+                <input
+                  type="color"
+                  value={section.settings.hero?.backgroundColor || "#ffffff"}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, backgroundColor: e.target.value }
+                    }
+                  })}
+                  className="w-10 h-10 rounded-lg border border-zinc-200 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={section.settings.hero?.backgroundColor || "#ffffff"}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, backgroundColor: e.target.value }
+                    }
+                  })}
+                  className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Gradient Colors */}
+          {section.settings.hero?.backgroundType === "gradient" && (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">From</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={section.settings.hero?.gradientFrom || "#f0f9ff"}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, gradientFrom: e.target.value }
+                      }
+                    })}
+                    className="w-10 h-10 rounded-lg border border-zinc-200 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={section.settings.hero?.gradientFrom || "#f0f9ff"}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, gradientFrom: e.target.value }
+                      }
+                    })}
+                    className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">To</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={section.settings.hero?.gradientTo || "#ecfdf5"}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, gradientTo: e.target.value }
+                      }
+                    })}
+                    className="w-10 h-10 rounded-lg border border-zinc-200 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={section.settings.hero?.gradientTo || "#ecfdf5"}
+                    onChange={(e) => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, gradientTo: e.target.value }
+                      }
+                    })}
+                    className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Image Settings */}
+          {section.settings.hero?.backgroundType === "image" && (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Image URL</label>
+                <input
+                  type="text"
+                  placeholder="https://example.com/image.jpg"
+                  value={section.settings.hero?.backgroundImage || ""}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, backgroundImage: e.target.value }
+                    }
+                  })}
+                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">
+                  Blur: {section.settings.hero?.imageBlur || 0}px
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  value={section.settings.hero?.imageBlur || 0}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, imageBlur: parseInt(e.target.value) }
+                    }
+                  })}
+                  className="w-full accent-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">
+                  Darken: {section.settings.hero?.imageDarken || 40}%
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="80"
+                  value={section.settings.hero?.imageDarken || 40}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, imageDarken: parseInt(e.target.value) }
+                    }
+                  })}
+                  className="w-full accent-cyan-500"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Player Badge Position */}
+          <div>
+            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Player Badge</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: "top", label: "Top" },
+                { value: "bottom", label: "Bottom" },
+                { value: "hidden", label: "Hidden" },
+              ].map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, playerBadge: value as "top" | "bottom" | "hidden" }
+                    }
+                  })}
+                  className={`p-2 rounded-lg border transition-all text-xs ${
+                    section.settings.hero?.playerBadge === value
+                      ? "border-cyan-300 bg-cyan-50 text-cyan-600"
+                      : "border-zinc-200 hover:border-zinc-300 text-zinc-500"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Buttons</label>
               <button
-                key={value}
-                onClick={() => onUpdate({ settings: { ...section.settings, alignment: value as "left" | "center" | "right" } })}
-                className={`flex-1 p-2.5 rounded-lg border transition-all ${
-                  section.settings.alignment === value
-                    ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                    : "border-zinc-200 hover:border-zinc-300 text-zinc-400"
+                onClick={() => onUpdate({
+                  settings: {
+                    ...section.settings,
+                    hero: { ...section.settings.hero, showButtons: !section.settings.hero?.showButtons }
+                  }
+                })}
+                className={`w-8 h-5 rounded-full transition-all ${
+                  section.settings.hero?.showButtons !== false ? "bg-cyan-500" : "bg-zinc-300"
                 }`}
               >
-                <Icon className="w-4 h-4 mx-auto" />
+                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                  section.settings.hero?.showButtons !== false ? "translate-x-3.5" : "translate-x-0.5"
+                }`} />
               </button>
-            ))}
+            </div>
+            {section.settings.hero?.showButtons !== false && (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="Primary button text"
+                  value={section.settings.hero?.primaryButtonText || "Join Discord"}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, primaryButtonText: e.target.value }
+                    }
+                  })}
+                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Secondary button text"
+                  value={section.settings.hero?.secondaryButtonText || "Copy IP"}
+                  onChange={(e) => onUpdate({
+                    settings: {
+                      ...section.settings,
+                      hero: { ...section.settings.hero, secondaryButtonText: e.target.value }
+                    }
+                  })}
+                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm"
+                />
+              </div>
+            )}
           </div>
-        </div>
+        </>
       )}
 
-      {/* Color Scheme */}
-      {(section.type === "hero" || section.type === "discord") && (
+      {/* Discord Color Scheme */}
+      {section.type === "discord" && (
         <div>
           <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Style</label>
           <div className="grid grid-cols-3 gap-2">

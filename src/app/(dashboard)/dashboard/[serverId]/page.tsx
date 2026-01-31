@@ -339,12 +339,12 @@ function PreviewHero({ section }: { section: Section }) {
             </div>
           )}
 
-          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${textColor} ${!section.title ? "opacity-40 italic" : ""}`}>
-            {section.title || "Your title here..."}
+          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${textColor}`}>
+            {section.title}
           </h1>
 
-          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : ""} ${subtextColor} ${!section.subtitle ? "opacity-40 italic" : ""}`}>
-            {section.subtitle || "Add a subtitle to describe your server..."}
+          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : ""} ${subtextColor}`}>
+            {section.subtitle}
           </p>
 
           {/* Player badge - bottom (before buttons) */}
@@ -1232,6 +1232,7 @@ function SettingsPanel({
         <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Title</label>
         <input
           type="text"
+          placeholder="Enter title..."
           value={section.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
           className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
@@ -1246,6 +1247,7 @@ function SettingsPanel({
             <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Subtitle</label>
             <input
               type="text"
+              placeholder="Enter subtitle..."
               value={section.subtitle || ""}
               onChange={(e) => onUpdate({ subtitle: e.target.value })}
               className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"

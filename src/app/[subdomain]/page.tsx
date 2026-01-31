@@ -1,13 +1,16 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
-import { HeroSection } from "@/components/sections/hero-section";
+import PreviewClient from "./preview-client";
 
 interface Props {
   params: Promise<{ subdomain: string }>;
+  searchParams: Promise<{ preview?: string }>;
 }
 
-export default async function ServerPage({ params }: Props) {
+export default async function ServerPage({ params, searchParams }: Props) {
   const { subdomain } = await params;
+  const { preview } = await searchParams;
+  const isPreviewMode = preview === "true";
 
   const server = await db.server.findUnique({
     where: { subdomain },
@@ -19,27 +22,32 @@ export default async function ServerPage({ params }: Props) {
     },
   });
 
-  if (!server || !server.published) {
+  // Allow preview mode to bypass the published check
+  if (!server || (!server.published && !isPreviewMode)) {
     notFound();
   }
 
+  // Transform data for the client component
+  const serverData = {
+    name: server.name,
+    subdomain: server.subdomain,
+    serverIp: server.serverIp,
+  };
+
+  const sections = server.sections.map((section) => ({
+    id: section.id,
+    type: section.type,
+    title: section.title,
+    subtitle: section.subtitle,
+    settings: section.settings as Record<string, unknown>,
+    visible: section.visible,
+  }));
+
   return (
-    <div className="min-h-screen bg-zinc-50">
-      {server.sections.map((section) => {
-        switch (section.type) {
-          case "hero":
-            return (
-              <HeroSection
-                key={section.id}
-                title={section.title || server.name}
-                content={section.content as Record<string, unknown>}
-                serverIp={server.serverIp}
-              />
-            );
-          default:
-            return null;
-        }
-      })}
-    </div>
+    <PreviewClient
+      server={serverData}
+      sections={sections}
+      isPreviewMode={isPreviewMode}
+    />
   );
 }

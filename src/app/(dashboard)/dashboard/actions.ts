@@ -39,9 +39,8 @@ export async function createServer(formData: FormData) {
         create: {
           type: "hero",
           title: validated.name,
-          content: {
-            subtitle: "Welcome to our Minecraft server!",
-          },
+          subtitle: "Welcome to our Minecraft server!",
+          settings: {},
           order: 0,
         },
       },

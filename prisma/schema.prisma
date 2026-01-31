@@ -66,7 +66,8 @@ model Server {
   serverPort  Int?      @default(25565)
   logo        String?
   banner      String?
-  theme       Json?     @default("{}")
+  navbar      Json?     @default("{}")  // Navbar settings
+  theme       Json?     @default("{}")  // Global theme settings
   published   Boolean   @default(false)
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -81,7 +82,8 @@ model Section {
   id        String   @id @default(cuid())
   type      String
   title     String?
-  content   Json     @default("{}")
+  subtitle  String?
+  settings  Json     @default("{}")  // All section-specific settings
   order     Int      @default(0)
   visible   Boolean  @default(true)
   serverId  String

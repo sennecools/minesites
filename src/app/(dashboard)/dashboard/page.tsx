@@ -8,57 +8,94 @@ import {
   Users,
   Eye,
   ArrowUpRight,
-  Globe,
   Sparkles,
-  TrendingUp,
-  Clock,
-  MoreHorizontal
+  MoreHorizontal,
+  Loader2
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
-// Mock data for the redesign
-const mockServers = [
-  {
-    id: "1",
-    name: "EpicCraft Network",
-    subdomain: "epiccraft",
-    description: "The best survival and skyblock experience",
-    serverIp: "play.epiccraft.net",
-    published: true,
-    players: 247,
-    views: 1420,
-    template: "gaming",
-  },
-  {
-    id: "2",
-    name: "PixelMC",
-    subdomain: "pixelmc",
-    description: "Creative building community",
-    serverIp: "pixelmc.net",
-    published: true,
-    players: 89,
-    views: 856,
-    template: "minimal",
-  },
-  {
-    id: "3",
-    name: "Test Server",
-    subdomain: "test-server",
-    description: "My test server",
-    serverIp: null,
-    published: false,
-    players: 0,
-    views: 12,
-    template: "starter",
-  },
-];
-
-const stats = [
-  { label: "Total Views", value: "2,288", change: "+12%", icon: Eye, color: "from-cyan-500 to-blue-500" },
-  { label: "Total Players", value: "336", change: "+8%", icon: Users, color: "from-emerald-500 to-teal-500" },
-  { label: "Active Servers", value: "2", change: "0", icon: Server, color: "from-violet-500 to-purple-500" },
-];
+interface ServerData {
+  id: string;
+  name: string;
+  subdomain: string;
+  description: string | null;
+  serverIp: string | null;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function DashboardPage() {
+  const [servers, setServers] = useState<ServerData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadServers() {
+      try {
+        const response = await fetch("/api/servers");
+        if (!response.ok) {
+          throw new Error("Failed to load servers");
+        }
+        const data = await response.json();
+        setServers(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load servers");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadServers();
+  }, []);
+
+  const stats = [
+    { label: "Total Views", value: "0", change: "-", icon: Eye, color: "from-cyan-500 to-blue-500" },
+    { label: "Total Players", value: "0", change: "-", icon: Users, color: "from-emerald-500 to-teal-500" },
+    { label: "Active Servers", value: servers.filter(s => s.published).length.toString(), change: "-", icon: Server, color: "from-violet-500 to-purple-500" },
+  ];
+
+  function formatRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    return date.toLocaleDateString();
+  }
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-3 text-zinc-500">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Loading your servers...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-center">
+          <p className="text-red-600 font-medium">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-6xl">
       {/* Welcome Header */}
@@ -68,7 +105,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           className="font-display text-2xl font-bold text-zinc-900"
         >
-          Welcome back, Senne
+          Welcome back
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: -10 }}
@@ -95,8 +132,8 @@ export default function DashboardPage() {
               <div>
                 <p className="text-sm text-zinc-500">{stat.label}</p>
                 <p className="text-2xl font-bold text-zinc-900 mt-1">{stat.value}</p>
-                <p className={`text-xs mt-1 ${stat.change.startsWith('+') ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                  {stat.change} from last week
+                <p className="text-xs mt-1 text-zinc-400">
+                  {stat.change === "-" ? "Coming soon" : `${stat.change} from last week`}
                 </p>
               </div>
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
@@ -125,7 +162,7 @@ export default function DashboardPage() {
 
       {/* Server Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {mockServers.map((server, i) => (
+        {servers.map((server, i) => (
           <motion.div
             key={server.id}
             initial={{ opacity: 0, y: 20 }}
@@ -171,16 +208,14 @@ export default function DashboardPage() {
                   </p>
                 )}
 
-                {/* Stats */}
+                {/* Info */}
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>{server.players} online</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>{server.views} views</span>
-                  </div>
+                  {server.serverIp && (
+                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                      <Server className="w-3.5 h-3.5" />
+                      <span className="font-mono">{server.serverIp}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Footer */}
@@ -208,7 +243,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.2 + servers.length * 0.1 }}
         >
           <motion.button
             whileHover={{ y: -4, scale: 1.01, transition: { duration: 0.15 } }}
@@ -225,32 +260,57 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
+      {/* Empty State */}
+      {servers.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <div className="w-16 h-16 rounded-2xl bg-zinc-100 mx-auto mb-4 flex items-center justify-center">
+            <Server className="w-8 h-8 text-zinc-300" />
+          </div>
+          <h3 className="text-lg font-semibold text-zinc-900 mb-1">No servers yet</h3>
+          <p className="text-zinc-500 mb-6">Create your first server to get started</p>
+          <motion.button
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
+          >
+            <Plus className="w-4 h-4" />
+            Create Server
+          </motion.button>
+        </motion.div>
+      )}
+
       {/* Quick Tips */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-cyan-50 to-emerald-50 border border-cyan-100"
-      >
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-5 h-5 text-white" />
+      {servers.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-cyan-50 to-emerald-50 border border-cyan-100"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-zinc-900">Pro tip: Boost your visibility</h3>
+              <p className="text-sm text-zinc-600 mt-1">
+                Add a custom domain to your server site to increase trust and make your server easier to find.
+                Upgrade to Pro to unlock custom domains and advanced analytics.
+              </p>
+              <motion.button
+                whileHover={{ x: 4 }}
+                className="mt-3 text-sm font-medium text-cyan-600 hover:text-cyan-700 flex items-center gap-1"
+              >
+                Upgrade to Pro <ArrowUpRight className="w-4 h-4" />
+              </motion.button>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-zinc-900">Pro tip: Boost your visibility</h3>
-            <p className="text-sm text-zinc-600 mt-1">
-              Add a custom domain to your server site to increase trust and make your server easier to find.
-              Upgrade to Pro to unlock custom domains and advanced analytics.
-            </p>
-            <motion.button
-              whileHover={{ x: 4 }}
-              className="mt-3 text-sm font-medium text-cyan-600 hover:text-cyan-700 flex items-center gap-1"
-            >
-              Upgrade to Pro <ArrowUpRight className="w-4 h-4" />
-            </motion.button>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

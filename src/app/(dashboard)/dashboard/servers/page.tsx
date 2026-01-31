@@ -5,67 +5,100 @@ import { motion } from "framer-motion";
 import {
   Plus,
   Server,
-  Users,
-  Eye,
   ArrowUpRight,
   MoreHorizontal,
   Search,
   Filter,
   Grid3X3,
   List,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// Mock data
-const mockServers = [
-  {
-    id: "1",
-    name: "EpicCraft Network",
-    subdomain: "epiccraft",
-    description: "The best survival and skyblock experience",
-    serverIp: "play.epiccraft.net",
-    published: true,
-    players: 247,
-    views: 1420,
-    template: "gaming",
-    updatedAt: "2 hours ago",
-  },
-  {
-    id: "2",
-    name: "PixelMC",
-    subdomain: "pixelmc",
-    description: "Creative building community",
-    serverIp: "pixelmc.net",
-    published: true,
-    players: 89,
-    views: 856,
-    template: "minimal",
-    updatedAt: "1 day ago",
-  },
-  {
-    id: "3",
-    name: "Test Server",
-    subdomain: "test-server",
-    description: "My test server",
-    serverIp: null,
-    published: false,
-    players: 0,
-    views: 12,
-    template: "starter",
-    updatedAt: "3 days ago",
-  },
-];
+interface ServerData {
+  id: string;
+  name: string;
+  subdomain: string;
+  description: string | null;
+  serverIp: string | null;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function ServersPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
+  const [servers, setServers] = useState<ServerData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredServers = mockServers.filter(
+  useEffect(() => {
+    async function loadServers() {
+      try {
+        const response = await fetch("/api/servers");
+        if (!response.ok) {
+          throw new Error("Failed to load servers");
+        }
+        const data = await response.json();
+        setServers(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load servers");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadServers();
+  }, []);
+
+  const filteredServers = servers.filter(
     (server) =>
       server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       server.subdomain.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  function formatRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    return date.toLocaleDateString();
+  }
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-3 text-zinc-500">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Loading your servers...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-center">
+          <p className="text-red-600 font-medium">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -189,16 +222,14 @@ export default function ServersPage() {
                     </p>
                   )}
 
-                  {/* Stats */}
+                  {/* Info */}
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{server.players} online</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>{server.views} views</span>
-                    </div>
+                    {server.serverIp && (
+                      <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                        <Server className="w-3.5 h-3.5" />
+                        <span className="font-mono">{server.serverIp}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Footer */}
@@ -249,8 +280,7 @@ export default function ServersPage() {
               <tr className="border-b border-zinc-100">
                 <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Server</th>
                 <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Status</th>
-                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Players</th>
-                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Views</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Server IP</th>
                 <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Updated</th>
                 <th className="text-right text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3"></th>
               </tr>
@@ -292,13 +322,12 @@ export default function ServersPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-zinc-600">{server.players}</span>
+                    <span className="text-sm text-zinc-600 font-mono">
+                      {server.serverIp || "-"}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-zinc-600">{server.views}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-zinc-500">{server.updatedAt}</span>
+                    <span className="text-sm text-zinc-500">{formatRelativeTime(server.updatedAt)}</span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <Link href={`/dashboard/${server.id}`}>

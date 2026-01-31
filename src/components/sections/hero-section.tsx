@@ -5,13 +5,14 @@ import { Button } from "@/components/ui";
 
 interface HeroSectionProps {
   title: string;
-  content: Record<string, unknown>;
+  subtitle?: string | null;
+  settings: Record<string, unknown>;
   serverIp?: string | null;
 }
 
-export function HeroSection({ title, content, serverIp }: HeroSectionProps) {
-  const subtitle = (content.subtitle as string) || "";
-  const backgroundImage = content.backgroundImage as string | undefined;
+export function HeroSection({ title, subtitle, settings, serverIp }: HeroSectionProps) {
+  const heroSettings = (settings.hero as Record<string, unknown>) || {};
+  const backgroundImage = heroSettings.backgroundImage as string | undefined;
 
   return (
     <section

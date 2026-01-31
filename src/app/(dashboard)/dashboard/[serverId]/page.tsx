@@ -1769,13 +1769,42 @@ const initialNavbarSettings: NavbarSettings = {
 };
 
 export default function ServerEditorPage() {
-  const [sections, setSections] = useState<Section[]>(initialSections);
+  const [sections, setSectionsInternal] = useState<Section[]>(initialSections);
+  const [history, setHistory] = useState<Section[][]>([]);
+  const [future, setFuture] = useState<Section[][]>([]);
   const [navbarSettings, setNavbarSettings] = useState<NavbarSettings>(initialNavbarSettings);
   const [selectedSection, setSelectedSection] = useState<string | null>("1");
   const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [showAddSection, setShowAddSection] = useState(false);
   const [copied, setCopied] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string>("Essential");
+
+  // Track changes for undo/redo
+  const setSections = (newSections: Section[] | ((prev: Section[]) => Section[])) => {
+    const resolved = typeof newSections === "function" ? newSections(sections) : newSections;
+    setHistory((prev) => [...prev.slice(-19), sections]); // Keep last 20 states
+    setFuture([]);
+    setSectionsInternal(resolved);
+  };
+
+  const undo = () => {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setHistory((h) => h.slice(0, -1));
+    setFuture((f) => [sections, ...f]);
+    setSectionsInternal(prev);
+  };
+
+  const redo = () => {
+    if (future.length === 0) return;
+    const next = future[0];
+    setFuture((f) => f.slice(1));
+    setHistory((h) => [...h, sections]);
+    setSectionsInternal(next);
+  };
+
+  const canUndo = history.length > 0;
+  const canRedo = future.length > 0;
 
   const visibleSections = sections.filter((s) => s.visible);
   const selectedSectionData = sections.find((s) => s.id === selectedSection);
@@ -1855,24 +1884,6 @@ export default function ServerEditorPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 mr-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg transition-colors"
-              title="Undo"
-            >
-              <Undo2 className="w-4 h-4" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg transition-colors"
-              title="Redo"
-            >
-              <Redo2 className="w-4 h-4" />
-            </motion.button>
-          </div>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -2053,7 +2064,40 @@ export default function ServerEditorPage() {
                 <span className="text-xs text-zinc-400">•</span>
                 <span className="text-xs text-zinc-500">{mockServer.subdomain}.minesites.net</span>
               </div>
-              <div className="flex items-center gap-1 p-1 bg-zinc-100 rounded-lg">
+              <div className="flex items-center gap-3">
+                {/* Undo/Redo */}
+                <div className="flex items-center gap-1">
+                  <motion.button
+                    whileHover={canUndo ? { scale: 1.05 } : {}}
+                    whileTap={canUndo ? { scale: 0.95 } : {}}
+                    onClick={undo}
+                    disabled={!canUndo}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      canUndo
+                        ? "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100"
+                        : "text-zinc-300 cursor-not-allowed"
+                    }`}
+                    title="Undo"
+                  >
+                    <Undo2 className="w-4 h-4" />
+                  </motion.button>
+                  <motion.button
+                    whileHover={canRedo ? { scale: 1.05 } : {}}
+                    whileTap={canRedo ? { scale: 0.95 } : {}}
+                    onClick={redo}
+                    disabled={!canRedo}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      canRedo
+                        ? "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100"
+                        : "text-zinc-300 cursor-not-allowed"
+                    }`}
+                    title="Redo"
+                  >
+                    <Redo2 className="w-4 h-4" />
+                  </motion.button>
+                </div>
+                {/* Device Mode */}
+                <div className="flex items-center gap-1 p-1 bg-zinc-100 rounded-lg">
                 {[
                   { mode: "desktop" as const, icon: Monitor },
                   { mode: "tablet" as const, icon: Tablet },
@@ -2072,6 +2116,7 @@ export default function ServerEditorPage() {
                     <Icon className="w-4 h-4" />
                   </motion.button>
                 ))}
+                </div>
               </div>
             </div>
 

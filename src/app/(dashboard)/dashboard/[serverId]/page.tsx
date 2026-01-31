@@ -1400,9 +1400,9 @@ export default function ServerEditorPage() {
         {/* Main Editor Container */}
         <div className="flex-1 flex rounded-2xl bg-white border border-zinc-200/80 shadow-sm overflow-hidden">
           {/* Sections List */}
-          <div className="w-64 flex-shrink-0 flex flex-col overflow-hidden p-4 border-r border-zinc-100">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
+          <div className="w-80 flex-shrink-0 flex flex-col overflow-hidden px-3 py-3 border-r border-zinc-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-zinc-400" />
                 <h2 className="font-semibold text-zinc-900 text-sm">Sections</h2>
               </div>
@@ -1420,31 +1420,31 @@ export default function ServerEditorPage() {
               {/* Locked Navbar Section */}
               <div
                 onClick={() => setSelectedSection("navbar")}
-                className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all mb-2 ${
+                className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border cursor-pointer transition-all mb-1.5 ${
                   selectedSection === "navbar"
                     ? "border-cyan-300 bg-gradient-to-r from-cyan-50 to-emerald-50"
                     : "border-zinc-200 bg-zinc-50 hover:border-zinc-300"
                 }`}
               >
-                <div className="text-zinc-300 flex-shrink-0 px-0.5">
-                  <div className="w-4 h-4" /> {/* Spacer where grip would be */}
+                <div className="text-zinc-300 flex-shrink-0">
+                  <div className="w-3.5 h-3.5" /> {/* Spacer where grip would be */}
                 </div>
                 <div
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 ${
                     selectedSection === "navbar"
                       ? "bg-gradient-to-br from-cyan-500 to-emerald-500"
                       : "bg-zinc-200"
                   }`}
                 >
-                  <Layout className={`w-3.5 h-3.5 ${selectedSection === "navbar" ? "text-white" : "text-zinc-500"}`} />
+                  <Layout className={`w-3 h-3 ${selectedSection === "navbar" ? "text-white" : "text-zinc-500"}`} />
                 </div>
-                <div className="flex-1 min-w-0 overflow-hidden">
-                  <p className="text-sm font-medium text-zinc-900 truncate leading-tight">Navigation</p>
-                  <p className="text-xs text-zinc-400">Locked</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-zinc-900 truncate">Navigation</p>
+                  <p className="text-[11px] text-zinc-400">Locked</p>
                 </div>
               </div>
 
-              <Reorder.Group axis="y" values={sections} onReorder={setSections} className="space-y-1.5">
+              <Reorder.Group axis="y" values={sections} onReorder={setSections} className="space-y-1">
                 {sections.map((section) => {
                   const config = sectionTypeConfig[section.type];
                   const Icon = config?.icon || Layout;
@@ -1455,17 +1455,17 @@ export default function ServerEditorPage() {
                       <motion.div
                         onClick={() => setSelectedSection(isSelected ? null : section.id)}
                         title={section.title}
-                        className={`group flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+                        className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg border cursor-pointer transition-all ${
                           isSelected
                             ? "border-cyan-300 bg-gradient-to-r from-cyan-50 to-emerald-50"
                             : "border-transparent hover:border-zinc-200 hover:bg-zinc-50"
                         } ${!section.visible ? "opacity-50" : ""}`}
                       >
                         <div className="cursor-grab text-zinc-300 hover:text-zinc-400 flex-shrink-0">
-                          <GripVertical className="w-4 h-4" />
+                          <GripVertical className="w-3.5 h-3.5" />
                         </div>
                         <div
-                          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 ${
                             isSelected
                               ? "bg-gradient-to-br from-cyan-500 to-emerald-500"
                               : section.visible
@@ -1473,13 +1473,13 @@ export default function ServerEditorPage() {
                               : "bg-zinc-200"
                           }`}
                         >
-                          <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-white" : "text-zinc-500"}`} />
+                          <Icon className={`w-3 h-3 ${isSelected ? "text-white" : "text-zinc-500"}`} />
                         </div>
-                        <div className="flex-1 min-w-0 overflow-hidden">
-                          <p className="text-sm font-medium text-zinc-900 truncate leading-tight">{section.title}</p>
-                          <p className="text-xs text-zinc-400 capitalize">{section.type}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-zinc-900 truncate">{section.title}</p>
+                          <p className="text-[11px] text-zinc-400 capitalize">{section.type}</p>
                         </div>
-                        <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -1490,9 +1490,9 @@ export default function ServerEditorPage() {
                             className="p-1 rounded hover:bg-white transition-colors"
                           >
                             {section.visible ? (
-                              <Eye className="w-3.5 h-3.5 text-zinc-400" />
+                              <Eye className="w-3 h-3 text-zinc-400" />
                             ) : (
-                              <EyeOff className="w-3.5 h-3.5 text-zinc-400" />
+                              <EyeOff className="w-3 h-3 text-zinc-400" />
                             )}
                           </motion.button>
                           <motion.button
@@ -1504,7 +1504,7 @@ export default function ServerEditorPage() {
                             }}
                             className="p-1 rounded hover:bg-red-50 transition-colors"
                           >
-                            <Trash2 className="w-3.5 h-3.5 text-zinc-400 hover:text-red-500" />
+                            <Trash2 className="w-3 h-3 text-zinc-400 hover:text-red-500" />
                           </motion.button>
                         </div>
                       </motion.div>
@@ -1521,7 +1521,7 @@ export default function ServerEditorPage() {
             </div>
 
             {/* Server Info */}
-            <div className="pt-3 mt-3 border-t border-zinc-100">
+            <div className="pt-2 mt-2 border-t border-zinc-100">
               <div className="flex items-center gap-2">
                 <code className="flex-1 px-2 py-1.5 bg-zinc-50 rounded-lg text-xs font-mono text-zinc-600 truncate">
                   {mockServer.serverIp}
@@ -1533,9 +1533,9 @@ export default function ServerEditorPage() {
                   className="p-1.5 rounded-lg hover:bg-zinc-100 transition-colors"
                 >
                   {copied ? (
-                    <Check className="w-4 h-4 text-emerald-500" />
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
                   ) : (
-                    <Copy className="w-4 h-4 text-zinc-400" />
+                    <Copy className="w-3.5 h-3.5 text-zinc-400" />
                   )}
                 </motion.button>
               </div>

@@ -374,7 +374,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex-1 mx-4">
                     <div className="h-5 rounded bg-white border border-zinc-200 flex items-center justify-center">
-                      <span className="text-[10px] text-zinc-500">epiccraft.mcsite.com</span>
+                      <span className="text-[10px] text-zinc-500">epiccraft.minesites.net</span>
                     </div>
                   </div>
                 </div>

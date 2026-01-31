@@ -18,7 +18,7 @@ const features = [
   },
   {
     title: "Custom Domain",
-    description: "Get yourserver.mcsite.com or connect your own domain.",
+    description: "Get yourserver.minesites.net or connect your own domain.",
     icon: Globe,
   },
   {
@@ -119,7 +119,7 @@ export default function HomePage() {
                   <div className="flex-1 flex justify-center">
                     <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-slate-900/50 text-sm text-slate-400">
                       <Globe className="w-3.5 h-3.5" />
-                      epiccraft.mcsite.com
+                      epiccraft.minesites.net
                     </div>
                   </div>
                 </div>

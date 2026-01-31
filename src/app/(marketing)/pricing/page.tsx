@@ -93,7 +93,7 @@ const plans = [
     features: [
       "1 server site",
       "Basic templates",
-      "mcsite.com subdomain",
+      "minesites.net subdomain",
       "Live player count",
       "Community support",
     ],
@@ -109,7 +109,7 @@ const plans = [
       "3 server sites",
       "All templates",
       "Custom subdomain",
-      "Remove MCsite branding",
+      "Remove MineSites branding",
       "Basic analytics",
       "Email support",
     ],

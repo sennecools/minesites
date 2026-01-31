@@ -96,7 +96,7 @@ export function ServerSettings({ server }: ServerSettingsProps) {
                 className="rounded-r-none"
               />
               <span className="px-3 py-2.5 text-sm text-zinc-500 bg-zinc-100 border border-l-0 border-zinc-200 rounded-r-xl">
-                .mcsite.com
+                .minesites.net
               </span>
             </div>
             {errors.subdomain && (

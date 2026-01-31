@@ -236,7 +236,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Free subdomain</h3>
               <p className="text-sm text-zinc-400">
-                Get yourserver.mcsite.com for free, or connect your own custom domain.
+                Get yourserver.minesites.net for free, or connect your own custom domain.
               </p>
             </motion.div>
           </div>
@@ -303,7 +303,7 @@ export default function HomePage() {
                 Ready to grow your community?
               </h2>
               <p className="text-emerald-100 max-w-lg mx-auto mb-8">
-                Join hundreds of server owners who already trust MCsite for their online presence.
+                Join hundreds of server owners who already trust MineSites for their online presence.
               </p>
               <Link href="/signup">
                 <Button size="lg" className="text-base px-8 bg-white text-emerald-600 hover:bg-emerald-50">

@@ -14,7 +14,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MCsite - Create a website for your Minecraft server",
+  title: "MineSites - Create a website for your Minecraft server",
   description:
     "A professional site for your Minecraft server in minutes. Showcase your community and builds with a modern, customizable portfolio.",
 };

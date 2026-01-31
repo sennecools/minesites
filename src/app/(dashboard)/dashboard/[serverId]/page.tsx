@@ -1354,7 +1354,7 @@ export default function ServerEditorPage() {
                 Live
               </span>
             </div>
-            <p className="text-sm text-zinc-500">{mockServer.subdomain}.mcsite.com</p>
+            <p className="text-sm text-zinc-500">{mockServer.subdomain}.minesites.net</p>
           </div>
         </div>
 
@@ -1555,7 +1555,7 @@ export default function ServerEditorPage() {
                 <Eye className="w-4 h-4 text-zinc-400" />
                 <span className="text-sm font-medium text-zinc-700">Preview</span>
                 <span className="text-xs text-zinc-400">•</span>
-                <span className="text-xs text-zinc-500">{mockServer.subdomain}.mcsite.com</span>
+                <span className="text-xs text-zinc-500">{mockServer.subdomain}.minesites.net</span>
               </div>
               <div className="flex items-center gap-1 p-1 bg-zinc-100 rounded-lg">
                 {[
@@ -1664,7 +1664,7 @@ export default function ServerEditorPage() {
                 {/* Mini Footer */}
                 <div className="px-4 py-3 border-t border-zinc-100 text-center bg-white">
                   <p className="text-xs text-zinc-400">
-                    Powered by <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">MCsite</span>
+                    Powered by <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">MineSites</span>
                   </p>
                 </div>
               </motion.div>

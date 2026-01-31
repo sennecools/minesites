@@ -77,7 +77,7 @@ export default function HomePageV3() {
                       <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
                       <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
                     </div>
-                    <div className="flex-1 text-center text-xs text-white/60">myserver.mcsite.com</div>
+                    <div className="flex-1 text-center text-xs text-white/60">myserver.minesites.net</div>
                   </div>
                   <div className="p-4 space-y-3">
                     <div className="flex items-center gap-3">
@@ -153,10 +153,10 @@ export default function HomePageV3() {
             <div className="rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 p-6 text-white">
               <h3 className="text-lg font-semibold mb-2">Free subdomain</h3>
               <p className="text-sm text-violet-200 mb-4">
-                Get yourserver.mcsite.com included
+                Get yourserver.minesites.net included
               </p>
               <div className="px-3 py-2 rounded-lg bg-white/20 backdrop-blur text-sm font-mono">
-                epic.mcsite.com
+                epic.minesites.net
               </div>
             </div>
           </motion.div>

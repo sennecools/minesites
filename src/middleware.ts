@@ -11,7 +11,7 @@ export default auth((req) => {
   const hostname = req.headers.get("host") || "";
   const isLocalhost = hostname.includes("localhost");
 
-  // Extract subdomain (e.g., "myserver" from "myserver.mcsite.com")
+  // Extract subdomain (e.g., "myserver" from "myserver.minesites.net")
   let subdomain: string | null = null;
   if (!isLocalhost) {
     const parts = hostname.split(".");

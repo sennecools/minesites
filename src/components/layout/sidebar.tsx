@@ -97,7 +97,7 @@ export function Sidebar() {
                 transition={{ duration: 0.15 }}
                 className="font-display text-sm font-bold text-zinc-900 whitespace-nowrap overflow-hidden"
               >
-                C<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">site</span>
+                Mine<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">Sites</span>
               </motion.span>
             )}
           </AnimatePresence>

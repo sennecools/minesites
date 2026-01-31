@@ -80,7 +80,7 @@ export default function HomePage() {
                 <div className="flex-1 flex justify-center">
                   <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-zinc-800 text-sm text-zinc-400">
                     <span className="text-green-400">●</span>
-                    epicpvp.mcsite.com
+                    epicpvp.minesites.net
                   </div>
                 </div>
               </div>

@@ -151,7 +151,7 @@ export default function DashboardPage() {
                       <h3 className="font-semibold text-zinc-900 group-hover:text-cyan-600 transition-colors">
                         {server.name}
                       </h3>
-                      <p className="text-xs text-zinc-400">{server.subdomain}.mcsite.com</p>
+                      <p className="text-xs text-zinc-400">{server.subdomain}.minesites.net</p>
                     </div>
                   </div>
                   <motion.button

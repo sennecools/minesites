@@ -169,7 +169,7 @@ export default function ServersPage() {
                         <h3 className="font-semibold text-zinc-900 group-hover:text-cyan-600 transition-colors">
                           {server.name}
                         </h3>
-                        <p className="text-xs text-zinc-400">{server.subdomain}.mcsite.com</p>
+                        <p className="text-xs text-zinc-400">{server.subdomain}.minesites.net</p>
                       </div>
                     </div>
                     <motion.button
@@ -275,7 +275,7 @@ export default function ServersPage() {
                       </div>
                       <div>
                         <p className="font-medium text-zinc-900 hover:text-cyan-600 transition-colors">{server.name}</p>
-                        <p className="text-xs text-zinc-400">{server.subdomain}.mcsite.com</p>
+                        <p className="text-xs text-zinc-400">{server.subdomain}.minesites.net</p>
                       </div>
                     </Link>
                   </td>

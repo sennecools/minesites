@@ -139,7 +139,7 @@ export function Footer() {
 
         <div className="mt-12 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-zinc-400">
-            &copy; {new Date().getFullYear()} MCsite. All rights reserved.
+            &copy; {new Date().getFullYear()} MineSites. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             {socialLinks.map((social) => (

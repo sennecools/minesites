@@ -97,7 +97,7 @@ export default function SignupPage() {
       <div className="text-center mb-8">
         <Link href="/" className="inline-block mb-6 lg:hidden">
           <span className="font-display text-2xl font-bold tracking-tight text-zinc-900">
-            MC<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">site</span>
+            Mine<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">Sites</span>
           </span>
         </Link>
         <h1 className="font-display text-2xl font-bold tracking-tight text-zinc-900">Create an account</h1>

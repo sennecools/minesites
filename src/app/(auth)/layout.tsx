@@ -52,7 +52,7 @@ export default function AuthLayout({
           >
             <Link href="/" className="inline-block">
               <span className="font-display text-2xl font-bold tracking-tight text-zinc-900">
-                MC<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">site</span>
+                Mine<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">Sites</span>
               </span>
             </Link>
           </motion.div>

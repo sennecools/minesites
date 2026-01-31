@@ -71,6 +71,7 @@ type HeroSettings = {
   imageBlur?: number; // 0-20
   imageDarken?: number; // 0-100
   playerBadge?: "top" | "bottom" | "hidden";
+  badgeStyle?: "pill" | "minimal" | "card" | "glow";
   showButtons?: boolean;
   primaryButtonText?: string;
   secondaryButtonText?: string;
@@ -205,6 +206,7 @@ function PreviewHero({ section }: { section: Section }) {
     imageBlur = 0,
     imageDarken = 40,
     playerBadge = "top",
+    badgeStyle = "pill",
     showButtons = true,
     primaryButtonText = "Join Discord",
     secondaryButtonText = "Copy IP",
@@ -214,6 +216,7 @@ function PreviewHero({ section }: { section: Section }) {
   const isLight = backgroundType === "solid" ? isLightColor(backgroundColor) : !hasImage;
   const textColor = hasImage || !isLight ? "text-white" : "text-zinc-900";
   const subtextColor = hasImage || !isLight ? "text-white/80" : "text-zinc-600";
+  const isDark = hasImage || !isLight;
 
   // Helper to determine if a color is light
   function isLightColor(hex: string): boolean {
@@ -236,16 +239,63 @@ function PreviewHero({ section }: { section: Section }) {
     return {};
   };
 
-  const PlayerBadge = () => (
-    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-      hasImage || !isLight
-        ? "bg-white/10 backdrop-blur-sm text-white border border-white/20"
-        : "bg-white text-zinc-600 shadow-sm border border-zinc-200"
-    }`}>
-      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-      {mockServer.players} players online
-    </div>
-  );
+  // Different badge styles
+  const PlayerBadge = () => {
+    if (badgeStyle === "minimal") {
+      return (
+        <div className={`inline-flex items-center gap-1.5 text-sm font-medium ${isDark ? "text-white/90" : "text-zinc-600"}`}>
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="font-bold">{mockServer.players}</span> online
+        </div>
+      );
+    }
+
+    if (badgeStyle === "card") {
+      return (
+        <div className={`inline-flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium ${
+          isDark
+            ? "bg-white/10 backdrop-blur-md text-white border border-white/10"
+            : "bg-white text-zinc-700 shadow-lg border border-zinc-100"
+        }`}>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
+            <span className="font-bold text-lg">{mockServer.players}</span>
+          </div>
+          <div className={`w-px h-6 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
+          <span className={isDark ? "text-white/70" : "text-zinc-500"}>players online</span>
+        </div>
+      );
+    }
+
+    if (badgeStyle === "glow") {
+      return (
+        <div className="relative inline-flex">
+          <div className="absolute inset-0 bg-green-500/30 rounded-full blur-xl animate-pulse" />
+          <div className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
+            isDark
+              ? "bg-green-500/20 text-green-300 border border-green-500/30 backdrop-blur-sm"
+              : "bg-green-50 text-green-700 border border-green-200"
+          }`}>
+            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
+            <span className="font-bold">{mockServer.players}</span>
+            <span className={isDark ? "text-green-300/70" : "text-green-600"}>players online</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: pill style
+    return (
+      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+        isDark
+          ? "bg-white/10 backdrop-blur-sm text-white border border-white/20"
+          : "bg-white text-zinc-600 shadow-sm border border-zinc-200"
+      }`}>
+        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+        {mockServer.players} players online
+      </div>
+    );
+  };
 
   return (
     <div className="relative overflow-hidden" style={getBackgroundStyle()}>
@@ -1403,7 +1453,7 @@ function SettingsPanel({
 
           {/* Player Badge Position */}
           <div>
-            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Player Badge</label>
+            <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Badge Position</label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { value: "top", label: "Top" },
@@ -1429,6 +1479,41 @@ function SettingsPanel({
               ))}
             </div>
           </div>
+
+          {/* Badge Style */}
+          {section.settings.hero?.playerBadge !== "hidden" && (
+            <div>
+              <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Badge Style</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: "pill", label: "Pill", desc: "Simple rounded" },
+                  { value: "minimal", label: "Minimal", desc: "Text only" },
+                  { value: "card", label: "Card", desc: "Large box" },
+                  { value: "glow", label: "Glow", desc: "Animated glow" },
+                ].map(({ value, label, desc }) => (
+                  <button
+                    key={value}
+                    onClick={() => onUpdate({
+                      settings: {
+                        ...section.settings,
+                        hero: { ...section.settings.hero, badgeStyle: value as "pill" | "minimal" | "card" | "glow" }
+                      }
+                    })}
+                    className={`p-2 rounded-lg border transition-all text-left ${
+                      (section.settings.hero?.badgeStyle || "pill") === value
+                        ? "border-cyan-300 bg-cyan-50"
+                        : "border-zinc-200 hover:border-zinc-300"
+                    }`}
+                  >
+                    <span className={`text-xs font-medium block ${
+                      (section.settings.hero?.badgeStyle || "pill") === value ? "text-cyan-600" : "text-zinc-700"
+                    }`}>{label}</span>
+                    <span className="text-[10px] text-zinc-400">{desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Buttons */}
           <div>

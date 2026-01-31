@@ -1064,27 +1064,27 @@ function SettingsPanel({
   if (!config) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Section Title */}
       <div>
-        <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">Title</label>
+        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Title</label>
         <input
           type="text"
           value={section.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
-          className="mt-1 w-full px-2 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
+          className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
         />
       </div>
 
       {/* Subtitle (for hero) */}
       {section.type === "hero" && (
         <div>
-          <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">Subtitle</label>
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Subtitle</label>
           <input
             type="text"
             value={section.subtitle || ""}
             onChange={(e) => onUpdate({ subtitle: e.target.value })}
-            className="mt-1 w-full px-2 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
+            className="mt-2 w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
           />
         </div>
       )}
@@ -1092,8 +1092,8 @@ function SettingsPanel({
       {/* Alignment (for hero) */}
       {section.type === "hero" && (
         <div>
-          <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Alignment</label>
-          <div className="flex gap-1.5">
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Alignment</label>
+          <div className="flex gap-2">
             {[
               { value: "left", icon: AlignLeft },
               { value: "center", icon: AlignCenter },
@@ -1102,13 +1102,13 @@ function SettingsPanel({
               <button
                 key={value}
                 onClick={() => onUpdate({ settings: { ...section.settings, alignment: value as "left" | "center" | "right" } })}
-                className={`flex-1 p-1.5 rounded-md border transition-all ${
+                className={`flex-1 p-2.5 rounded-lg border transition-all ${
                   section.settings.alignment === value
                     ? "border-cyan-300 bg-cyan-50 text-cyan-600"
                     : "border-zinc-200 hover:border-zinc-300 text-zinc-400"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5 mx-auto" />
+                <Icon className="w-4 h-4 mx-auto" />
               </button>
             ))}
           </div>
@@ -1118,8 +1118,8 @@ function SettingsPanel({
       {/* Color Scheme */}
       {(section.type === "hero" || section.type === "discord") && (
         <div>
-          <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Style</label>
-          <div className="grid grid-cols-3 gap-1.5">
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Style</label>
+          <div className="grid grid-cols-3 gap-2">
             {[
               { value: "default", label: "Light", colors: "bg-white border-zinc-200" },
               { value: "accent", label: "Gradient", colors: "bg-gradient-to-br from-cyan-100 to-emerald-100" },
@@ -1128,14 +1128,14 @@ function SettingsPanel({
               <button
                 key={value}
                 onClick={() => onUpdate({ settings: { ...section.settings, colorScheme: value as "default" | "accent" | "dark" } })}
-                className={`p-1.5 rounded-md border transition-all ${
+                className={`p-2 rounded-lg border transition-all ${
                   section.settings.colorScheme === value
                     ? "border-cyan-300 ring-1 ring-cyan-100"
                     : "border-zinc-200 hover:border-zinc-300"
                 }`}
               >
-                <div className={`w-full h-4 rounded ${colors} mb-0.5`} />
-                <span className="text-[10px] text-zinc-600">{label}</span>
+                <div className={`w-full h-5 rounded ${colors} mb-1`} />
+                <span className="text-xs text-zinc-600">{label}</span>
               </button>
             ))}
           </div>
@@ -1145,8 +1145,8 @@ function SettingsPanel({
       {/* Layout (for stats, features, gallery) */}
       {(section.type === "stats" || section.type === "gallery") && (
         <div>
-          <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Layout</label>
-          <div className="flex gap-1.5">
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Layout</label>
+          <div className="flex gap-2">
             {[
               { value: "grid", icon: Grid3X3, label: "Grid" },
               { value: "list", icon: Rows3, label: "List" },
@@ -1154,14 +1154,14 @@ function SettingsPanel({
               <button
                 key={value}
                 onClick={() => onUpdate({ settings: { ...section.settings, layout: value as "grid" | "list" } })}
-                className={`flex-1 p-1.5 rounded-md border transition-all flex flex-col items-center gap-0.5 ${
+                className={`flex-1 p-2.5 rounded-lg border transition-all flex flex-col items-center gap-1 ${
                   section.settings.layout === value
                     ? "border-cyan-300 bg-cyan-50 text-cyan-600"
                     : "border-zinc-200 hover:border-zinc-300 text-zinc-400"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
-                <span className="text-[10px]">{label}</span>
+                <Icon className="w-4 h-4" />
+                <span className="text-xs">{label}</span>
               </button>
             ))}
           </div>
@@ -1171,10 +1171,10 @@ function SettingsPanel({
       {/* Content Editor for Features */}
       {section.type === "features" && (
         <div>
-          <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Features</label>
-          <div className="space-y-1.5">
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Features</label>
+          <div className="space-y-2">
             {((section.settings.content?.features as string[]) || []).map((feature, i) => (
-              <div key={i} className="flex gap-1">
+              <div key={i} className="flex gap-2">
                 <input
                   type="text"
                   value={feature}
@@ -1183,16 +1183,16 @@ function SettingsPanel({
                     newFeatures[i] = e.target.value;
                     onUpdate({ settings: { ...section.settings, content: { ...section.settings.content, features: newFeatures } } });
                   }}
-                  className="flex-1 px-2 py-1 bg-zinc-50 border border-zinc-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
                 <button
                   onClick={() => {
                     const newFeatures = ((section.settings.content?.features as string[]) || []).filter((_, idx) => idx !== i);
                     onUpdate({ settings: { ...section.settings, content: { ...section.settings.content, features: newFeatures } } });
                   }}
-                  className="p-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                  className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -1201,7 +1201,7 @@ function SettingsPanel({
                 const newFeatures = [...((section.settings.content?.features as string[]) || []), "New Feature"];
                 onUpdate({ settings: { ...section.settings, content: { ...section.settings.content, features: newFeatures } } });
               }}
-              className="w-full p-1.5 border border-dashed border-zinc-300 rounded-md text-[10px] text-zinc-500 hover:border-cyan-300 hover:text-cyan-600 transition-colors"
+              className="w-full p-2 border border-dashed border-zinc-300 rounded-lg text-xs text-zinc-500 hover:border-cyan-300 hover:text-cyan-600 transition-colors"
             >
               + Add Feature
             </button>
@@ -1212,10 +1212,10 @@ function SettingsPanel({
       {/* Content Editor for Game Modes */}
       {section.type === "gamemodes" && (
         <div>
-          <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Game Modes</label>
-          <div className="space-y-1.5">
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Game Modes</label>
+          <div className="space-y-2">
             {((section.settings.content?.modes as string[]) || []).map((mode, i) => (
-              <div key={i} className="flex gap-1">
+              <div key={i} className="flex gap-2">
                 <input
                   type="text"
                   value={mode}
@@ -1224,16 +1224,16 @@ function SettingsPanel({
                     newModes[i] = e.target.value;
                     onUpdate({ settings: { ...section.settings, content: { ...section.settings.content, modes: newModes } } });
                   }}
-                  className="flex-1 px-2 py-1 bg-zinc-50 border border-zinc-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
                 <button
                   onClick={() => {
                     const newModes = ((section.settings.content?.modes as string[]) || []).filter((_, idx) => idx !== i);
                     onUpdate({ settings: { ...section.settings, content: { ...section.settings.content, modes: newModes } } });
                   }}
-                  className="p-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                  className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -1243,7 +1243,7 @@ function SettingsPanel({
                   const newModes = [...((section.settings.content?.modes as string[]) || []), "New Mode"];
                   onUpdate({ settings: { ...section.settings, content: { ...section.settings.content, modes: newModes } } });
                 }}
-                className="w-full p-1.5 border border-dashed border-zinc-300 rounded-md text-[10px] text-zinc-500 hover:border-cyan-300 hover:text-cyan-600 transition-colors"
+                className="w-full p-2 border border-dashed border-zinc-300 rounded-lg text-xs text-zinc-500 hover:border-cyan-300 hover:text-cyan-600 transition-colors"
               >
                 + Add Mode
               </button>
@@ -1400,19 +1400,19 @@ export default function ServerEditorPage() {
         {/* Main Editor Container */}
         <div className="flex-1 flex rounded-2xl bg-white border border-zinc-200/80 shadow-sm overflow-hidden">
           {/* Sections List */}
-          <div className="w-56 flex-shrink-0 flex flex-col overflow-hidden p-3 border-r border-zinc-100">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-zinc-400" />
-                <h2 className="font-semibold text-zinc-900 text-xs">Sections</h2>
+          <div className="w-64 flex-shrink-0 flex flex-col overflow-hidden p-4 border-r border-zinc-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-zinc-400" />
+                <h2 className="font-semibold text-zinc-900 text-sm">Sections</h2>
               </div>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowAddSection(true)}
-                className="p-1 rounded-md bg-gradient-to-r from-cyan-500 to-emerald-500 text-white hover:shadow-md transition-shadow"
+                className="p-1.5 rounded-md bg-gradient-to-r from-cyan-500 to-emerald-500 text-white hover:shadow-md transition-shadow"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
               </motion.button>
             </div>
 
@@ -1420,31 +1420,31 @@ export default function ServerEditorPage() {
               {/* Locked Navbar Section */}
               <div
                 onClick={() => setSelectedSection("navbar")}
-                className={`flex items-center gap-1.5 p-1.5 rounded-lg border cursor-pointer transition-all mb-2 ${
+                className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all mb-2 ${
                   selectedSection === "navbar"
                     ? "border-cyan-300 bg-gradient-to-r from-cyan-50 to-emerald-50"
                     : "border-zinc-200 bg-zinc-50 hover:border-zinc-300"
                 }`}
               >
                 <div className="text-zinc-300 flex-shrink-0 px-0.5">
-                  <div className="w-3 h-3" /> {/* Spacer where grip would be */}
+                  <div className="w-4 h-4" /> {/* Spacer where grip would be */}
                 </div>
                 <div
-                  className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
                     selectedSection === "navbar"
                       ? "bg-gradient-to-br from-cyan-500 to-emerald-500"
                       : "bg-zinc-200"
                   }`}
                 >
-                  <Layout className={`w-2.5 h-2.5 ${selectedSection === "navbar" ? "text-white" : "text-zinc-500"}`} />
+                  <Layout className={`w-3.5 h-3.5 ${selectedSection === "navbar" ? "text-white" : "text-zinc-500"}`} />
                 </div>
                 <div className="flex-1 min-w-0 overflow-hidden">
-                  <p className="text-[11px] font-medium text-zinc-900 truncate leading-tight">Navigation</p>
-                  <p className="text-[9px] text-zinc-400">Locked</p>
+                  <p className="text-sm font-medium text-zinc-900 truncate leading-tight">Navigation</p>
+                  <p className="text-xs text-zinc-400">Locked</p>
                 </div>
               </div>
 
-              <Reorder.Group axis="y" values={sections} onReorder={setSections} className="space-y-1">
+              <Reorder.Group axis="y" values={sections} onReorder={setSections} className="space-y-1.5">
                 {sections.map((section) => {
                   const config = sectionTypeConfig[section.type];
                   const Icon = config?.icon || Layout;
@@ -1455,17 +1455,17 @@ export default function ServerEditorPage() {
                       <motion.div
                         onClick={() => setSelectedSection(isSelected ? null : section.id)}
                         title={section.title}
-                        className={`group flex items-center gap-1.5 p-1.5 rounded-lg border cursor-pointer transition-all ${
+                        className={`group flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
                           isSelected
                             ? "border-cyan-300 bg-gradient-to-r from-cyan-50 to-emerald-50"
                             : "border-transparent hover:border-zinc-200 hover:bg-zinc-50"
                         } ${!section.visible ? "opacity-50" : ""}`}
                       >
                         <div className="cursor-grab text-zinc-300 hover:text-zinc-400 flex-shrink-0">
-                          <GripVertical className="w-3 h-3" />
+                          <GripVertical className="w-4 h-4" />
                         </div>
                         <div
-                          className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             isSelected
                               ? "bg-gradient-to-br from-cyan-500 to-emerald-500"
                               : section.visible
@@ -1473,13 +1473,13 @@ export default function ServerEditorPage() {
                               : "bg-zinc-200"
                           }`}
                         >
-                          <Icon className={`w-2.5 h-2.5 ${isSelected ? "text-white" : "text-zinc-500"}`} />
+                          <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-white" : "text-zinc-500"}`} />
                         </div>
                         <div className="flex-1 min-w-0 overflow-hidden">
-                          <p className="text-[11px] font-medium text-zinc-900 truncate leading-tight">{section.title}</p>
-                          <p className="text-[9px] text-zinc-400 capitalize">{section.type}</p>
+                          <p className="text-sm font-medium text-zinc-900 truncate leading-tight">{section.title}</p>
+                          <p className="text-xs text-zinc-400 capitalize">{section.type}</p>
                         </div>
-                        <div className="flex items-center flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -1487,12 +1487,12 @@ export default function ServerEditorPage() {
                               e.stopPropagation();
                               toggleVisibility(section.id);
                             }}
-                            className="p-0.5 rounded hover:bg-white transition-colors"
+                            className="p-1 rounded hover:bg-white transition-colors"
                           >
                             {section.visible ? (
-                              <Eye className="w-2.5 h-2.5 text-zinc-400" />
+                              <Eye className="w-3.5 h-3.5 text-zinc-400" />
                             ) : (
-                              <EyeOff className="w-2.5 h-2.5 text-zinc-400" />
+                              <EyeOff className="w-3.5 h-3.5 text-zinc-400" />
                             )}
                           </motion.button>
                           <motion.button
@@ -1502,9 +1502,9 @@ export default function ServerEditorPage() {
                               e.stopPropagation();
                               deleteSection(section.id);
                             }}
-                            className="p-0.5 rounded hover:bg-red-50 transition-colors"
+                            className="p-1 rounded hover:bg-red-50 transition-colors"
                           >
-                            <Trash2 className="w-2.5 h-2.5 text-zinc-400 hover:text-red-500" />
+                            <Trash2 className="w-3.5 h-3.5 text-zinc-400 hover:text-red-500" />
                           </motion.button>
                         </div>
                       </motion.div>
@@ -1521,21 +1521,21 @@ export default function ServerEditorPage() {
             </div>
 
             {/* Server Info */}
-            <div className="pt-2 mt-2 border-t border-zinc-100">
-              <div className="flex items-center gap-1.5">
-                <code className="flex-1 px-1.5 py-1 bg-zinc-50 rounded-md text-[10px] font-mono text-zinc-600 truncate">
+            <div className="pt-3 mt-3 border-t border-zinc-100">
+              <div className="flex items-center gap-2">
+                <code className="flex-1 px-2 py-1.5 bg-zinc-50 rounded-lg text-xs font-mono text-zinc-600 truncate">
                   {mockServer.serverIp}
                 </code>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleCopyIP}
-                  className="p-1 rounded-md hover:bg-zinc-100 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-zinc-100 transition-colors"
                 >
                   {copied ? (
-                    <Check className="w-3 h-3 text-emerald-500" />
+                    <Check className="w-4 h-4 text-emerald-500" />
                   ) : (
-                    <Copy className="w-3 h-3 text-zinc-400" />
+                    <Copy className="w-4 h-4 text-zinc-400" />
                   )}
                 </motion.button>
               </div>
@@ -1677,19 +1677,19 @@ export default function ServerEditorPage() {
           </div>
 
           {/* Settings Panel */}
-          <div className="w-64 flex-shrink-0 flex flex-col overflow-hidden p-3">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Palette className="w-3.5 h-3.5 text-zinc-400" />
-              <h2 className="font-semibold text-zinc-900 text-xs">Settings</h2>
+          <div className="w-72 flex-shrink-0 flex flex-col overflow-hidden p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Palette className="w-4 h-4 text-zinc-400" />
+              <h2 className="font-semibold text-zinc-900 text-sm">Settings</h2>
             </div>
 
             <div className="flex-1 overflow-y-auto scrollbar-thin">
               {selectedSection === "navbar" ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {/* Navbar Style */}
                   <div>
-                    <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Style</label>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Style</label>
+                    <div className="grid grid-cols-3 gap-2">
                       {[
                         { value: "default", label: "Default" },
                         { value: "centered", label: "Centered" },
@@ -1698,13 +1698,13 @@ export default function ServerEditorPage() {
                         <button
                           key={value}
                           onClick={() => setNavbarSettings({ ...navbarSettings, style: value as NavbarSettings["style"] })}
-                          className={`p-1.5 rounded-md border transition-all text-center ${
+                          className={`p-2 rounded-lg border transition-all text-center ${
                             navbarSettings.style === value
                               ? "border-cyan-300 bg-cyan-50 text-cyan-600"
                               : "border-zinc-200 hover:border-zinc-300 text-zinc-500"
                           }`}
                         >
-                          <span className="text-[10px] font-medium">{label}</span>
+                          <span className="text-xs font-medium">{label}</span>
                         </button>
                       ))}
                     </div>
@@ -1712,25 +1712,25 @@ export default function ServerEditorPage() {
 
                   {/* Show Logo Toggle */}
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">Show Logo</label>
+                    <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Show Logo</label>
                     <button
                       onClick={() => setNavbarSettings({ ...navbarSettings, showLogo: !navbarSettings.showLogo })}
-                      className={`w-8 h-5 rounded-full transition-colors ${
+                      className={`w-10 h-6 rounded-full transition-colors ${
                         navbarSettings.showLogo ? "bg-cyan-500" : "bg-zinc-300"
                       }`}
                     >
-                      <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                        navbarSettings.showLogo ? "translate-x-3.5" : "translate-x-0.5"
+                      <div className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                        navbarSettings.showLogo ? "translate-x-4.5" : "translate-x-0.5"
                       }`} />
                     </button>
                   </div>
 
                   {/* Navigation Links */}
                   <div>
-                    <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5 block">Links</label>
-                    <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 block">Links</label>
+                    <div className="space-y-2">
                       {navbarSettings.links.map((link, i) => (
-                        <div key={i} className="flex gap-1">
+                        <div key={i} className="flex gap-2">
                           <input
                             type="text"
                             value={link.label}
@@ -1740,16 +1740,16 @@ export default function ServerEditorPage() {
                               setNavbarSettings({ ...navbarSettings, links: newLinks });
                             }}
                             placeholder="Label"
-                            className="flex-1 px-2 py-1 bg-zinc-50 border border-zinc-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                            className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                           />
                           <button
                             onClick={() => {
                               const newLinks = navbarSettings.links.filter((_, idx) => idx !== i);
                               setNavbarSettings({ ...navbarSettings, links: newLinks });
                             }}
-                            className="p-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                            className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-4 h-4" />
                           </button>
                         </div>
                       ))}
@@ -1761,7 +1761,7 @@ export default function ServerEditorPage() {
                               links: [...navbarSettings.links, { label: "New Link", href: "/" }]
                             });
                           }}
-                          className="w-full p-1.5 border border-dashed border-zinc-300 rounded-md text-[10px] text-zinc-500 hover:border-cyan-300 hover:text-cyan-600 transition-colors"
+                          className="w-full p-2 border border-dashed border-zinc-300 rounded-lg text-xs text-zinc-500 hover:border-cyan-300 hover:text-cyan-600 transition-colors"
                         >
                           + Add Link
                         </button>
@@ -1770,7 +1770,7 @@ export default function ServerEditorPage() {
                   </div>
                 </div>
               ) : selectedSectionData ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <SettingsPanel
                     section={selectedSectionData}
                     onUpdate={(updates) => updateSection(selectedSectionData.id, updates)}
@@ -1779,19 +1779,19 @@ export default function ServerEditorPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => deleteSection(selectedSectionData.id)}
-                    className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-red-600 hover:bg-red-50 rounded-lg text-xs font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-4 h-4" />
                     Delete Section
                   </motion.button>
                 </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center">
-                  <div className="w-8 h-8 rounded-lg bg-zinc-100 mb-2 flex items-center justify-center">
-                    <Type className="w-4 h-4 text-zinc-300" />
+                  <div className="w-12 h-12 rounded-xl bg-zinc-100 mb-3 flex items-center justify-center">
+                    <Type className="w-5 h-5 text-zinc-300" />
                   </div>
-                  <p className="text-zinc-400 text-xs">No section selected</p>
-                  <p className="text-zinc-300 text-[10px] mt-0.5">Click a section to edit</p>
+                  <p className="text-zinc-400 text-sm">No section selected</p>
+                  <p className="text-zinc-300 text-xs mt-1">Click a section to edit</p>
                 </div>
               )}
             </div>

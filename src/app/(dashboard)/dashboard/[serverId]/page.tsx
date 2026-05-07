@@ -55,27 +55,12 @@ import {
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { ElementType } from "react";
 import { SECTION_REGISTRY } from '@/lib/section-registry';
-import type { SectionType } from '@/types/sections';
+import type { SectionType, HeroSettings as HeroSectionSettings } from '@/types/sections';
 import type { ServerData } from '@/components/preview/types';
 import type { SiteTheme } from "@/types/site-theme";
 import { DEFAULT_THEME } from "@/types/site-theme";
 import { THEME_PRESETS, FONT_FAMILY_MAP } from "@/lib/theme-presets";
 import { AppearanceTab } from "@/components/editor/appearance-tab";
-
-type HeroSectionSettings = {
-  alignment?: "left" | "center" | "right";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number; // 0-20
-  imageDarken?: number; // 0-100
-  playerBadge?: "top" | "bottom" | "hidden";
-  badgeStyle?: "pill" | "minimal" | "card" | "glow";
-  showDiscordButton?: boolean;
-  showCopyIpButton?: boolean;
-};
 
 type GamemodesSettings = {
   layout?: "single" | "grid-2x2" | "grid-4" | "list";

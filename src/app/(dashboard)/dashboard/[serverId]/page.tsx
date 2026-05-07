@@ -54,19 +54,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 
-// Mock server data
-const mockServer = {
-  id: "1",
-  name: "EpicCraft Network",
-  subdomain: "epiccraft",
-  description: "The best survival and skyblock experience",
-  serverIp: "play.epiccraft.net",
-  published: true,
-  players: 247,
-  maxPlayers: 500,
-  version: "1.20.4",
-};
-
 type HeroSettings = {
   alignment?: "left" | "center" | "right";
   backgroundType?: "solid" | "gradient" | "image";
@@ -551,113 +538,6 @@ function HeaderSettingsPanel({
   );
 }
 
-const initialSections: Section[] = [
-  {
-    id: "1",
-    type: "hero",
-    title: mockServer.name,
-    subtitle: "A community-driven Minecraft network for modded exploration and creativity.",
-    visible: true,
-    settings: {
-      alignment: "center",
-      hero: {
-        alignment: "center",
-        backgroundType: "gradient",
-        gradientFrom: "#f0f9ff",
-        gradientTo: "#ecfdf5",
-        playerBadge: "top",
-        showDiscordButton: true,
-        discordButtonText: "Join Discord",
-        showCopyIpButton: true,
-        copyIpButtonText: "Copy IP",
-        imageBlur: 0,
-        imageDarken: 40,
-      }
-    }
-  },
-  {
-    id: "2",
-    type: "gamemodes",
-    title: "Active Servers",
-    subtitle: "Choose your adventure",
-    visible: true,
-    settings: {
-      colorScheme: "default",
-      content: {
-        modes: ["All the Mods 10", "MoniFactory", "Custom Pack", "Vanilla+"]
-      },
-      gamemodes: {
-        layout: "grid-2x2",
-        cardStyle: "default",
-        alignment: "left",
-        showPlayerCount: true,
-        showModpack: true,
-        showDescription: true,
-        showBadge: true,
-        showViewAllButton: true,
-      }
-    }
-  },
-  {
-    id: "3",
-    type: "features",
-    title: "Why Join Us?",
-    subtitle: "Everything you need for the perfect Minecraft experience",
-    visible: true,
-    settings: {
-      colorScheme: "default",
-      content: {
-        features: [
-          { title: "Fast Performance", description: "Optimized servers with minimal lag for the best gameplay", icon: "zap" },
-          { title: "Anti-Cheat Protection", description: "Advanced anti-cheat keeping the game fair for everyone", icon: "shield" },
-          { title: "Active Community", description: "Active Discord community with events and giveaways", icon: "users" },
-          { title: "24/7 Uptime", description: "99.9% uptime with 24/7 monitoring and support", icon: "star" }
-        ]
-      },
-      features: {
-        layout: "2x2",
-        headerAlignment: "center",
-        cardAlignment: "left",
-        backgroundType: "gradient",
-        gradientFrom: "#ffffff",
-        gradientTo: "#f4f4f5",
-      }
-    }
-  },
-  {
-    id: "4",
-    type: "discord",
-    title: "Join Our Discord",
-    subtitle: "Connect with thousands of players, get support, and stay updated on server news.",
-    visible: true,
-    settings: {
-      colorScheme: "default",
-      discord: {
-        alignment: "left",
-        backgroundType: "gradient",
-        gradientFrom: "#eef2ff",
-        gradientTo: "#faf5ff",
-        showStats: true,
-        inviteCode: "",
-        buttonText: "Join Server",
-      }
-    }
-  },
-  {
-    id: "5",
-    type: "stats",
-    title: "Server Statistics",
-    visible: false,
-    settings: { layout: "grid", colorScheme: "default" }
-  },
-  {
-    id: "6",
-    type: "gallery",
-    title: "Screenshots",
-    visible: false,
-    settings: { layout: "grid", colorScheme: "default" }
-  },
-];
 
 const sectionTypeConfig: Record<string, {
   icon: React.ElementType;
@@ -738,7 +618,7 @@ function PreviewHero({ section }: { section: Section }) {
       return (
         <div className={`inline-flex items-center gap-1.5 text-sm font-medium ${isDark ? "text-white/90" : "text-zinc-600"}`}>
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="font-bold">{mockServer.players}</span> online
+          <span className="font-bold">{0}</span> online
         </div>
       );
     }
@@ -752,7 +632,7 @@ function PreviewHero({ section }: { section: Section }) {
         }`}>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-            <span className="font-bold text-lg">{mockServer.players}</span>
+            <span className="font-bold text-lg">{0}</span>
           </div>
           <div className={`w-px h-6 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
           <span className={isDark ? "text-white/70" : "text-zinc-500"}>players online</span>
@@ -770,7 +650,7 @@ function PreviewHero({ section }: { section: Section }) {
               : "bg-green-50 text-green-700 border border-green-200"
           }`}>
             <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-            <span className="font-bold">{mockServer.players}</span>
+            <span className="font-bold">{0}</span>
             <span className={isDark ? "text-green-300/70" : "text-green-600"}>players online</span>
           </div>
         </div>
@@ -785,7 +665,7 @@ function PreviewHero({ section }: { section: Section }) {
           : "bg-white text-zinc-600 shadow-sm border border-zinc-200"
       }`}>
         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-        {mockServer.players} players online
+        {0} players online
       </div>
     );
   };
@@ -878,7 +758,7 @@ function PreviewStats({ section }: { section: Section }) {
     showTotal = true,
     showVersion = true,
     showUptime = true,
-    version = mockServer.version,
+    version = "1.20.4",
     uptime = "99.9%",
     headerAlignment = "center",
     backgroundType = "solid",
@@ -1660,13 +1540,13 @@ function PreviewDiscord({ section }: { section: Section }) {
             <img src={guildIcon} alt={guildName || "Discord server"} className="w-14 h-14 rounded-2xl border-4 border-[#2b2d31] object-cover" />
           ) : (
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 border-4 border-[#2b2d31] flex items-center justify-center">
-              <span className="text-white font-bold text-lg">{(guildName || mockServer.name).charAt(0)}</span>
+              <span className="text-white font-bold text-lg">{(guildName || "Server").charAt(0)}</span>
             </div>
           )}
         </div>
       </div>
       <div className="pt-8 pb-4 px-4">
-        <h3 className="text-white font-bold text-lg">{guildName || mockServer.name}</h3>
+        <h3 className="text-white font-bold text-lg">{guildName || "Server"}</h3>
         <div className="flex items-center gap-4 mt-3 text-sm">
           <span className="flex items-center gap-1.5 text-zinc-400">
             <span className="w-2 h-2 rounded-full bg-green-500" />
@@ -2501,7 +2381,7 @@ function PreviewFaq({ section }: { section: Section }) {
 
   const faqs = [
     { q: "How do I join the server?", a: "Simply add our IP address to your Minecraft server list and connect! We support both Java and Bedrock editions.", icon: Server },
-    { q: "What Minecraft version is supported?", a: `We currently support ${mockServer.version} and above. We recommend using the latest version for the best experience.`, icon: Zap },
+    { q: "What Minecraft version is supported?", a: `We currently support 1.20.4 and above. We recommend using the latest version for the best experience.`, icon: Zap },
     { q: "Is the server free to play?", a: "Yes! The server is completely free to play. We offer optional ranks and cosmetics to support server costs.", icon: Star },
     { q: "How can I report a player?", a: "You can report players using /report in-game or through our Discord server. Staff will review reports within 24 hours.", icon: Shield },
   ];
@@ -3019,7 +2899,7 @@ function SettingsPanel({
                       ...section.settings,
                       gallery: {
                         ...section.settings.gallery,
-                        images: [...images, { id: Date.now().toString(), url: "", label: `Image ${images.length + 1}` }]
+                        images: [...images, { id: crypto.randomUUID(), url: "", label: `Image ${images.length + 1}` }]
                       }
                     }
                   });
@@ -3320,7 +3200,7 @@ function SettingsPanel({
                           ...section.settings,
                           stats: {
                             ...section.settings.stats,
-                            servers: [...servers, { id: Date.now().toString(), name: `Server ${servers.length + 1}`, players: 0, maxPlayers: 100, status: "online" as const }]
+                            servers: [...servers, { id: crypto.randomUUID(), name: `Server ${servers.length + 1}`, players: 0, maxPlayers: 100, status: "online" as const }]
                           }
                         }
                       });
@@ -4293,18 +4173,30 @@ export default function ServerEditorPage() {
   const params = useParams();
   const serverId = params.serverId as string;
 
-  const [sections, setSectionsInternal] = useState<Section[]>(initialSections);
+  type ServerDataState = {
+    id: string;
+    name: string;
+    subdomain: string;
+    description: string;
+    serverIp: string;
+    published: boolean;
+    players: number;
+    maxPlayers: number;
+    version: string;
+  };
+
+  const [sections, setSectionsInternal] = useState<Section[]>([]);
   const [history, setHistory] = useState<Section[][]>([]);
   const [future, setFuture] = useState<Section[][]>([]);
   const [navbarSettings, setNavbarSettings] = useState<NavbarSettings>(initialNavbarSettings);
-  const [selectedSection, setSelectedSection] = useState<string | null>("1");
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [showAddSection, setShowAddSection] = useState(false);
   const [copied, setCopied] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string>("Essential");
 
   // Server data state
-  const [serverData, setServerData] = useState(mockServer);
+  const [serverData, setServerData] = useState<ServerDataState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -4338,27 +4230,23 @@ export default function ServerEditorPage() {
           setNavbarSettings(data.navbar as NavbarSettings);
         }
 
-        if (data.sections && data.sections.length > 0) {
-          const loadedSections = data.sections.map((s: {
-            id: string;
-            type: string;
-            title?: string;
-            subtitle?: string;
-            settings?: Record<string, unknown>;
-            visible?: boolean;
-          }) => ({
-            id: s.id,
-            type: s.type,
-            title: s.title || "",
-            subtitle: s.subtitle,
-            visible: s.visible ?? true,
-            settings: s.settings || {},
-          }));
-          setSectionsInternal(loadedSections);
-          if (loadedSections.length > 0) {
-            setSelectedSection(loadedSections[0].id);
-          }
-        }
+        const loadedSections: Section[] = (data.sections ?? []).map((s: {
+          id: string;
+          type: string;
+          title?: string | null;
+          subtitle?: string | null;
+          settings?: Record<string, unknown>;
+          visible?: boolean;
+        }) => ({
+          id: s.id,
+          type: s.type,
+          title: s.title ?? "",
+          subtitle: s.subtitle ?? null,
+          visible: s.visible ?? true,
+          settings: s.settings ?? {},
+        }));
+        setSectionsInternal(loadedSections);
+        setSelectedSection(loadedSections[0]?.id ?? null);
       } catch (error) {
         console.error("Error loading server:", error);
         setLoadError(error instanceof Error ? error.message : "Failed to load server");
@@ -4397,6 +4285,7 @@ export default function ServerEditorPage() {
 
   // Save function
   const saveServer = useCallback(async () => {
+    if (!serverData) return;
     setIsSaving(true);
     setSaveError(null);
 
@@ -4481,7 +4370,7 @@ export default function ServerEditorPage() {
   const addSection = (type: string) => {
     const config = sectionTypeConfig[type];
     const newSection: Section = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       type,
       title: config?.label || `New ${type} section`,
       visible: true,
@@ -4503,7 +4392,7 @@ export default function ServerEditorPage() {
   };
 
   const handleCopyIP = () => {
-    navigator.clipboard.writeText(serverData.serverIp);
+    navigator.clipboard.writeText(serverData?.serverIp ?? "");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -4546,6 +4435,8 @@ export default function ServerEditorPage() {
       </div>
     );
   }
+
+  if (!serverData) return null;
 
   return (
     <div className="-m-6 p-4 h-[calc(100vh-64px)] flex flex-col overflow-hidden">

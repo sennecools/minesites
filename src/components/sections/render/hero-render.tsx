@@ -147,11 +147,6 @@ export function HeroRender({ section, serverData }: SectionRenderProps) {
           >
             {section.subtitle}
           </p>
-          {playerBadge === "bottom" && (
-            <div className="mb-6">
-              <PlayerBadge />
-            </div>
-          )}
           {(showDiscordButton || showCopyIpButton) && (
             <div
               className={`flex gap-3 ${
@@ -174,6 +169,11 @@ export function HeroRender({ section, serverData }: SectionRenderProps) {
                   {copyIpButtonText}
                 </button>
               )}
+            </div>
+          )}
+          {playerBadge === "bottom" && (
+            <div className="mt-6">
+              <PlayerBadge />
             </div>
           )}
         </div>

@@ -68,6 +68,7 @@ function PlaceholderRender({ section }: SectionRenderProps) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function PlaceholderSettings(_props: SectionSettingsProps) {
   return null;
 }

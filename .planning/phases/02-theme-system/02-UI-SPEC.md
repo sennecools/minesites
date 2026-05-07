@@ -52,13 +52,15 @@ Declared values (must be multiples of 4):
 | xl | 32px | Layout gaps, sidebar section breaks |
 | 2xl | 48px | Major section breaks on public site |
 | 3xl | 64px | Page-level vertical rhythm on public site |
+| nav-height | 56px | Layout dimension — fixed height of `SiteNav`. 56 / 4 = 14 (grid-aligned). |
 
 Exceptions (documented with justification):
 
 | Value | Context | Justification |
 |-------|---------|---------------|
 | 44px | Minimum tap zone for color swatch circles (`.color-picker`) | WCAG 2.5.5 minimum interactive target size — accessibility exception. The visual circle is 28px (existing pattern); the invisible touch target extends to 44px via padding. |
-| 14px | Top and bottom padding inside sticky nav (56px total height) | Optical centering within fixed 56px nav height: 14px top + 28px content + 14px bottom = 56px. The 14px value is driven by the fixed height constraint, not the 8pt grid. |
+
+**Nav vertical padding note:** Nav height is fixed at `56px` (grid-aligned, 56 / 4 = 14). Vertical padding is implementation-derived to center a 28px content block — not a declared spacing token. Do not hardcode `14px` as a spacing value; let the browser center the content within the `h-14` (56px) container.
 
 Source: Standard 8pt scale; existing `.color-picker` (28px) from `globals.css`; WCAG 2.5.5
 
@@ -160,7 +162,7 @@ Source: CONTEXT.md D-13, D-14
 
 | Component | File | Notes |
 |-----------|------|-------|
-| `SiteNav` | `src/components/site/nav.tsx` | Sticky, 56px tall, server name left + IP copy button right. Uses `Button` for copy. Lucide `Copy`/`Check` for copy feedback. |
+| `SiteNav` | `src/components/site/nav.tsx` | Sticky, 56px tall (use `h-14` / `nav-height` token), server name left + IP copy button right. Uses `Button` for copy. Lucide `Copy`/`Check` for copy feedback. Vertical padding is implementation-derived — do not hardcode `14px`. |
 | `SiteRoot` (layout wrapper) | `src/app/[subdomain]/layout.tsx` | Adds `.site-root` class and injects CSS vars inline. Declares all 5 Google Fonts statically. |
 | `ThemePresetMap` | `src/lib/theme-presets.ts` | Static map of palette key → hex value. Used by server component for CSS var injection. |
 
@@ -169,7 +171,7 @@ Source: CONTEXT.md D-13, D-14
 | Component | File | Notes |
 |-----------|------|-------|
 | `AppearanceTab` | `src/components/editor/appearance-tab.tsx` | Color swatches (8 circles, 3-3-2 layout) + font picker (5 labeled options). Live preview via CSS vars. |
-| `ColorSwatchPicker` | `src/components/editor/color-swatch-picker.tsx` | Grid of 28px circles with 44px tap zone. Selected state: 2px ring in accent color, scale(1.1). Framer Motion `whileHover` + `whileTap`. |
+| `ColorSwatchPicker` | `src/components/editor/color-swatch-picker.tsx` | Grid of 28px circles with 44px tap zone. Selected state: 2px ring in accent color, scale(1.1). Framer Motion `whileHover` + `whileTap`. Each swatch circle must include `aria-label={colorName}` (e.g., `aria-label="Cyan"`) for accessibility. |
 | `FontPicker` | `src/components/editor/font-picker.tsx` | 5 named clickable labels. Active state: accent-colored underline. Preview: label renders in the chosen font. |
 | `SectionBgOverride` | In each section's settings panel | Color input under "Background" control group. Stores `section.settings.backgroundColor`. |
 

@@ -17,72 +17,16 @@ import {
   Image,
   Trophy,
 } from "lucide-react";
-
-// Types
-interface Section {
-  id: string;
-  type: string;
-  title: string | null;
-  subtitle: string | null;
-  settings: Record<string, unknown>;
-  visible: boolean;
-}
-
-interface ServerData {
-  name: string;
-  subdomain: string;
-  serverIp: string | null;
-}
-
-interface StatsServer {
-  id: string;
-  name: string;
-  players?: number;
-  maxPlayers?: number;
-  status?: "online" | "offline";
-}
-
-interface FeatureItem {
-  title: string;
-  description: string;
-  icon: string;
-}
-
-interface GalleryImage {
-  id: string;
-  url: string;
-  label?: string;
-}
-
-// Mock data for preview
-const mockData = {
-  players: 247,
-  maxPlayers: 500,
-  version: "1.20.4",
-};
-
-// Utility functions
-function isColorDark(hex: string): boolean {
-  if (!hex) return false;
-  const c = hex.replace("#", "");
-  if (c.length !== 6) return false;
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness < 128;
-}
-
-function isLightColor(hex: string): boolean {
-  if (!hex) return true;
-  const c = hex.replace("#", "");
-  if (c.length !== 6) return true;
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 128;
-}
+import {
+  type Section,
+  type ServerData,
+  type StatsServer,
+  type FeatureItem,
+  type GalleryImage,
+  isColorDark,
+  isLightColor,
+} from "@/components/preview/types";
+import { SECTION_REGISTRY } from "@/lib/section-registry";
 
 // Icon map
 const featureIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -106,119 +50,6 @@ const iconGradients = [
 ];
 
 // Preview Components
-function PreviewHero({ section, serverData }: { section: Section; serverData: ServerData }) {
-  const hero = (section.settings.hero as Record<string, unknown>) || {};
-  const {
-    alignment = "center",
-    backgroundType = "gradient",
-    backgroundColor = "#ffffff",
-    gradientFrom = "#f0f9ff",
-    gradientTo = "#ecfdf5",
-    backgroundImage = "",
-    imageBlur = 0,
-    imageDarken = 40,
-    playerBadge = "top",
-    badgeStyle = "pill",
-    showDiscordButton = true,
-    discordButtonText = "Join Discord",
-    showCopyIpButton = true,
-    copyIpButtonText = "Copy IP",
-  } = hero as Record<string, unknown>;
-
-  const hasImage = backgroundType === "image" && !!backgroundImage;
-  const isLight = backgroundType === "solid" ? isLightColor(backgroundColor as string) : !hasImage;
-  const isDark = hasImage || !isLight;
-
-  const getBackgroundStyle = () => {
-    if (backgroundType === "solid") return { backgroundColor: backgroundColor as string };
-    if (backgroundType === "gradient") return { background: `linear-gradient(to bottom right, ${gradientFrom}, ${gradientTo})` };
-    return {};
-  };
-
-  const PlayerBadge = () => {
-    if (badgeStyle === "minimal") {
-      return (
-        <div className={`inline-flex items-center gap-1.5 text-sm font-medium ${isDark ? "text-white/90" : "text-zinc-600"}`}>
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="font-bold">{mockData.players}</span> online
-        </div>
-      );
-    }
-    if (badgeStyle === "card") {
-      return (
-        <div className={`inline-flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium ${isDark ? "bg-white/10 backdrop-blur-md text-white border border-white/10" : "bg-white text-zinc-700 shadow-lg border border-zinc-100"}`}>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-            <span className="font-bold text-lg">{mockData.players}</span>
-          </div>
-          <div className={`w-px h-6 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
-          <span className={isDark ? "text-white/70" : "text-zinc-500"}>players online</span>
-        </div>
-      );
-    }
-    if (badgeStyle === "glow") {
-      return (
-        <div className="relative inline-flex">
-          <div className="absolute inset-0 bg-green-500/30 rounded-full blur-xl animate-pulse" />
-          <div className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${isDark ? "bg-green-500/20 text-green-300 border border-green-500/30 backdrop-blur-sm" : "bg-green-50 text-green-700 border border-green-200"}`}>
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-            <span className="font-bold">{mockData.players}</span>
-            <span className={isDark ? "text-green-300/70" : "text-green-600"}>players online</span>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${isDark ? "bg-white/10 backdrop-blur-sm text-white border border-white/20" : "bg-white text-zinc-600 shadow-sm border border-zinc-200"}`}>
-        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-        {mockData.players} players online
-      </div>
-    );
-  };
-
-  return (
-    <div className="relative overflow-hidden" style={getBackgroundStyle()}>
-      {hasImage && (
-        <>
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})`, filter: (imageBlur as number) > 0 ? `blur(${imageBlur}px)` : undefined, transform: (imageBlur as number) > 0 ? "scale(1.1)" : undefined }} />
-          <div className="absolute inset-0 bg-black" style={{ opacity: (imageDarken as number) / 100 }} />
-        </>
-      )}
-      {!hasImage && backgroundType === "gradient" && (
-        <>
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-indigo-200/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
-        </>
-      )}
-      <div className={`relative py-20 px-6 ${alignment === "center" ? "text-center" : alignment === "right" ? "text-right" : "text-left"}`}>
-        <div className="max-w-3xl mx-auto">
-          {playerBadge === "top" && <div className="mb-6"><PlayerBadge /></div>}
-          <h1 className={`text-5xl md:text-6xl font-extrabold mb-4 tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
-            {section.title || serverData.name}
-          </h1>
-          <p className={`text-xl max-w-2xl mb-8 ${alignment === "center" ? "mx-auto" : alignment === "right" ? "ml-auto" : ""} ${isDark ? "text-white/80" : "text-zinc-600"}`}>
-            {section.subtitle}
-          </p>
-          {playerBadge === "bottom" && <div className="mb-6"><PlayerBadge /></div>}
-          {(!!showDiscordButton || !!showCopyIpButton) && (
-            <div className={`flex gap-3 ${alignment === "center" ? "justify-center" : alignment === "right" ? "justify-end" : ""}`}>
-              {!!showDiscordButton && (
-                <button className="bg-indigo-600 hover:bg-indigo-700 hover:scale-105 hover:-translate-y-0.5 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200">
-                  {discordButtonText as string}
-                </button>
-              )}
-              {!!showCopyIpButton && (
-                <button className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 ${isDark ? "bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10" : "bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200 hover:shadow-md"}`}>
-                  {copyIpButtonText as string}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function PreviewStats({ section }: { section: Section }) {
   const stats = (section.settings.stats as Record<string, unknown>) || {};
@@ -229,7 +60,7 @@ function PreviewStats({ section }: { section: Section }) {
     showTotal = true,
     showVersion = true,
     showUptime = true,
-    version = mockData.version,
+    version = "1.20.4",
     uptime = "99.9%",
     backgroundType = "solid",
     backgroundColor = "#18181b",
@@ -258,8 +89,8 @@ function PreviewStats({ section }: { section: Section }) {
 
   if (mode === "single") {
     const statItems = [
-      { value: mockData.players.toString(), label: "Players Online", icon: Users, color: "text-green-500", iconBg: "bg-green-500/10" },
-      { value: mockData.maxPlayers.toString(), label: "Server Capacity", icon: Server, color: isDark ? "text-cyan-400" : "text-cyan-600", iconBg: "bg-cyan-500/10" },
+      { value: "247", label: "Players Online", icon: Users, color: "text-green-500", iconBg: "bg-green-500/10" },
+      { value: "500", label: "Server Capacity", icon: Server, color: isDark ? "text-cyan-400" : "text-cyan-600", iconBg: "bg-cyan-500/10" },
       ...(showVersion ? [{ value: version as string, label: "Minecraft Version", icon: Zap, color: isDark ? "text-amber-400" : "text-amber-600", iconBg: "bg-amber-500/10" }] : []),
       ...(showUptime ? [{ value: uptime as string, label: "Uptime", icon: BarChart3, color: isDark ? "text-indigo-400" : "text-indigo-600", iconBg: "bg-indigo-500/10" }] : []),
     ];
@@ -915,8 +746,10 @@ export default function PreviewClient({ server, sections, isPreviewMode }: Previ
         if (!section.visible) return null;
 
         switch (section.type) {
-          case "hero":
-            return <PreviewHero key={section.id} section={section} serverData={server} />;
+          case "hero": {
+            const Entry = SECTION_REGISTRY["hero"];
+            return <Entry.render key={section.id} section={section} serverData={server} />;
+          }
           case "stats":
             return <PreviewStats key={section.id} section={section} />;
           case "features":

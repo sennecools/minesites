@@ -4,6 +4,20 @@ import type { HeroSettings, SectionRenderProps } from '@/types/sections';
 import { isLightColor } from '@/components/preview/types';
 
 /**
+ * Validates a background image URL before embedding in a CSS url() call.
+ * Rejects non-http/https protocols and malformed values to prevent CSS injection.
+ */
+function safeBackgroundUrl(url: string): string | undefined {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return undefined;
+    return url;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * HeroRender — extracted from preview-client.tsx PreviewHero (Phase 1).
  * Same markup, same behavior. Player count now sourced from serverData prop.
  *
@@ -30,7 +44,8 @@ export function HeroRender({ section, serverData }: SectionRenderProps) {
     copyIpButtonText = "Copy IP",
   } = hero;
 
-  const hasImage = backgroundType === "image" && !!backgroundImage;
+  const safeImage = safeBackgroundUrl(backgroundImage);
+  const hasImage = backgroundType === "image" && !!safeImage;
   const isLight = backgroundType === "solid" ? isLightColor(backgroundColor) : !hasImage;
   const isDark = hasImage || !isLight;
   const players = serverData.players ?? 0;
@@ -94,7 +109,7 @@ export function HeroRender({ section, serverData }: SectionRenderProps) {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url(${backgroundImage})`,
+              backgroundImage: `url(${safeImage})`,
               filter: imageBlur > 0 ? `blur(${imageBlur}px)` : undefined,
               transform: imageBlur > 0 ? "scale(1.1)" : undefined,
             }}

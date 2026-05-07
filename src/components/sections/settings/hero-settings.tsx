@@ -188,7 +188,7 @@ export function HeroSettings({ section, onUpdate }: SectionSettingsProps) {
                 min="0"
                 max="20"
                 value={hero.imageBlur ?? 0}
-                onChange={(e) => updateHero({ imageBlur: parseInt(e.target.value) })}
+                onChange={(e) => updateHero({ imageBlur: parseInt(e.target.value, 10) })}
                 className="w-full accent-cyan-500"
               />
             </div>
@@ -199,7 +199,7 @@ export function HeroSettings({ section, onUpdate }: SectionSettingsProps) {
                 min="0"
                 max="100"
                 value={hero.imageDarken ?? 40}
-                onChange={(e) => updateHero({ imageDarken: parseInt(e.target.value) })}
+                onChange={(e) => updateHero({ imageDarken: parseInt(e.target.value, 10) })}
                 className="w-full accent-cyan-500"
               />
             </div>

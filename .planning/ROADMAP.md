@@ -30,7 +30,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 **Plans:** 5 plans
 - [x] 01-01-PLAN.md — Foundation types: src/types/sections.ts, src/types/site-theme.ts, src/lib/plan.ts
 - [x] 01-02-PLAN.md — Extract Hero render and Hero settings into src/components/sections/{render,settings}/
-- [ ] 01-03-PLAN.md — Build SECTION_REGISTRY (Record<SectionType, RegistryEntry>) and update sections barrel
+- [x] 01-03-PLAN.md — Build SECTION_REGISTRY (Record<SectionType, RegistryEntry>) and update sections barrel
 - [ ] 01-04-PLAN.md — Editor god-component cleanup: remove mockServer/initialSections, wire registry, replace inline Hero settings block
 - [ ] 01-05-PLAN.md — Public renderer wire-up: dedupe types, route hero through SECTION_REGISTRY, delete inline PreviewHero
 

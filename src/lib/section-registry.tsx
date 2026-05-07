@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, ElementType } from "react";
 import {
   Layout,
   BarChart3,
@@ -48,7 +48,9 @@ export interface RegistryEntry {
   settings: ComponentType<SectionSettingsProps>;
   defaultSettings: () => SectionSettings;
   displayName: string;
-  icon: ReactNode;
+  icon: ElementType;        // Component constructor — render as <Entry.icon className="..." />
+  category: string;         // "Essential" | "Community" | "Media" | "Info" | "Engagement"
+  description: string;      // One-line description for the section picker
   maxCount?: number;
 }
 
@@ -101,7 +103,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
       },
     }),
     displayName: "Hero Section",
-    icon: <Layout className="w-4 h-4" />,
+    icon: Layout,
+    category: "Essential",
+    description: "Main banner with title and CTA",
   },
   stats: {
     type: "stats",
@@ -109,7 +113,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Live Player Count",
-    icon: <BarChart3 className="w-4 h-4" />,
+    icon: BarChart3,
+    category: "Essential",
+    description: "Live player count and info",
     maxCount: 1,
   },
   features: {
@@ -118,7 +124,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Features / About",
-    icon: <Sparkles className="w-4 h-4" />,
+    icon: Sparkles,
+    category: "Essential",
+    description: "Highlight server features",
   },
   gamemodes: {
     type: "gamemodes",
@@ -126,7 +134,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Game Modes",
-    icon: <Trophy className="w-4 h-4" />,
+    icon: Trophy,
+    category: "Essential",
+    description: "Showcase your servers",
   },
   discord: {
     type: "discord",
@@ -134,7 +144,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Discord CTA",
-    icon: <MessageCircle className="w-4 h-4" />,
+    icon: MessageCircle,
+    category: "Community",
+    description: "Discord widget and invite",
   },
   gallery: {
     type: "gallery",
@@ -142,7 +154,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Image Gallery",
-    icon: <ImageIcon className="w-4 h-4" />,
+    icon: ImageIcon,
+    category: "Media",
+    description: "Screenshot showcase",
   },
   staff: {
     type: "staff",
@@ -150,7 +164,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Staff",
-    icon: <Users className="w-4 h-4" />,
+    icon: Users,
+    category: "Community",
+    description: "Show your team members",
   },
   text: {
     type: "text",
@@ -158,7 +174,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Text",
-    icon: <AlignLeft className="w-4 h-4" />,
+    icon: AlignLeft,
+    category: "Essential",
+    description: "Custom text content",
   },
   rules: {
     type: "rules",
@@ -166,7 +184,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Rules",
-    icon: <ListChecks className="w-4 h-4" />,
+    icon: ListChecks,
+    category: "Info",
+    description: "List your server rules",
   },
   voting: {
     type: "voting",
@@ -174,7 +194,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Voting Links",
-    icon: <Vote className="w-4 h-4" />,
+    icon: Vote,
+    category: "Engagement",
+    description: "Voting sites and rewards",
   },
   store: {
     type: "store",
@@ -182,7 +204,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Store",
-    icon: <ShoppingBag className="w-4 h-4" />,
+    icon: ShoppingBag,
+    category: "Engagement",
+    description: "Featured store items",
   },
   reviews: {
     type: "reviews",
@@ -190,7 +214,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Reviews",
-    icon: <Star className="w-4 h-4" />,
+    icon: Star,
+    category: "Community",
+    description: "Player testimonials",
   },
   faq: {
     type: "faq",
@@ -198,7 +224,9 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "FAQ",
-    icon: <HelpCircle className="w-4 h-4" />,
+    icon: HelpCircle,
+    category: "Info",
+    description: "Common questions",
   },
   video: {
     type: "video",
@@ -206,6 +234,8 @@ export const SECTION_REGISTRY: Record<SectionType, RegistryEntry> = {
     settings: PlaceholderSettings,
     defaultSettings: () => ({}),
     displayName: "Video",
-    icon: <Video className="w-4 h-4" />,
+    icon: Video,
+    category: "Media",
+    description: "YouTube trailer embed",
   },
 };

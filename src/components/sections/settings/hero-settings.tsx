@@ -25,6 +25,18 @@ export function HeroSettings({ section, onUpdate }: SectionSettingsProps) {
     });
   };
 
+  // Section-level background override (THEME-03) — separate from hero.backgroundColor
+  const sectionBg = section.settings.backgroundColor as string | undefined;
+
+  const handleSectionBgChange = (value: string | undefined) => {
+    onUpdate({
+      settings: {
+        ...section.settings,
+        backgroundColor: value,
+      },
+    });
+  };
+
   return (
     <>
       {/* Subtitle */}
@@ -290,6 +302,40 @@ export function HeroSettings({ section, onUpdate }: SectionSettingsProps) {
               !(hero.showCopyIpButton ?? true) ? "opacity-50" : ""
             }`}
           />
+        </div>
+      </div>
+
+      {/* Section Background Override — THEME-03 */}
+      <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
+        <h3 className="settings-label">Section Background</h3>
+        <div className="flex gap-2 items-center">
+          <div
+            className="color-picker"
+            style={{ backgroundColor: sectionBg ?? "#0e0e10" }}
+          >
+            <input
+              type="color"
+              value={sectionBg ?? "#0e0e10"}
+              onChange={(e) => handleSectionBgChange(e.target.value)}
+              className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer opacity-0"
+            />
+          </div>
+          <input
+            type="text"
+            placeholder="#0e0e10"
+            value={sectionBg ?? ""}
+            onChange={(e) => handleSectionBgChange(e.target.value || undefined)}
+            className="input-field flex-1 min-w-0 text-xs font-mono"
+          />
+          {sectionBg && (
+            <button
+              type="button"
+              onClick={() => handleSectionBgChange(undefined)}
+              className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors whitespace-nowrap"
+            >
+              Reset Background
+            </button>
+          )}
         </div>
       </div>
     </>

@@ -57,6 +57,10 @@ import type { ElementType } from "react";
 import { SECTION_REGISTRY } from '@/lib/section-registry';
 import type { SectionType } from '@/types/sections';
 import type { ServerData } from '@/components/preview/types';
+import type { SiteTheme } from "@/types/site-theme";
+import { DEFAULT_THEME } from "@/types/site-theme";
+import { THEME_PRESETS, FONT_FAMILY_MAP } from "@/lib/theme-presets";
+import { AppearanceTab } from "@/components/editor/appearance-tab";
 
 type HeroSectionSettings = {
   alignment?: "left" | "center" | "right";
@@ -2399,6 +2403,8 @@ export default function ServerEditorPage() {
   const [history, setHistory] = useState<Section[][]>([]);
   const [future, setFuture] = useState<Section[][]>([]);
   const [navbarSettings, setNavbarSettings] = useState<NavbarSettings>(initialNavbarSettings);
+  const [themeSettings, setThemeSettings] = useState<SiteTheme>(DEFAULT_THEME);
+  const [sidebarTab, setSidebarTab] = useState<"sections" | "appearance">("sections");
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [showAddSection, setShowAddSection] = useState(false);
@@ -2440,6 +2446,10 @@ export default function ServerEditorPage() {
           setNavbarSettings(data.navbar as NavbarSettings);
         }
 
+        if (data.theme && typeof data.theme === "object") {
+          setThemeSettings({ ...DEFAULT_THEME, ...(data.theme as Partial<SiteTheme>) });
+        }
+
         const loadedSections: Section[] = (data.sections ?? []).map((s: {
           id: string;
           type: string;
@@ -2468,8 +2478,11 @@ export default function ServerEditorPage() {
     loadServerData();
   }, [serverId]);
 
+  // Ref to the preview panel .site-root wrapper for live CSS var mutation
+  const previewRootRef = useRef<HTMLDivElement>(null);
+
   // Track unsaved changes by comparing to saved state
-  const savedStateRef = useRef<{ sections: string; navbar: string } | null>(null);
+  const savedStateRef = useRef<{ sections: string; navbar: string; theme: string } | null>(null);
 
   // Store saved state after initial load
   useEffect(() => {
@@ -2477,21 +2490,24 @@ export default function ServerEditorPage() {
       savedStateRef.current = {
         sections: JSON.stringify(sections),
         navbar: JSON.stringify(navbarSettings),
+        theme: JSON.stringify(themeSettings),
       };
     }
-  }, [isLoading, sections, navbarSettings]);
+  }, [isLoading, sections, navbarSettings, themeSettings]);
 
   // Compare current state to saved state
   useEffect(() => {
     if (!isLoading && savedStateRef.current !== null) {
       const currentSections = JSON.stringify(sections);
       const currentNavbar = JSON.stringify(navbarSettings);
+      const currentTheme = JSON.stringify(themeSettings);
       const hasChanges =
         currentSections !== savedStateRef.current.sections ||
-        currentNavbar !== savedStateRef.current.navbar;
+        currentNavbar !== savedStateRef.current.navbar ||
+        currentTheme !== savedStateRef.current.theme;
       setHasUnsavedChanges(hasChanges);
     }
-  }, [sections, navbarSettings, isLoading]);
+  }, [sections, navbarSettings, themeSettings, isLoading]);
 
   // Save function
   const saveServer = useCallback(async () => {
@@ -2509,6 +2525,7 @@ export default function ServerEditorPage() {
           description: serverData.description,
           serverIp: serverData.serverIp,
           navbar: navbarSettings,
+          theme: themeSettings,
           sections: sections.map((s, index) => ({
             id: s.id,
             type: s.type,
@@ -2529,6 +2546,7 @@ export default function ServerEditorPage() {
       savedStateRef.current = {
         sections: JSON.stringify(sections),
         navbar: JSON.stringify(navbarSettings),
+        theme: JSON.stringify(themeSettings),
       };
       setHasUnsavedChanges(false);
     } catch (error) {
@@ -2536,7 +2554,7 @@ export default function ServerEditorPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [serverId, serverData, navbarSettings, sections]);
+  }, [serverId, serverData, navbarSettings, themeSettings, sections]);
 
   // Track changes for undo/redo
   const setSections = (newSections: Section[] | ((prev: Section[]) => Section[])) => {
@@ -2719,8 +2737,44 @@ export default function ServerEditorPage() {
       <div className="flex-1 flex gap-0 min-h-0">
         {/* Main Editor Container */}
         <div className="flex-1 flex rounded-2xl bg-white border border-zinc-200/80 shadow-sm overflow-hidden">
-          {/* Sections List */}
+          {/* Sections / Appearance Sidebar */}
           <div className="w-56 xl:w-72 flex-shrink-0 flex flex-col overflow-hidden px-2.5 xl:px-3 py-3 border-r border-zinc-100">
+            {/* Tab toggle: Sections | Appearance */}
+            <div className="flex items-center gap-1 mb-3 bg-zinc-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setSidebarTab("sections")}
+                className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${
+                  sidebarTab === "sections"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-700"
+                }`}
+              >
+                Sections
+              </button>
+              <button
+                onClick={() => setSidebarTab("appearance")}
+                className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${
+                  sidebarTab === "appearance"
+                    ? "bg-white text-zinc-900 shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-700"
+                }`}
+              >
+                Appearance
+              </button>
+            </div>
+
+            {sidebarTab === "appearance" ? (
+              <div className="flex-1 overflow-y-auto scrollbar-thin">
+                <AppearanceTab
+                  themeSettings={themeSettings}
+                  setThemeSettings={setThemeSettings}
+                  previewRootRef={previewRootRef}
+                  onSave={saveServer}
+                  isSaving={isSaving}
+                />
+              </div>
+            ) : (
+            <>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-zinc-400" />
@@ -2860,6 +2914,8 @@ export default function ServerEditorPage() {
                 </motion.button>
               </div>
             </div>
+            </>
+            )}
           </div>
 
           {/* Fading Divider Left */}
@@ -2936,9 +2992,19 @@ export default function ServerEditorPage() {
             {/* Preview Content */}
             <div className="flex-1 p-4 bg-[#f0f0f0] overflow-y-auto flex justify-center scrollbar-thin">
               <motion.div
+                ref={previewRootRef}
                 animate={{ width: previewWidth[previewMode] }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="bg-white rounded-lg shadow-xl overflow-hidden h-fit max-w-full"
+                className="site-root bg-white rounded-lg shadow-xl overflow-hidden h-fit max-w-full"
+                data-theme={themeSettings.palette}
+                style={{
+                  "--site-accent": THEME_PRESETS[themeSettings.palette],
+                  "--site-bg": "#0e0e10",
+                  "--site-card": "#1a1a1f",
+                  "--site-text": "#f4f4f5",
+                  "--site-text-muted": "#a1a1aa",
+                  "--site-font-display": FONT_FAMILY_MAP[themeSettings.font],
+                } as React.CSSProperties}
               >
                 {/* Navbar - clickable to edit */}
                 <div

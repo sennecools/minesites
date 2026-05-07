@@ -11,6 +11,8 @@ import { isLightColor } from '@/components/preview/types';
  */
 export function HeroRender({ section, serverData }: SectionRenderProps) {
   const hero = (section.settings.hero as HeroSettings) ?? {};
+  // Section-level background override (THEME-03) — takes precedence over hero background type
+  const sectionBgOverride = section.settings.backgroundColor as string | undefined;
   const {
     alignment = "center",
     backgroundType = "gradient",
@@ -83,7 +85,10 @@ export function HeroRender({ section, serverData }: SectionRenderProps) {
   };
 
   return (
-    <div className="relative overflow-hidden" style={getBackgroundStyle()}>
+    <div
+      className="relative overflow-hidden"
+      style={sectionBgOverride ? { backgroundColor: sectionBgOverride } : getBackgroundStyle()}
+    >
       {hasImage && (
         <>
           <div

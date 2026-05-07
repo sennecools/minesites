@@ -119,7 +119,10 @@ export function HeroRender({ section, serverData }: SectionRenderProps) {
               <PlayerBadge />
             </div>
           )}
-          <h1 className={`text-5xl md:text-6xl font-extrabold mb-4 tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
+          <h1
+            className={`text-5xl md:text-6xl font-extrabold mb-4 tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}
+            style={{ fontFamily: "var(--site-font-display)" }}
+          >
             {section.title || serverData.name}
           </h1>
           <p

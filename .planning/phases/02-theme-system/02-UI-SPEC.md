@@ -53,11 +53,14 @@ Declared values (must be multiples of 4):
 | 2xl | 48px | Major section breaks on public site |
 | 3xl | 64px | Page-level vertical rhythm on public site |
 
-Exceptions:
-- Touch targets for color swatch circles: minimum 28px diameter (`.color-picker` existing pattern), minimum 44px tap zone
-- Sticky nav height: 56px fixed (14px top + bottom padding with 28px content)
+Exceptions (documented with justification):
 
-Source: Standard 8pt scale; existing `.color-picker` (28px) from `globals.css`
+| Value | Context | Justification |
+|-------|---------|---------------|
+| 44px | Minimum tap zone for color swatch circles (`.color-picker`) | WCAG 2.5.5 minimum interactive target size — accessibility exception. The visual circle is 28px (existing pattern); the invisible touch target extends to 44px via padding. |
+| 14px | Top and bottom padding inside sticky nav (56px total height) | Optical centering within fixed 56px nav height: 14px top + 28px content + 14px bottom = 56px. The 14px value is driven by the fixed height constraint, not the 8pt grid. |
+
+Source: Standard 8pt scale; existing `.color-picker` (28px) from `globals.css`; WCAG 2.5.5
 
 ---
 
@@ -65,14 +68,20 @@ Source: Standard 8pt scale; existing `.color-picker` (28px) from `globals.css`
 
 ### Public Site (`.site-root`)
 
+**Maximum 2 weights declared.** Body text always uses the legible fallback font regardless of the active gaming font.
+
 | Role | Size | Weight | Line Height | Font |
 |------|------|--------|-------------|------|
 | Body | 16px | 400 (regular) | 1.6 | system-ui / Inter (legible fallback — never the gaming font) |
-| Label / UI copy | 14px | 500 (medium) | 1.4 | system-ui / Inter |
+| Label / UI copy | 14px | 400 (regular) | 1.4 | system-ui / Inter |
 | Heading | 24px | 700 (bold) | 1.2 | `--site-font-display` (active gaming font) |
-| Display / Hero | 40px | 800 (extrabold) | 1.1 | `--site-font-display` (active gaming font) |
+| Display / Hero | 40px | 700 (bold) | 1.1 | `--site-font-display` (active gaming font) |
 
-Source: CONTEXT.md D-09 — body always uses legible fallback regardless of theme font choice.
+Weights used: **400** (regular — body and labels) and **700** (bold — headings and display). No other weights.
+
+Primary focal point: server name in hero section at Display size (40px, weight 700, `--site-font-display`).
+
+Source: CONTEXT.md D-09 — body always uses legible fallback regardless of theme font choice. Weights collapsed from 4 to 2 per UI-SPEC revision (checker block on Dimension 4).
 
 ### Editor Sidebar ("Appearance" tab)
 
@@ -160,7 +169,7 @@ Source: CONTEXT.md D-13, D-14
 | Component | File | Notes |
 |-----------|------|-------|
 | `AppearanceTab` | `src/components/editor/appearance-tab.tsx` | Color swatches (8 circles, 3-3-2 layout) + font picker (5 labeled options). Live preview via CSS vars. |
-| `ColorSwatchPicker` | `src/components/editor/color-swatch-picker.tsx` | Grid of 28px circles. Selected state: 2px ring in accent color, scale(1.1). Framer Motion `whileHover` + `whileTap`. |
+| `ColorSwatchPicker` | `src/components/editor/color-swatch-picker.tsx` | Grid of 28px circles with 44px tap zone. Selected state: 2px ring in accent color, scale(1.1). Framer Motion `whileHover` + `whileTap`. |
 | `FontPicker` | `src/components/editor/font-picker.tsx` | 5 named clickable labels. Active state: accent-colored underline. Preview: label renders in the chosen font. |
 | `SectionBgOverride` | In each section's settings panel | Color input under "Background" control group. Stores `section.settings.backgroundColor`. |
 
@@ -192,7 +201,7 @@ Source: CONTEXT.md code_context section
 ### Appearance Tab — Font Selection
 
 1. User clicks a font label.
-2. Active label gets: accent-colored bottom border (2px), font-weight 600.
+2. Active label gets: accent-colored bottom border (2px), font-weight 700.
 3. `--site-font-display` CSS variable updates immediately in preview panel.
 4. Font label renders its own name in the corresponding font (e.g., "Orbitron" label uses the Orbitron font-family).
 5. Save button activates. Save persists `server.theme.font` to DB.
@@ -210,7 +219,7 @@ Source: CONTEXT.md D-11; existing `Copy`/`Check` import pattern in editor
 ### Per-Section Background Override
 
 1. Section settings panel shows a "Background" control group at the bottom.
-2. Control: color input (HTML `<input type="color">` or hex text field) + "Reset to default" ghost button.
+2. Control: color input (HTML `<input type="color">` or hex text field) + "Reset Background" ghost button.
 3. When set: section outer wrapper applies `style={{ backgroundColor: settings.backgroundColor }}`.
 4. When reset/undefined: section renders `#0e0e10` (site default).
 5. Change updates preview immediately (client-side state).
@@ -231,7 +240,7 @@ Source: CONTEXT.md D-12
 | Font picker section heading | "Font" |
 | Save button (Appearance tab) | "Save Appearance" |
 | Per-section background label | "Section Background" |
-| Per-section reset action | "Reset to default" |
+| Per-section reset action | "Reset Background" |
 | Empty state (no sections, public site) | Heading: "Nothing here yet" / Body: "The server owner is still setting things up." |
 | Error state (theme load failure) | "Could not load theme — using defaults." (silent fallback, no user action required) |
 | Destructive actions | None in Phase 2 |

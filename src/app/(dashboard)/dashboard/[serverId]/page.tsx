@@ -553,7 +553,7 @@ const sectionTypeConfig = Object.fromEntries(
       description: entry.description,
     },
   ])
-) as Record<string, { icon: ElementType; label: string; category: string; description: string }>;
+) as Record<string, { icon: ElementType; label: string; category: string; description: string; locked?: boolean }>;
 // navbar is not in SECTION_REGISTRY (it cannot be added/removed by users)
 // The locked "Navigation" card is rendered as a static hardcoded item in the section list
 

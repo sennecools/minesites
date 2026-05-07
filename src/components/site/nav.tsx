@@ -11,10 +11,15 @@ interface SiteNavProps {
 export function SiteNav({ serverName, serverIp }: SiteNavProps) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(serverIp);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    if (!serverIp) return; // guard: nothing to copy
+    try {
+      await navigator.clipboard.writeText(serverIp);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable (non-HTTPS or permission denied) — fail silently
+    }
   };
 
   return (

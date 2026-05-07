@@ -45,10 +45,19 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   3. A server owner can open the editor, pick a color palette preset, pick a font, and see both applied immediately on the public site without a code deploy.
   4. A server owner can override the background color of an individual section independently of the site-wide palette.
 **Plans:** 4 plans
+
+**Wave 1**
 - [ ] 02-01-PLAN.md — SiteTheme type update + theme-presets.ts static lookup tables (THEME_PRESETS, FONT_FAMILY_MAP)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 02-02-PLAN.md — Public site layout: .site-root isolation, 5 Google Fonts, CSS var injection, SiteNav
 - [ ] 02-03-PLAN.md — Editor Appearance tab: ColorSwatchPicker, FontPicker, AppearanceTab, page.tsx wiring
 - [ ] 02-04-PLAN.md — Per-section background override: SectionBgOverride in hero-settings + hero-render
+
+**Cross-cutting constraints:**
+- `.site-root` class must appear exactly once per page (layout.tsx wrapper only — never on child components)
+- `globals.css` `:root` variables must not be modified — all public site CSS vars use the `--site-` prefix
+- God-component (`src/app/(dashboard)/dashboard/[serverId]/page.tsx`) must not grow in net line count
 
 ### Phase 3: Section Types
 **Goal:** Server owners can build a complete, useful Minecraft server page using 9 Minecraft-native section types, including a live player count that never blocks page load.

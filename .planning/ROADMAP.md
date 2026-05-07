@@ -33,7 +33,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 - [x] 01-03-PLAN.md — Build SECTION_REGISTRY (Record<SectionType, RegistryEntry>) and update sections barrel
 - [x] 01-04-PLAN.md — Editor god-component cleanup: remove mockServer/initialSections, wire registry, replace inline Hero settings block
 - [x] 01-05-PLAN.md — Public renderer wire-up: dedupe types, route hero through SECTION_REGISTRY, delete inline PreviewHero
-- [ ] 01-06-PLAN.md — Gap closure (SC4): generalize SectionPreview/SettingsPanel/preview-client dispatch via SECTION_REGISTRY[type]
+- [x] 01-06-PLAN.md — Gap closure (SC4): generalize SectionPreview/SettingsPanel/preview-client dispatch via SECTION_REGISTRY[type]
 
 ### Phase 2: Theme System
 **Goal:** Public server websites have a visually distinct gaming identity controlled by a theme the server owner configures; the admin dashboard is completely unaffected.
@@ -83,7 +83,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Extraction | 5/6 | Gap closure pending | - |
+| 1. Foundation & Extraction | 6/6 | Verifying | - |
 | 2. Theme System | 0/TBD | Not started | - |
 | 3. Section Types | 0/TBD | Not started | - |
 | 4. Freemium Gating | 0/TBD | Not started | - |

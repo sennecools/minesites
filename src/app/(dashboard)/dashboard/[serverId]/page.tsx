@@ -53,8 +53,11 @@ import {
   Loader2
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { SECTION_REGISTRY } from '@/lib/section-registry';
+import { HeroSettings } from '@/components/sections/settings/hero-settings';
+import type { ServerData } from '@/components/preview/types';
 
-type HeroSettings = {
+type HeroSectionSettings = {
   alignment?: "left" | "center" | "right";
   backgroundType?: "solid" | "gradient" | "image";
   backgroundColor?: string;
@@ -66,9 +69,7 @@ type HeroSettings = {
   playerBadge?: "top" | "bottom" | "hidden";
   badgeStyle?: "pill" | "minimal" | "card" | "glow";
   showDiscordButton?: boolean;
-  discordButtonText?: string;
   showCopyIpButton?: boolean;
-  copyIpButtonText?: string;
 };
 
 type GamemodesSettings = {
@@ -231,7 +232,7 @@ type SectionSettings = {
     [key: string]: unknown;
   };
   // Section specific
-  hero?: HeroSettings;
+  hero?: HeroSectionSettings;
   gamemodes?: GamemodesSettings;
   features?: FeaturesSettings;
   discord?: DiscordSettings;
@@ -244,8 +245,8 @@ type SectionSettings = {
 type Section = {
   id: string;
   type: string;
-  title: string;
-  subtitle?: string;
+  title: string | null;
+  subtitle: string | null;
   visible: boolean;
   settings: SectionSettings;
 };
@@ -566,189 +567,6 @@ const sectionTypeConfig: Record<string, {
 const sectionCategories = ["Essential", "Community", "Media", "Info", "Engagement"];
 
 // Preview Components - Actual website sections with real styling
-function PreviewHero({ section }: { section: Section }) {
-  const hero = section.settings.hero || {};
-  const {
-    alignment = "center",
-    backgroundType = "gradient",
-    backgroundColor = "#ffffff",
-    gradientFrom = "#f0f9ff",
-    gradientTo = "#ecfdf5",
-    backgroundImage = "",
-    imageBlur = 0,
-    imageDarken = 40,
-    playerBadge = "top",
-    badgeStyle = "pill",
-    showDiscordButton = true,
-    discordButtonText = "Join Discord",
-    showCopyIpButton = true,
-    copyIpButtonText = "Copy IP",
-  } = hero;
-
-  const hasImage = backgroundType === "image" && backgroundImage;
-  const isLight = backgroundType === "solid" ? isLightColor(backgroundColor) : !hasImage;
-  const textColor = hasImage || !isLight ? "text-white" : "text-zinc-900";
-  const subtextColor = hasImage || !isLight ? "text-white/80" : "text-zinc-600";
-  const isDark = hasImage || !isLight;
-
-  // Helper to determine if a color is light
-  function isLightColor(hex: string): boolean {
-    const c = hex.replace("#", "");
-    const r = parseInt(c.substring(0, 2), 16);
-    const g = parseInt(c.substring(2, 4), 16);
-    const b = parseInt(c.substring(4, 6), 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    return brightness > 128;
-  }
-
-  // Background style
-  const getBackgroundStyle = () => {
-    if (backgroundType === "solid") {
-      return { backgroundColor };
-    }
-    if (backgroundType === "gradient") {
-      return { background: `linear-gradient(to bottom right, ${gradientFrom}, ${gradientTo})` };
-    }
-    return {};
-  };
-
-  // Different badge styles
-  const PlayerBadge = () => {
-    if (badgeStyle === "minimal") {
-      return (
-        <div className={`inline-flex items-center gap-1.5 text-sm font-medium ${isDark ? "text-white/90" : "text-zinc-600"}`}>
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="font-bold">{0}</span> online
-        </div>
-      );
-    }
-
-    if (badgeStyle === "card") {
-      return (
-        <div className={`inline-flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium ${
-          isDark
-            ? "bg-white/10 backdrop-blur-md text-white border border-white/10"
-            : "bg-white text-zinc-700 shadow-lg border border-zinc-100"
-        }`}>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-            <span className="font-bold text-lg">{0}</span>
-          </div>
-          <div className={`w-px h-6 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
-          <span className={isDark ? "text-white/70" : "text-zinc-500"}>players online</span>
-        </div>
-      );
-    }
-
-    if (badgeStyle === "glow") {
-      return (
-        <div className="relative inline-flex">
-          <div className="absolute inset-0 bg-green-500/30 rounded-full blur-xl animate-pulse" />
-          <div className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
-            isDark
-              ? "bg-green-500/20 text-green-300 border border-green-500/30 backdrop-blur-sm"
-              : "bg-green-50 text-green-700 border border-green-200"
-          }`}>
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-            <span className="font-bold">{0}</span>
-            <span className={isDark ? "text-green-300/70" : "text-green-600"}>players online</span>
-          </div>
-        </div>
-      );
-    }
-
-    // Default: pill style
-    return (
-      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-        isDark
-          ? "bg-white/10 backdrop-blur-sm text-white border border-white/20"
-          : "bg-white text-zinc-600 shadow-sm border border-zinc-200"
-      }`}>
-        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-        {0} players online
-      </div>
-    );
-  };
-
-  return (
-    <div className="relative overflow-hidden" style={getBackgroundStyle()}>
-      {/* Background Image */}
-      {hasImage && (
-        <>
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${backgroundImage})`,
-              filter: imageBlur > 0 ? `blur(${imageBlur}px)` : undefined,
-              transform: imageBlur > 0 ? "scale(1.1)" : undefined,
-            }}
-          />
-          <div
-            className="absolute inset-0 bg-black"
-            style={{ opacity: imageDarken / 100 }}
-          />
-        </>
-      )}
-
-      {/* Gradient decorations for non-image backgrounds */}
-      {!hasImage && backgroundType === "gradient" && (
-        <>
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-indigo-200/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
-        </>
-      )}
-
-      <div className={`relative py-16 px-6 ${
-        alignment === "center" ? "text-center" : alignment === "right" ? "text-right" : "text-left"
-      }`}>
-        <div className="max-w-2xl mx-auto">
-          {/* Player badge - top */}
-          {playerBadge === "top" && (
-            <div className="mb-6">
-              <PlayerBadge />
-            </div>
-          )}
-
-          <h1 className={`text-4xl md:text-5xl font-extrabold mb-4 tracking-tight ${textColor}`}>
-            {section.title}
-          </h1>
-
-          <p className={`text-lg max-w-xl mb-8 ${alignment === "center" ? "mx-auto" : alignment === "right" ? "ml-auto" : ""} ${subtextColor}`}>
-            {section.subtitle}
-          </p>
-
-          {/* Player badge - bottom (before buttons) */}
-          {playerBadge === "bottom" && (
-            <div className="mb-6">
-              <PlayerBadge />
-            </div>
-          )}
-
-          {(showDiscordButton || showCopyIpButton) && (
-            <div className={`flex gap-3 ${
-              alignment === "center" ? "justify-center" : alignment === "right" ? "justify-end" : ""
-            }`}>
-              {showDiscordButton && (
-                <button className="bg-indigo-600 hover:bg-indigo-700 hover:scale-105 hover:-translate-y-0.5 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200">
-                  {discordButtonText}
-                </button>
-              )}
-              {showCopyIpButton && (
-                <button className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 ${
-                  isDark
-                    ? "bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10"
-                    : "bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200 hover:shadow-md"
-                }`}>
-                  {copyIpButtonText}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function PreviewStats({ section }: { section: Section }) {
   const {
@@ -2501,9 +2319,12 @@ function PreviewVideo({ section }: { section: Section }) {
   );
 }
 
-function SectionPreview({ section }: { section: Section }) {
+function SectionPreview({ section, serverData }: { section: Section; serverData: ServerData }) {
   switch (section.type) {
-    case "hero": return <PreviewHero section={section} />;
+    case "hero": {
+      const Entry = SECTION_REGISTRY["hero"];
+      return <Entry.render section={section} serverData={serverData} />;
+    }
     case "stats": return <PreviewStats section={section} />;
     case "features": return <PreviewFeatures section={section} />;
     case "gamemodes": return <PreviewGamemodes section={section} />;
@@ -2546,7 +2367,7 @@ function SettingsPanel({
           <input
             type="text"
             placeholder="Enter title..."
-            value={section.title}
+            value={section.title ?? ""}
             onChange={(e) => onUpdate({ title: e.target.value })}
             className="input-field mt-2"
           />
@@ -2555,211 +2376,7 @@ function SettingsPanel({
 
       {/* Hero Section Settings */}
       {section.type === "hero" && (
-        <>
-          {/* Subtitle */}
-          <div>
-            <label className="settings-label">Subtitle</label>
-            <input
-              type="text"
-              placeholder="Enter subtitle..."
-              value={section.subtitle || ""}
-              onChange={(e) => onUpdate({ subtitle: e.target.value })}
-              className="input-field mt-2"
-            />
-          </div>
-
-          {/* Alignment */}
-          <div>
-            <label className="settings-label">Alignment</label>
-            <div className="flex gap-2 mt-2">
-              {[
-                { value: "left", icon: AlignLeft },
-                { value: "center", icon: AlignCenter },
-                { value: "right", icon: AlignRight },
-              ].map(({ value, icon: Icon }) => (
-                <button
-                  key={value}
-                  onClick={() => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, alignment: value as "left" | "center" | "right" }
-                    }
-                  })}
-                  className={`flex-1 p-2 rounded-lg border transition-all ${
-                    section.settings.hero?.alignment === value
-                      ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                      : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-400"
-                  }`}
-                >
-                  <Icon className="w-4 h-4 mx-auto" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Background */}
-          <BackgroundSettingsPanel
-            config={{
-              type: section.settings.hero?.backgroundType || "gradient",
-              color: section.settings.hero?.backgroundColor || "#ffffff",
-              gradientFrom: section.settings.hero?.gradientFrom || "#f0f9ff",
-              gradientTo: section.settings.hero?.gradientTo || "#ecfdf5",
-              image: section.settings.hero?.backgroundImage,
-              blur: section.settings.hero?.imageBlur,
-              darken: section.settings.hero?.imageDarken,
-            }}
-            onChange={(config) => onUpdate({
-              settings: {
-                ...section.settings,
-                hero: {
-                  ...section.settings.hero,
-                  backgroundType: config.type,
-                  backgroundColor: config.color,
-                  gradientFrom: config.gradientFrom,
-                  gradientTo: config.gradientTo,
-                  backgroundImage: config.image,
-                  imageBlur: config.blur,
-                  imageDarken: config.darken,
-                }
-              }
-            })}
-            defaultGradientFrom="#f0f9ff"
-            defaultGradientTo="#ecfdf5"
-          />
-
-          {/* Player Badge Group */}
-          <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
-            <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Player Badge</h3>
-
-            {/* Position */}
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { value: "top", label: "Top" },
-                { value: "bottom", label: "Bottom" },
-                { value: "hidden", label: "Hidden" },
-              ].map(({ value, label }) => (
-                <button
-                  key={value}
-                  onClick={() => onUpdate({
-                    settings: {
-                      ...section.settings,
-                      hero: { ...section.settings.hero, playerBadge: value as "top" | "bottom" | "hidden" }
-                    }
-                  })}
-                  className={`p-2 rounded-lg border transition-all text-xs ${
-                    section.settings.hero?.playerBadge === value
-                      ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                      : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-500"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            {/* Style */}
-            {section.settings.hero?.playerBadge !== "hidden" && (
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { value: "pill", label: "Pill" },
-                  { value: "minimal", label: "Minimal" },
-                  { value: "card", label: "Card" },
-                  { value: "glow", label: "Glow" },
-                ].map(({ value, label }) => (
-                  <button
-                    key={value}
-                    onClick={() => onUpdate({
-                      settings: {
-                        ...section.settings,
-                        hero: { ...section.settings.hero, badgeStyle: value as "pill" | "minimal" | "card" | "glow" }
-                      }
-                    })}
-                    className={`p-2 rounded-lg border transition-all text-xs ${
-                      (section.settings.hero?.badgeStyle || "pill") === value
-                        ? "border-cyan-300 bg-cyan-50 text-cyan-600"
-                        : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-500"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Buttons Group */}
-          <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
-            <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Buttons</h3>
-
-            {/* Discord Button */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onUpdate({
-                  settings: {
-                    ...section.settings,
-                    hero: { ...section.settings.hero, showDiscordButton: !section.settings.hero?.showDiscordButton }
-                  }
-                })}
-                className={`w-8 h-5 rounded-full transition-all flex-shrink-0 ${
-                  section.settings.hero?.showDiscordButton !== false ? "bg-cyan-500" : "bg-zinc-300"
-                }`}
-              >
-                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                  section.settings.hero?.showDiscordButton !== false ? "translate-x-3.5" : "translate-x-0.5"
-                }`} />
-              </button>
-              <input
-                type="text"
-                placeholder="Join Discord"
-                value={section.settings.hero?.discordButtonText ?? ""}
-                onChange={(e) => onUpdate({
-                  settings: {
-                    ...section.settings,
-                    hero: { ...section.settings.hero, discordButtonText: e.target.value }
-                  }
-                })}
-                disabled={section.settings.hero?.showDiscordButton === false}
-                className={`input-field flex-1 min-w-0 ${
-                  section.settings.hero?.showDiscordButton === false ? "opacity-50" : ""
-                }`}
-              />
-            </div>
-
-            {/* Copy IP Button */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onUpdate({
-                  settings: {
-                    ...section.settings,
-                    hero: { ...section.settings.hero, showCopyIpButton: !section.settings.hero?.showCopyIpButton }
-                  }
-                })}
-                className={`w-8 h-5 rounded-full transition-all flex-shrink-0 ${
-                  section.settings.hero?.showCopyIpButton !== false ? "bg-cyan-500" : "bg-zinc-300"
-                }`}
-              >
-                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                  section.settings.hero?.showCopyIpButton !== false ? "translate-x-3.5" : "translate-x-0.5"
-                }`} />
-              </button>
-              <input
-                type="text"
-                placeholder="Copy IP"
-                value={section.settings.hero?.copyIpButtonText ?? ""}
-                onChange={(e) => onUpdate({
-                  settings: {
-                    ...section.settings,
-                    hero: { ...section.settings.hero, copyIpButtonText: e.target.value }
-                  }
-                })}
-                disabled={section.settings.hero?.showCopyIpButton === false}
-                className={`input-field flex-1 min-w-0 ${
-                  section.settings.hero?.showCopyIpButton === false ? "opacity-50" : ""
-                }`}
-              />
-            </div>
-          </div>
-        </>
+        <HeroSettings section={section} onUpdate={onUpdate} />
       )}
 
 
@@ -2768,7 +2385,7 @@ function SettingsPanel({
         <>
           {/* Header */}
           <HeaderSettingsPanel
-            title={section.title}
+            title={section.title ?? ""}
             subtitle={section.subtitle || ""}
             alignment={section.settings.gallery?.headerAlignment || "center"}
             onTitleChange={(value) => onUpdate({ title: value })}
@@ -2981,7 +2598,7 @@ function SettingsPanel({
         <>
           {/* Header */}
           <HeaderSettingsPanel
-            title={section.title}
+            title={section.title ?? ""}
             subtitle={section.subtitle || ""}
             alignment={section.settings.stats?.headerAlignment || "center"}
             onTitleChange={(value) => onUpdate({ title: value })}
@@ -3301,7 +2918,7 @@ function SettingsPanel({
         <>
           {/* Header */}
           <HeaderSettingsPanel
-            title={section.title}
+            title={section.title ?? ""}
             subtitle={section.subtitle || ""}
             alignment={section.settings.features?.headerAlignment || "center"}
             onTitleChange={(value) => onUpdate({ title: value })}
@@ -3468,7 +3085,7 @@ function SettingsPanel({
         <>
           {/* Header */}
           <HeaderSettingsPanel
-            title={section.title}
+            title={section.title ?? ""}
             subtitle={section.subtitle || ""}
             alignment={section.settings.gamemodes?.headerAlignment || "center"}
             onTitleChange={(value) => onUpdate({ title: value })}
@@ -3651,7 +3268,7 @@ function SettingsPanel({
         <>
           {/* Header */}
           <HeaderSettingsPanel
-            title={section.title}
+            title={section.title ?? ""}
             subtitle={section.subtitle || ""}
             alignment={section.settings.discord?.alignment || "left"}
             onTitleChange={(value) => onUpdate({ title: value })}
@@ -3871,7 +3488,7 @@ function SettingsPanel({
         <>
           {/* Header */}
           <HeaderSettingsPanel
-            title={section.title}
+            title={section.title ?? ""}
             subtitle={section.subtitle || ""}
             alignment={section.settings.staff?.headerAlignment || "center"}
             onTitleChange={(value) => onUpdate({ title: value })}
@@ -4373,6 +3990,7 @@ export default function ServerEditorPage() {
       id: crypto.randomUUID(),
       type,
       title: config?.label || `New ${type} section`,
+      subtitle: null,
       visible: true,
       settings: {},
     };
@@ -4563,7 +4181,7 @@ export default function ServerEditorPage() {
                     <Reorder.Item key={section.id} value={section}>
                       <motion.div
                         onClick={() => setSelectedSection(isSelected ? null : section.id)}
-                        title={section.title}
+                        title={section.title ?? ""}
                         className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg border cursor-pointer transition-all ${
                           isSelected
                             ? "border-cyan-300 bg-gradient-to-r from-cyan-50 to-emerald-50"
@@ -4792,7 +4410,7 @@ export default function ServerEditorPage() {
                         onClick={() => setSelectedSection(section.id)}
                         className="relative cursor-pointer group"
                       >
-                        <SectionPreview section={section} />
+                        <SectionPreview section={section} serverData={{ name: serverData.name, subdomain: serverData.subdomain, serverIp: serverData.serverIp, players: serverData.players, maxPlayers: serverData.maxPlayers, version: serverData.version }} />
                         {/* Hover/Selected border overlay */}
                         <div className={`absolute inset-0 pointer-events-none transition-all border-2 ${
                           selectedSection === section.id

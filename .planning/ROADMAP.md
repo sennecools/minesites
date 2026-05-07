@@ -10,7 +10,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Extraction** - Shared types, plan.ts, section registry, extract existing section code out of the god-component
+- [x] **Phase 1: Foundation & Extraction** - Shared types, plan.ts, section registry, extract existing section code out of the god-component
 - [ ] **Phase 2: Theme System** - CSS variable isolation, gaming-styled site layout, full theme controls in the editor
 - [ ] **Phase 3: Section Types** - All 9 Minecraft-native section types delivered via the registry
 - [ ] **Phase 4: Freemium Gating** - Server-side section count enforcement, User.plan field, upgrade prompt in editor
@@ -27,7 +27,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   2. The editor page (`page.tsx`) has not grown in line count; existing Hero renderer and settings panel live in their own files under `src/components/sections/`.
   3. `src/types/site-theme.ts` defines the `SiteTheme` interface and `src/lib/plan.ts` defines `getPlanLimits()`.
   4. Adding a new section type requires only two new files and one registry entry — no edits to `page.tsx`.
-**Plans:** 5 plans
+**Plans:** 6 plans (5 + 1 gap closure)
 - [x] 01-01-PLAN.md — Foundation types: src/types/sections.ts, src/types/site-theme.ts, src/lib/plan.ts
 - [x] 01-02-PLAN.md — Extract Hero render and Hero settings into src/components/sections/{render,settings}/
 - [x] 01-03-PLAN.md — Build SECTION_REGISTRY (Record<SectionType, RegistryEntry>) and update sections barrel
@@ -83,7 +83,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Extraction | 6/6 | Verifying | - |
+| 1. Foundation & Extraction | 6/6 | Complete | 2026-05-07 |
 | 2. Theme System | 0/TBD | Not started | - |
 | 3. Section Types | 0/TBD | Not started | - |
 | 4. Freemium Gating | 0/TBD | Not started | - |

@@ -128,14 +128,14 @@ All required capabilities are covered by the existing stack. This phase adds zer
     └── Preview panel <div class="site-root" data-theme={theme.palette}>
             └── CSS vars set via inline style={{ '--site-accent': '#...', ... }}
 
-[src/app/[subdomain]/page.tsx]  (Server Component)
+[src/app/[subdomain]/layout.tsx]  (Server Component)
     │
-    ├── db.server.findUnique() ─── fetches server.theme JSON
+    ├── db.server.findUnique() ─── self-fetches server.theme, name, serverIp via params.subdomain
+    │       └── wrapped in React.cache() to deduplicate with page.tsx's server row fetch
     │
-    └── <SubdomainLayout theme={parsedTheme}>
-              └── .site-root wrapper with inline style (CSS vars)
-                      └── <SiteNav serverName subdomain serverIp />
-                      └── sections (via SECTION_REGISTRY dispatch)
+    └── .site-root wrapper with inline style (CSS vars)
+            └── <SiteNav serverName serverIp />
+            └── {children} (sections rendered by page.tsx)
 ```
 
 ### Recommended Project Structure
@@ -157,8 +157,8 @@ src/
 │       └── font-picker.tsx      # FontPicker with font-preview labels (NEW)
 └── app/
     └── [subdomain]/
-        ├── layout.tsx           # MODIFY: add .site-root, fonts, CSS var injection
-        └── page.tsx             # MODIFY: pass theme to layout
+        ├── layout.tsx           # MODIFY: add .site-root, fonts, CSS var injection, self-fetch
+        └── page.tsx             # MODIFY: minor — themeSettings state + preview wrapper
 ```
 
 Per-section background override is added inside each existing section's settings panel file (no new files — modification only).
@@ -495,7 +495,7 @@ export function SiteNav({ serverName, serverIp }: SiteNavProps) {
 
   return (
     <nav
-      className="site-root sticky top-0 z-50 h-14 flex items-center justify-between px-6"
+      className="sticky top-0 z-50 h-14 flex items-center justify-between px-6"
       style={{ backgroundColor: "var(--site-card)" }}
     >
       <span
@@ -653,17 +653,19 @@ export function SectionBgOverride({ value, onChange }: SectionBgOverrideProps) {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **How should `theme` data flow from `page.tsx` to `layout.tsx` in the subdomain route?**
    - What we know: Next.js App Router layouts receive children but not arbitrary props from child pages.
    - What's unclear: The standard pattern for passing data from a page to its parent layout. Options: (a) fetch theme again in layout.tsx (extra DB call), (b) use a React context via a shared client Provider, (c) restructure so the layout itself fetches theme using the `params` it receives.
    - Recommendation: **Option (c)** — the `[subdomain]/layout.tsx` already receives `{ params: { subdomain } }` which it can use to fetch the theme directly. This avoids double fetching and keeps layout fully server-side. The page still does its own full fetch for sections.
+   - RESOLVED: layout.tsx self-fetches via `db.server.findUnique({ where: { subdomain } })` wrapped in `React.cache()` to deduplicate with page.tsx's own server row fetch. No theme prop threading from page → layout.
 
 2. **Should the editor preview panel's `.site-root` wrapper also apply the font CSS class variables?**
    - What we know: The 5 font CSS vars (`--font-rajdhani`, etc.) are defined by `next/font/google` in the subdomain layout — not in the dashboard.
    - What's unclear: Whether the font `className` from `next/font/google` can be applied outside its host layout.
    - Recommendation: Use literal font-family strings in the editor preview (e.g., `'Rajdhani, sans-serif'`) rather than `var(--font-rajdhani)`. This avoids cross-layout font var dependencies and works the same visually in the preview panel.
+   - RESOLVED: Use literal font-family strings from `FONT_FAMILY_MAP` (e.g., `"'Rajdhani', sans-serif"`) in the editor preview's `--site-font-display` CSS var. The `--font-*` vars from `next/font/google` are not available in the dashboard context.
 
 ---
 

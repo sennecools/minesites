@@ -18,6 +18,7 @@ export function FontPicker({ selected, onChange, accentColor }: FontPickerProps)
       {keys.map((key) => (
         <motion.button
           key={key}
+          type="button"
           onClick={() => onChange(key)}
           whileHover={{ x: 2 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}

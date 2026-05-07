@@ -18,6 +18,7 @@ export function ColorSwatchPicker({ selected, onChange }: ColorSwatchPickerProps
         // 44px interactive target (WCAG 2.5.5); 28px visual circle centered inside
         <button
           key={key}
+          type="button"
           onClick={() => onChange(key)}
           aria-label={PALETTE_DISPLAY_NAMES[key]}
           className="w-11 h-11 flex items-center justify-center"

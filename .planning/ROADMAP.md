@@ -31,8 +31,8 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 - [x] 01-01-PLAN.md — Foundation types: src/types/sections.ts, src/types/site-theme.ts, src/lib/plan.ts
 - [x] 01-02-PLAN.md — Extract Hero render and Hero settings into src/components/sections/{render,settings}/
 - [x] 01-03-PLAN.md — Build SECTION_REGISTRY (Record<SectionType, RegistryEntry>) and update sections barrel
-- [ ] 01-04-PLAN.md — Editor god-component cleanup: remove mockServer/initialSections, wire registry, replace inline Hero settings block
-- [ ] 01-05-PLAN.md — Public renderer wire-up: dedupe types, route hero through SECTION_REGISTRY, delete inline PreviewHero
+- [x] 01-04-PLAN.md — Editor god-component cleanup: remove mockServer/initialSections, wire registry, replace inline Hero settings block
+- [x] 01-05-PLAN.md — Public renderer wire-up: dedupe types, route hero through SECTION_REGISTRY, delete inline PreviewHero
 
 ### Phase 2: Theme System
 **Goal:** Public server websites have a visually distinct gaming identity controlled by a theme the server owner configures; the admin dashboard is completely unaffected.

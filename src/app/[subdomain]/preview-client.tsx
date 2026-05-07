@@ -27,6 +27,7 @@ import {
   isLightColor,
 } from "@/components/preview/types";
 import { SECTION_REGISTRY } from "@/lib/section-registry";
+import type { SectionType } from "@/types/sections";
 
 // Icon map
 const featureIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -745,35 +746,18 @@ export default function PreviewClient({ server, sections, isPreviewMode }: Previ
       {sections.map((section) => {
         if (!section.visible) return null;
 
-        switch (section.type) {
-          case "hero": {
-            const Entry = SECTION_REGISTRY["hero"];
-            return <Entry.render key={section.id} section={section} serverData={server} />;
-          }
-          case "stats":
-            return <PreviewStats key={section.id} section={section} />;
-          case "features":
-            return <PreviewFeatures key={section.id} section={section} />;
-          case "gamemodes":
-            return <PreviewGamemodes key={section.id} section={section} />;
-          case "discord":
-            return <PreviewDiscord key={section.id} section={section} serverData={server} />;
-          case "gallery":
-            return <PreviewGallery key={section.id} section={section} />;
-          case "staff":
-            return <PreviewStaff key={section.id} section={section} />;
-          case "text":
-            return <PreviewText key={section.id} section={section} />;
-          default:
-            return (
-              <section key={section.id} className="py-16 bg-zinc-100">
-                <div className="mx-auto max-w-5xl px-6 text-center">
-                  <h2 className="text-2xl font-bold mb-2">{section.title || section.type}</h2>
-                  <p className="text-zinc-500">Section type: {section.type}</p>
-                </div>
-              </section>
-            );
+        const entry = SECTION_REGISTRY[section.type as SectionType];
+        if (!entry) {
+          return (
+            <section key={section.id} className="py-16 bg-zinc-100">
+              <div className="mx-auto max-w-5xl px-6 text-center">
+                <h2 className="text-2xl font-bold mb-2">{section.title || section.type}</h2>
+                <p className="text-zinc-500">Section type: {section.type}</p>
+              </div>
+            </section>
+          );
         }
+        return <entry.render key={section.id} section={section} serverData={server} />;
       })}
     </div>
   );

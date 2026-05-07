@@ -44,7 +44,11 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   2. Dashboard pages at the same time look exactly as before; no shared styles bleed in either direction.
   3. A server owner can open the editor, pick a color palette preset, pick a font, and see both applied immediately on the public site without a code deploy.
   4. A server owner can override the background color of an individual section independently of the site-wide palette.
-**Plans:** TBD
+**Plans:** 4 plans
+- [ ] 02-01-PLAN.md — SiteTheme type update + theme-presets.ts static lookup tables (THEME_PRESETS, FONT_FAMILY_MAP)
+- [ ] 02-02-PLAN.md — Public site layout: .site-root isolation, 5 Google Fonts, CSS var injection, SiteNav
+- [ ] 02-03-PLAN.md — Editor Appearance tab: ColorSwatchPicker, FontPicker, AppearanceTab, page.tsx wiring
+- [ ] 02-04-PLAN.md — Per-section background override: SectionBgOverride in hero-settings + hero-render
 
 ### Phase 3: Section Types
 **Goal:** Server owners can build a complete, useful Minecraft server page using 9 Minecraft-native section types, including a live player count that never blocks page load.
@@ -84,7 +88,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Extraction | 6/6 | Complete | 2026-05-07 |
-| 2. Theme System | 0/TBD | Not started | - |
+| 2. Theme System | 0/4 | Not started | - |
 | 3. Section Types | 0/TBD | Not started | - |
 | 4. Freemium Gating | 0/TBD | Not started | - |
 | 5. Visual Effects | 0/TBD | Not started | - |

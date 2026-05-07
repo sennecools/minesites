@@ -29,6 +29,13 @@ body {
   color: var(--foreground);
 }
 
+/* Public site root — ensures full-viewport coverage and overrides body bg/color */
+.site-root {
+  min-height: 100dvh;
+  color: var(--site-text);
+  background-color: var(--site-bg);
+}
+
 /* Gradient accent for CTAs */
 .gradient-accent {
   background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);

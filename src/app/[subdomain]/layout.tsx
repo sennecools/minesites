@@ -87,6 +87,7 @@ export default async function SubdomainLayout({
 
   // CSS vars injected as inline style — server-rendered, present in initial
   // HTML response, no FOUC (D-14, THEME-04).
+  // backgroundColor is handled by .site-root in globals.css (CR-03).
   const cssVars: React.CSSProperties = {
     "--site-accent": accent,
     "--site-bg": "#0e0e10",
@@ -94,7 +95,6 @@ export default async function SubdomainLayout({
     "--site-text": "#f4f4f5",
     "--site-text-muted": "#a1a1aa",
     "--site-font-display": fontFamily,
-    backgroundColor: "var(--site-bg)",
   } as React.CSSProperties;
 
   return (

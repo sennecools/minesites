@@ -47,12 +47,12 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 **Plans:** 4 plans
 
 **Wave 1**
-- [ ] 02-01-PLAN.md — SiteTheme type update + theme-presets.ts static lookup tables (THEME_PRESETS, FONT_FAMILY_MAP)
+- [x] 02-01-PLAN.md — SiteTheme type update + theme-presets.ts static lookup tables (THEME_PRESETS, FONT_FAMILY_MAP)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02-PLAN.md — Public site layout: .site-root isolation, 5 Google Fonts, CSS var injection, SiteNav
-- [ ] 02-03-PLAN.md — Editor Appearance tab: ColorSwatchPicker, FontPicker, AppearanceTab, page.tsx wiring
-- [ ] 02-04-PLAN.md — Per-section background override: SectionBgOverride in hero-settings + hero-render
+- [x] 02-02-PLAN.md — Public site layout: .site-root isolation, 5 Google Fonts, CSS var injection, SiteNav
+- [x] 02-03-PLAN.md — Editor Appearance tab: ColorSwatchPicker, FontPicker, AppearanceTab, page.tsx wiring
+- [x] 02-04-PLAN.md — Per-section background override: SectionBgOverride in hero-settings + hero-render
 
 **Cross-cutting constraints:**
 - `.site-root` class must appear exactly once per page (layout.tsx wrapper only — never on child components)

@@ -40,7 +40,7 @@ A Minecraft server website that looks and feels like a gaming site — not a das
 
 This is a brownfield project with existing working infrastructure: authentication, dashboard, section editor, and subdomain routing are all in place. The primary problem is visual: the section components rendered on public server websites inherit the same design language as the admin dashboard (clean, neutral, card-based). Server websites should feel like gaming pages — bold typography, vivid accent colors, dark backgrounds — controlled by the server owner's chosen theme. The editor itself remains a clean dashboard tool; only the output changes.
 
-The codebase map (`.planning/codebase/`) identified a 5,171-line god-component in the server editor and zero test coverage as existing technical concerns. New section types should avoid growing this further — extract into smaller components.
+Phase 1 (Foundation & Extraction) restructured the god-component: it was 5,171 lines; it's now ~3,200. New section types go in `src/components/sections/render/` and `src/components/sections/settings/` — adding one requires only 2 files + 1 registry entry in `src/lib/section-registry.tsx`, zero edits to `page.tsx` or `preview-client.tsx`. Zero test coverage remains an open concern.
 
 Key technical context:
 - Next.js 16 App Router, TypeScript, Tailwind CSS
@@ -82,4 +82,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-07 after initialization*
+*Last updated: 2026-05-07 after Phase 1 completion*

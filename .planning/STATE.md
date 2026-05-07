@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-05-07)
 
 Phase: 1 of 5 (Foundation & Extraction)
 Plan: 0 of 5 in current phase
-Status: Ready to execute
-Last activity: 2026-05-07 — Phase 1 planned: 5 plans, 4 waves
+Status: Executing (wave 2 of 4)
+Last activity: 2026-05-07 — Wave 1 complete (1/5 plans done)
 
 Progress: [░░░░░░░░░░] 0%
 

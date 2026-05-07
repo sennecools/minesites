@@ -28,7 +28,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   3. `src/types/site-theme.ts` defines the `SiteTheme` interface and `src/lib/plan.ts` defines `getPlanLimits()`.
   4. Adding a new section type requires only two new files and one registry entry — no edits to `page.tsx`.
 **Plans:** 5 plans
-- [ ] 01-01-PLAN.md — Foundation types: src/types/sections.ts, src/types/site-theme.ts, src/lib/plan.ts
+- [x] 01-01-PLAN.md — Foundation types: src/types/sections.ts, src/types/site-theme.ts, src/lib/plan.ts
 - [ ] 01-02-PLAN.md — Extract Hero render and Hero settings into src/components/sections/{render,settings}/
 - [ ] 01-03-PLAN.md — Build SECTION_REGISTRY (Record<SectionType, RegistryEntry>) and update sections barrel
 - [ ] 01-04-PLAN.md — Editor god-component cleanup: remove mockServer/initialSections, wire registry, replace inline Hero settings block

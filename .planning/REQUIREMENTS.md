@@ -76,39 +76,37 @@
 
 ## Traceability
 
-Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VISUAL-01 | — | Pending |
-| VISUAL-02 | — | Pending |
-| SECT-01 | — | Pending |
-| SECT-02 | — | Pending |
-| SECT-03 | — | Pending |
-| SECT-04 | — | Pending |
-| SECT-05 | — | Pending |
-| SECT-06 | — | Pending |
-| SECT-07 | — | Pending |
-| SECT-08 | — | Pending |
-| SECT-09 | — | Pending |
-| THEME-01 | — | Pending |
-| THEME-02 | — | Pending |
-| THEME-03 | — | Pending |
-| THEME-04 | — | Pending |
-| FREE-01 | — | Pending |
-| FREE-02 | — | Pending |
-| FREE-03 | — | Pending |
-| FREE-04 | — | Pending |
-| FX-01 | — | Pending |
-| FX-02 | — | Pending |
-| FX-03 | — | Pending |
-| FX-04 | — | Pending |
+| VISUAL-01 | Phase 2 | Pending |
+| VISUAL-02 | Phase 2 | Pending |
+| SECT-01 | Phase 3 | Pending |
+| SECT-02 | Phase 3 | Pending |
+| SECT-03 | Phase 3 | Pending |
+| SECT-04 | Phase 3 | Pending |
+| SECT-05 | Phase 3 | Pending |
+| SECT-06 | Phase 3 | Pending |
+| SECT-07 | Phase 3 | Pending |
+| SECT-08 | Phase 3 | Pending |
+| SECT-09 | Phase 3 | Pending |
+| THEME-01 | Phase 2 | Pending |
+| THEME-02 | Phase 2 | Pending |
+| THEME-03 | Phase 2 | Pending |
+| THEME-04 | Phase 2 | Pending |
+| FREE-01 | Phase 4 | Pending |
+| FREE-02 | Phase 4 | Pending |
+| FREE-03 | Phase 4 | Pending |
+| FREE-04 | Phase 4 | Pending |
+| FX-01 | Phase 5 | Pending |
+| FX-02 | Phase 5 | Pending |
+| FX-03 | Phase 5 | Pending |
+| FX-04 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 23 total
-- Mapped to phases: 0
-- Unmapped: 23 ⚠️
+- Mapped to phases: 23
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-07*
-*Last updated: 2026-05-07 after initial definition*
+*Last updated: 2026-05-07 after roadmap creation*

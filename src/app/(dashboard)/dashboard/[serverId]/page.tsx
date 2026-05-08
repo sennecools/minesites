@@ -2679,9 +2679,15 @@ export default function ServerEditorPage() {
               <h1 className="font-display text-xl font-bold text-zinc-900">
                 {serverData.name}
               </h1>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Live
+              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
+                serverData.published
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "bg-zinc-100 text-zinc-500"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  serverData.published ? "bg-emerald-500" : "bg-zinc-400"
+                }`} />
+                {serverData.published ? "Live" : "Draft"}
               </span>
             </div>
             <p className="text-sm text-zinc-500">{serverData.subdomain}.minesites.net</p>

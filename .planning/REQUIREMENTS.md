@@ -1,9 +1,33 @@
 # Requirements: MineSites
 
-**Defined:** 2026-05-07
+**Defined:** 2026-05-07 | **Updated:** 2026-05-08 (v1.1 added)
 **Core Value:** A Minecraft server website that looks and feels like a gaming site — not a dashboard — built in minutes by the server owner, not a developer.
 
-## v1 Requirements
+## v1.1 Requirements
+
+### Website Management
+
+- [ ] **WEB-01**: User can create a Website with a name and unique custom subdomain
+- [ ] **WEB-02**: User can update a Website's name and subdomain after creation
+- [ ] **WEB-03**: User can delete a Website and all its associated sections and server connections
+
+### Server Connections
+
+- [ ] **CONN-01**: User can add a Minecraft server connection to their Website (display name, IP address, port)
+- [ ] **CONN-02**: User can remove a Minecraft server connection from their Website
+- [ ] **CONN-03**: User can update a Minecraft server connection's display name, IP, and port
+- [ ] **CONN-04**: Server-specific sections (Live Player Count, Server Info) store a reference to a connected MinecraftServer and use its IP for data polling
+
+### Dashboard UX
+
+- [ ] **DASH-01**: Main dashboard page shows the user's Websites instead of Servers
+- [ ] **DASH-02**: Dashboard includes a "New Website" button/dialog where user picks a name and custom subdomain
+- [ ] **DASH-03**: Website editor includes a server connections manager tab for adding, editing, and removing connected Minecraft servers
+- [ ] **DASH-04**: Website cards in the dashboard list display the live URL (e.g., myhardcoreserver.minesites.net)
+
+---
+
+## v1.0 Requirements
 
 ### Visual Design
 
@@ -76,6 +100,24 @@
 
 ## Traceability
 
+### v1.1
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| WEB-01 | TBD | Pending |
+| WEB-02 | TBD | Pending |
+| WEB-03 | TBD | Pending |
+| CONN-01 | TBD | Pending |
+| CONN-02 | TBD | Pending |
+| CONN-03 | TBD | Pending |
+| CONN-04 | TBD | Pending |
+| DASH-01 | TBD | Pending |
+| DASH-02 | TBD | Pending |
+| DASH-03 | TBD | Pending |
+| DASH-04 | TBD | Pending |
+
+### v1.0
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | VISUAL-01 | Phase 2 | Pending |
@@ -103,10 +145,9 @@
 | FX-04 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 23 total
-- Mapped to phases: 23
-- Unmapped: 0 ✓
+- v1.1 requirements: 11 total | Mapped to phases: 0 (TBD — roadmap pending)
+- v1.0 requirements: 23 total | Mapped to phases: 23
 
 ---
 *Requirements defined: 2026-05-07*
-*Last updated: 2026-05-07 after roadmap creation*
+*Last updated: 2026-05-08 — v1.1 requirements added*

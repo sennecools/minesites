@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { updateWebsiteSchema } from "@/lib/validations/website";
 
 // GET /api/servers/[serverId] - Load server data with sections
 export async function GET(
@@ -55,12 +56,26 @@ export async function PUT(
 
     const { serverId } = await params;
     const body = await request.json();
-    const { name, subdomain, description, logo, banner, navbar, theme, sections } = body;
+    const { logo, banner, navbar, theme, sections } = body;
+
+    // Validate name/subdomain/description fields
+    const parseResult = updateWebsiteSchema.safeParse({
+      name: body.name,
+      subdomain: body.subdomain,
+      description: body.description,
+    });
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Invalid input", details: parseResult.error.flatten() },
+        { status: 400 }
+      );
+    }
+    const { name, subdomain, description } = parseResult.data;
 
     // Check ownership
     const existingWebsite = await db.website.findUnique({
       where: { id: serverId },
-      select: { userId: true },
+      select: { userId: true, subdomain: true },
     });
 
     if (!existingWebsite) {
@@ -69,6 +84,29 @@ export async function PUT(
 
     if (existingWebsite.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // If subdomain is changing, verify it is not taken
+    if (subdomain && subdomain !== existingWebsite.subdomain) {
+      const conflict = await db.website.findUnique({ where: { subdomain } });
+      if (conflict) {
+        return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
+      }
+    }
+
+    // Freemium enforcement: validate section count against user.plan
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
+    });
+    const FREE_SECTION_LIMIT = 5;
+    if (sections && Array.isArray(sections) && user?.plan !== "pro") {
+      if (sections.length > FREE_SECTION_LIMIT) {
+        return NextResponse.json(
+          { error: `Free plan is limited to ${FREE_SECTION_LIMIT} sections` },
+          { status: 403 }
+        );
+      }
     }
 
     // Update website and sections in a transaction

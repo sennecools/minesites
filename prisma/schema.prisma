@@ -15,6 +15,7 @@ model User {
   image         String?
   password      String?
   discordId     String?   @unique
+  plan          String    @default("free")
   accounts      Account[]
   sessions      Session[]
   websites      Website[]

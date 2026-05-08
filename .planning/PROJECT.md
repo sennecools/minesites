@@ -57,6 +57,8 @@ This is a brownfield project with existing working infrastructure: authenticatio
 
 Phase 1 (Foundation & Extraction) restructured the god-component: it was 5,171 lines; it's now ~3,200. New section types go in `src/components/sections/render/` and `src/components/sections/settings/` — adding one requires only 2 files + 1 registry entry in `src/lib/section-registry.tsx`, zero edits to `page.tsx` or `preview-client.tsx`. Zero test coverage remains an open concern.
 
+Phase 6 (Schema Reset) completed the v1.1 data model: `Server` model replaced by `Website` + `MinecraftServer`; `Section.serverId` renamed to `websiteId`; all TypeScript consumers updated; `npx tsc --noEmit` exits 0; migration history generated at `prisma/migrations/20260508111252_schema_reset/`.
+
 Key technical context:
 - Next.js 16 App Router, TypeScript, Tailwind CSS
 - Prisma + PostgreSQL for persistence
@@ -100,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-08 — Milestone v1.1 started (Website-Centric Model)*
+*Last updated: 2026-05-08 — Phase 6 complete (Schema Reset: Website + MinecraftServer models live)*

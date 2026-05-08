@@ -7,13 +7,19 @@ import path from "path";
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 async function main() {
+  const seedEmail = process.env.SEED_USER_EMAIL;
+  if (!seedEmail) {
+    console.error("SEED_USER_EMAIL env var is required. Set it in .env or pass it directly.");
+    process.exit(1);
+  }
+
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const adapter = new PrismaPg(pool);
   const db = new PrismaClient({ adapter });
 
   // Find the user
   const user = await db.user.findUnique({
-    where: { email: "sennecools1009@gmail.com" },
+    where: { email: seedEmail },
   });
 
   if (!user) {

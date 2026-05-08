@@ -17,7 +17,7 @@ model User {
   discordId     String?   @unique
   accounts      Account[]
   sessions      Session[]
-  servers       Server[]
+  websites      Website[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -57,25 +57,38 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Server {
-  id          String    @id @default(cuid())
+model Website {
+  id          String            @id @default(cuid())
   name        String
-  subdomain   String    @unique
+  subdomain   String            @unique
   description String?
-  serverIp    String?
-  serverPort  Int?      @default(25565)
   logo        String?
   banner      String?
-  navbar      Json?     @default("{}")  // Navbar settings
-  theme       Json?     @default("{}")  // Global theme settings
-  published   Boolean   @default(false)
+  navbar      Json?             @default("{}")
+  theme       Json?             @default("{}")
+  published   Boolean           @default(false)
   userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   sections    Section[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  servers     MinecraftServer[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   @@index([userId])
+}
+
+model MinecraftServer {
+  id          String   @id @default(cuid())
+  name        String
+  ip          String
+  port        Int      @default(25565)
+  description String?
+  websiteId   String
+  website     Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([websiteId])
 }
 
 model Section {
@@ -83,13 +96,13 @@ model Section {
   type      String
   title     String?
   subtitle  String?
-  settings  Json     @default("{}")  // All section-specific settings
+  settings  Json     @default("{}")
   order     Int      @default(0)
   visible   Boolean  @default(true)
-  serverId  String
-  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([serverId])
+  @@index([websiteId])
 }

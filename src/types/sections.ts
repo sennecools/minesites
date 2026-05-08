@@ -1,7 +1,7 @@
 // Canonical home for all section settings types and shared component prop types.
 // Per Phase 1 decisions D-06, D-07, D-08.
 
-import type { Section, ServerData } from '@/components/preview/types';
+import type { Section, WebsiteData } from '@/components/preview/types';
 
 // ---------- SectionType union ----------
 // Excludes 'navbar' — navbar is server-level config (Server.navbar Json), not a Section row.
@@ -198,7 +198,7 @@ export interface SectionSettings {
 // pitfall described in RESEARCH §Pitfall 2.
 export interface SectionRenderProps {
   section: Section;
-  serverData: ServerData;
+  serverData: WebsiteData;
 }
 
 export interface SectionSettingsProps {

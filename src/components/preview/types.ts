@@ -1,6 +1,6 @@
 // Shared types for preview components
 
-export interface ServerData {
+export interface WebsiteData {
   name: string;
   subdomain: string;
   serverIp: string | null;

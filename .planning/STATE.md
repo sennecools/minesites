@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-08)
 
 **Core value:** A Minecraft server website that looks and feels like a gaming site — not a dashboard — built in minutes by the server owner, not a developer.
-**Current focus:** Milestone v1.1 — Website-Centric Model (Phase 6: Schema Reset, not started)
+**Current focus:** Milestone v1.1 — Website-Centric Model (Phase 6: Schema Reset, ready to execute)
 
 ## Current Position
 
-Phase: 6 of 8 (Schema Reset) — not started
-Plan: —
-Status: Ready to plan
-Last activity: 2026-05-08 — Milestone v1.1 roadmap created (3 phases, 11 requirements)
+Phase: 6 of 8 (Schema Reset) — ready to execute
+Plan: 4 plans (3 waves)
+Status: Ready to execute
+Last activity: 2026-05-08 — Phase 6 planned (4 plans: schema rewrite, type rename, call site renames, TS compile gate)
 
 ## Performance Metrics
 

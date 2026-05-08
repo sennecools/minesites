@@ -2508,7 +2508,8 @@ export default function ServerEditorPage() {
           name: serverData.name,
           subdomain: serverData.subdomain,
           description: serverData.description,
-          serverIp: serverData.serverIp,
+          // serverIp lives on the MinecraftServer child model, not the Website model;
+          // omit it here until the MinecraftServer relationship is surfaced in the editor
           navbar: navbarSettings,
           theme: themeSettings,
           sections: sections.map((s, index) => ({

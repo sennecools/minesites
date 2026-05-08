@@ -15,6 +15,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { CreateServerDialog } from "../create-server-dialog";
 
 interface WebsiteData {
   id: string;
@@ -32,6 +33,7 @@ export default function ServersPage() {
   const [servers, setServers] = useState<WebsiteData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     async function loadServers() {
@@ -119,6 +121,7 @@ export default function ServersPage() {
         <motion.button
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => setCreateDialogOpen(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
         >
           <Plus className="w-4 h-4" />
@@ -254,6 +257,7 @@ export default function ServersPage() {
           >
             <motion.button
               whileHover={{ y: -4, scale: 1.01, transition: { duration: 0.15 } }}
+              onClick={() => setCreateDialogOpen(true)}
               className="w-full h-full min-h-[200px] p-5 rounded-2xl border-2 border-dashed border-zinc-200 hover:border-cyan-300 hover:bg-cyan-50/30 transition-all flex flex-col items-center justify-center gap-3 group"
             >
               <div className="w-12 h-12 rounded-xl bg-zinc-100 group-hover:bg-gradient-to-br group-hover:from-cyan-500 group-hover:to-emerald-500 flex items-center justify-center transition-all">
@@ -348,6 +352,7 @@ export default function ServersPage() {
             <motion.button
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => setCreateDialogOpen(true)}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
             >
               <Plus className="w-4 h-4" />
@@ -356,6 +361,8 @@ export default function ServersPage() {
           )}
         </div>
       )}
+
+      <CreateServerDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </div>
   );
 }

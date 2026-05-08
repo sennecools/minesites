@@ -1,22 +1,73 @@
 # Roadmap: MineSites
 
-**Milestone:** v1.0 — Minecraft website builder with gaming identity
-**Status:** Active
+**Current Milestone:** v1.1 — Website-Centric Model
+**Previous Milestone:** v1.0 — Minecraft website builder with gaming identity (phases 1-2 complete)
 **Config:** Coarse granularity | YOLO mode | Parallel execution
 
 ## Overview
 
+## v1.1: Website-Centric Model
+
+The current codebase ties each website to one Minecraft server. This milestone decouples them: a `Website` belongs to a user, can showcase multiple Minecraft servers, and lives at a custom subdomain the user chooses. The existing section registry and theme infrastructure (phases 1–2) remain valid and are re-pointed at the new `Website` model. Work proceeds in dependency order: schema first, then API, then UI.
+
+## v1.1 Phases
+
+- [ ] **Phase 6: Schema Reset** — Drop `Server` model, introduce `Website` + `MinecraftServer` models, update `Section` to use `websiteId`
+- [ ] **Phase 7: API Layer** — CRUD API for Website and MinecraftServer; update section save/load to use `websiteId`; CONN-04 server picker stored in section settings
+- [ ] **Phase 8: Dashboard & Public Site** — Website list dashboard, create-website dialog, connection manager tab in editor, public routing by website subdomain
+
+---
+
+## v1.0: Minecraft Website Builder (phases 1-2 complete; phases 3-5 deferred to post-v1.1)
+
 Starting from a working but visually inconsistent brownfield app, this milestone transforms the public site output into a genuine gaming-styled website builder. Work proceeds in dependency order: shared foundations first, then visual isolation, then new section types (enabled by the registry pattern), then freemium enforcement, and finally the paid-tier visual effects layer.
 
-## Phases
+## v1.0 Phases
 
 - [x] **Phase 1: Foundation & Extraction** - Shared types, plan.ts, section registry, extract existing section code out of the god-component
-- [ ] **Phase 2: Theme System** - CSS variable isolation, gaming-styled site layout, full theme controls in the editor
-- [ ] **Phase 3: Section Types** - All 9 Minecraft-native section types delivered via the registry
-- [ ] **Phase 4: Freemium Gating** - Server-side section count enforcement, User.plan field, upgrade prompt in editor
-- [ ] **Phase 5: Visual Effects** - Particles, parallax, entrance animations — paid tier only, stripped server-side for free accounts
+- [x] **Phase 2: Theme System** - CSS variable isolation, gaming-styled site layout, full theme controls in the editor
+- [ ] **Phase 3: Section Types** - All 9 Minecraft-native section types delivered via the registry *(deferred — resumes after v1.1)*
+- [ ] **Phase 4: Freemium Gating** - Server-side section count enforcement, User.plan field, upgrade prompt in editor *(deferred)*
+- [ ] **Phase 5: Visual Effects** - Particles, parallax, entrance animations — paid tier only, stripped server-side for free accounts *(deferred)*
 
 ## Phase Details
+
+### Phase 6: Schema Reset
+**Goal:** The Prisma schema is updated to reflect the user-centric website model: `Server` is removed, `Website` and `MinecraftServer` are introduced, `Section` references `websiteId`. The app compiles and the database migrates cleanly from a fresh state.
+**UI hint:** no
+**Requirements:** WEB-01 (schema foundation), CONN-01 (schema foundation)
+**Success Criteria** (what must be TRUE):
+  1. `prisma/schema.prisma` defines `Website` (id, name, subdomain, theme, published, userId, sections, servers) and `MinecraftServer` (id, name, ip, port, websiteId); the old `Server` model is absent.
+  2. `Section` model has `websiteId` (not `serverId`); all foreign key relationships are correct.
+  3. `npx prisma migrate dev` runs to completion on a fresh database with no errors.
+  4. TypeScript compiles with zero errors after all type references are updated from `Server`/`serverId` to `Website`/`websiteId`.
+**Plans:** TBD
+
+### Phase 7: API Layer
+**Goal:** All server-side API routes are rebuilt to use the new `Website` and `MinecraftServer` models; sections are saved and loaded by `websiteId`; server-specific sections store a `minecraftServerId` reference.
+**UI hint:** no
+**Requirements:** WEB-01, WEB-02, WEB-03, CONN-01, CONN-02, CONN-03, CONN-04
+**Success Criteria** (what must be TRUE):
+  1. `GET /api/websites` returns the authenticated user's websites; `POST /api/websites` creates a new website with name/subdomain validation (uniqueness enforced).
+  2. `GET/PUT/DELETE /api/websites/[websiteId]` reads, updates (name, subdomain, theme, sections), and deletes a website owned by the authenticated user.
+  3. `POST/PUT/DELETE /api/websites/[websiteId]/servers` manages MinecraftServer connection records linked to the website.
+  4. Section save payload accepts a `minecraftServerId` field in settings; server-specific sections (Live Player Count, Server Info) persist and retrieve which server connection to use.
+**Plans:** TBD
+
+### Phase 8: Dashboard & Public Site
+**Goal:** The dashboard shows a list of the user's websites; users can create a website, manage its connected servers in the editor, and view the live public site routed by the website's custom subdomain.
+**UI hint:** yes
+**Requirements:** DASH-01, DASH-02, DASH-03, DASH-04
+**Success Criteria** (what must be TRUE):
+  1. `/dashboard` renders a grid of Website cards showing name, subdomain URL (clickable), and section count — no Server cards.
+  2. "New Website" button opens a dialog; user enters name and subdomain; subdomain uniqueness is validated before save.
+  3. Website editor includes a "Servers" tab listing connected MinecraftServer records with add/edit/remove controls.
+  4. Visiting `[subdomain].minesites.net` renders the Website's published sections (not a Server's) — the public routing layer uses the `Website.subdomain` field.
+**Plans:** TBD
+
+---
+
+## v1.0 Phase Details
 
 ### Phase 1: Foundation & Extraction
 **Goal:** The codebase is restructured so that every future section type lands as two files plus one registry entry — never as lines added to the god-component.
@@ -94,10 +145,20 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 
 ## Progress
 
+### v1.1
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 6. Schema Reset | 0/TBD | Not started | - |
+| 7. API Layer | 0/TBD | Not started | - |
+| 8. Dashboard & Public Site | 0/TBD | Not started | - |
+
+### v1.0
+
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Extraction | 6/6 | Complete | 2026-05-07 |
-| 2. Theme System | 0/4 | Not started | - |
-| 3. Section Types | 0/TBD | Not started | - |
-| 4. Freemium Gating | 0/TBD | Not started | - |
-| 5. Visual Effects | 0/TBD | Not started | - |
+| 2. Theme System | 4/4 | Complete | 2026-05-07 |
+| 3. Section Types | 0/TBD | Deferred (post-v1.1) | - |
+| 4. Freemium Gating | 0/TBD | Deferred (post-v1.1) | - |
+| 5. Visual Effects | 0/TBD | Deferred (post-v1.1) | - |

@@ -104,17 +104,17 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WEB-01 | TBD | Pending |
-| WEB-02 | TBD | Pending |
-| WEB-03 | TBD | Pending |
-| CONN-01 | TBD | Pending |
-| CONN-02 | TBD | Pending |
-| CONN-03 | TBD | Pending |
-| CONN-04 | TBD | Pending |
-| DASH-01 | TBD | Pending |
-| DASH-02 | TBD | Pending |
-| DASH-03 | TBD | Pending |
-| DASH-04 | TBD | Pending |
+| WEB-01 | Phase 6 (schema) + Phase 7 (API) | Pending |
+| WEB-02 | Phase 7 | Pending |
+| WEB-03 | Phase 7 | Pending |
+| CONN-01 | Phase 6 (schema) + Phase 7 (API) | Pending |
+| CONN-02 | Phase 7 | Pending |
+| CONN-03 | Phase 7 | Pending |
+| CONN-04 | Phase 7 | Pending |
+| DASH-01 | Phase 8 | Pending |
+| DASH-02 | Phase 8 | Pending |
+| DASH-03 | Phase 8 | Pending |
+| DASH-04 | Phase 8 | Pending |
 
 ### v1.0
 
@@ -145,7 +145,7 @@
 | FX-04 | Phase 5 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 11 total | Mapped to phases: 0 (TBD — roadmap pending)
+- v1.1 requirements: 11 total | Mapped to phases: 11 (3 phases)
 - v1.0 requirements: 23 total | Mapped to phases: 23
 
 ---

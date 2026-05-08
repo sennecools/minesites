@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-07)
+See: .planning/PROJECT.md (updated 2026-05-08)
 
 **Core value:** A Minecraft server website that looks and feels like a gaming site — not a dashboard — built in minutes by the server owner, not a developer.
-**Current focus:** Phase 2 — Theme System
+**Current focus:** Milestone v1.1 — Website-Centric Model (requirements definition)
 
 ## Current Position
 
-Phase: 2 of 5 (Theme System)
-Plan: 4/4 in current phase
-Status: Executed — awaiting verification
-Last activity: 2026-05-07 — Phase 2 executed (4/4 plans complete, 2 waves)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-08 — Milestone v1.1 started (Website-Centric Model)
 
 ## Performance Metrics
 

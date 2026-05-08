@@ -1,8 +1,19 @@
 # MineSites
 
+## Current Milestone: v1.1 Website-Centric Model
+
+**Goal:** Decouple websites from individual servers — a website belongs to a user, has its own custom subdomain, and can showcase multiple Minecraft servers. Server-specific sections choose which connected server to pull data from.
+
+**Target features:**
+- New `Website` model with custom subdomain, belonging to User (free: 1 website; paid: multiple)
+- Lightweight `MinecraftServer` connection records linked to a Website (name, IP, port)
+- Server-specific sections pick which connected server they display
+- Dashboard UX rebuilt: create website → connect servers → build sections
+- Clean slate: existing `Server` model replaced, no data migration
+
 ## What This Is
 
-MineSites is a website builder designed specifically for Minecraft server owners. Unlike generic builders, it includes server-native elements — live player count, server info cards, and join buttons — that players actually expect. Server owners drag in sections, customize a theme, and publish a gaming-styled website at their own subdomain, without touching code.
+MineSites is a website builder designed specifically for Minecraft server owners. Unlike generic builders, it includes server-native elements — live player count, server info cards, and join buttons — that players actually expect. Server owners create a website with a custom subdomain, connect their Minecraft servers, drag in sections, customize a theme, and publish a gaming-styled page at their subdomain — without touching code. One website can showcase multiple servers.
 
 ## Core Value
 
@@ -13,20 +24,24 @@ A Minecraft server website that looks and feels like a gaming site — not a das
 ### Validated
 
 - ✓ User can sign up and log in (Google OAuth + credentials) — existing
-- ✓ User can create and manage multiple server profiles — existing
-- ✓ Server websites are served at `[server].minesites.net` via subdomain routing — existing
 - ✓ User can add and reorder sections in a visual editor (drag-and-drop) — existing
-- ✓ Images can be uploaded to server profiles — existing
+- ✓ Images can be uploaded to profiles — existing
+- ✓ Section registry pattern: new section type = 2 files + 1 registry entry (Phase 1)
+- ✓ Public site CSS isolation under `.site-root`, theme variables injected at layout (Phase 2)
 
-### Active
+### Active (v1.1)
 
-- [ ] Server website output has its own distinct visual identity (gaming-styled, not dashboard-styled)
+- [ ] User can create a Website with a custom subdomain (`[name].minesites.net`)
+- [ ] User can connect one or more Minecraft servers (IP/port) to their Website
+- [ ] Server-specific sections (Live Player Count, Server Info) pick which connected server to display
+- [ ] Free tier is limited to 1 website per user
+- [ ] Website dashboard replaces the server-centric dashboard (website list → website editor)
+
+### Active (deferred from v1.0 — resumes after v1.1)
+
 - [ ] Section editor offers 7+ Minecraft-native section types
-- [ ] Live player count section pulls data by polling the Minecraft server status API via IP
-- [ ] Server info section displays IP, version, and game mode
-- [ ] Full theme system: site-wide color palette + font, with per-section overrides
-- [ ] Free tier is gated to max 5 sections per page
-- [ ] Paid tier unlocks more sections per page AND visual effects (particles, animations, parallax)
+- [ ] Full theme system: site-wide color palette + font, with per-section overrides (partially done — wiring to Website model needed)
+- [ ] Paid tier unlocks more websites AND visual effects (particles, animations, parallax)
 
 ### Out of Scope
 
@@ -63,6 +78,9 @@ Key technical context:
 | Free/paid gating at section count + effects | Simple enough to enforce without complex entitlement system | — Pending |
 | Full theme system (palette + font) | Lets servers look unique without per-element design work | — Pending |
 | Keep dashboard design separate from website output | Core UX problem — same styles bleed into server pages | — Pending |
+| Website model decoupled from Server model (v1.1) | Original 1-server-per-website assumption is too limiting; user-centric websites enable multi-server showcases | Decided — clean break, no migration |
+| Free tier: 1 website max (v1.1) | Simplest gating; MVP focus before adding multi-website paid tier | Decided |
+| Server-specific sections pick a connected server (v1.1) | Natural UX when a website has multiple Minecraft servers to choose from | Decided |
 
 ## Evolution
 
@@ -82,4 +100,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-07 after Phase 1 completion*
+*Last updated: 2026-05-08 — Milestone v1.1 started (Website-Centric Model)*

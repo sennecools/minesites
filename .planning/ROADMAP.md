@@ -51,7 +51,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 - [x] 06-03-PLAN.md — Prisma call site renames: all 14 db.server.* calls across 5 files
 
 **Wave 3** *(depends on Wave 2 — closes remaining TS surface and runs compile check)*
-- [ ] 06-04-PLAN.md — Remaining TS references (6 files) + god-component import + npx tsc --noEmit gate
+- [x] 06-04-PLAN.md — Remaining TS references (6 files) + god-component import + npx tsc --noEmit gate
 
 ### Phase 7: API Layer
 **Goal:** All server-side API routes are rebuilt to use the new `Website` and `MinecraftServer` models; sections are saved and loaded by `websiteId`; server-specific sections store a `minecraftServerId` reference.

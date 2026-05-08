@@ -44,7 +44,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 **Plans:** 4 plans
 
 **Wave 1** *(schema foundation — all subsequent plans depend on this)*
-- [ ] 06-01-PLAN.md — Schema rewrite (Website + MinecraftServer models), migration, prisma generate, website.ts validation
+- [x] 06-01-PLAN.md — Schema rewrite (Website + MinecraftServer models), migration, prisma generate, website.ts validation
 
 **Wave 2** *(parallel — no file overlap between plans)*
 - [ ] 06-02-PLAN.md — Core type rename: ServerData → WebsiteData in preview/types.ts and sections.ts

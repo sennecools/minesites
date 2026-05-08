@@ -1,3 +1,19 @@
+---
+gsd_state_version: 1.0
+milestone: v1.1
+milestone_name: Website-Centric Model
+status: executing
+stopped_at: Phase 2 context gathered
+last_updated: "2026-05-08T10:40:31.250Z"
+last_activity: 2026-05-08 -- Phase 06 execution started
+progress:
+  total_phases: 8
+  completed_phases: 2
+  total_plans: 14
+  completed_plans: 10
+  percent: 71
+---
+
 # Project State
 
 ## Project Reference
@@ -5,18 +21,19 @@
 See: .planning/PROJECT.md (updated 2026-05-08)
 
 **Core value:** A Minecraft server website that looks and feels like a gaming site — not a dashboard — built in minutes by the server owner, not a developer.
-**Current focus:** Milestone v1.1 — Website-Centric Model (Phase 6: Schema Reset, ready to execute)
+**Current focus:** Phase 06 — schema-reset
 
 ## Current Position
 
-Phase: 6 of 8 (Schema Reset) — ready to execute
-Plan: 4 plans (3 waves)
-Status: Ready to execute
-Last activity: 2026-05-08 — Phase 6 planned (4 plans: schema rewrite, type rename, call site renames, TS compile gate)
+Phase: 06 (schema-reset) — EXECUTING
+Plan: 1 of 4
+Status: Executing Phase 06
+Last activity: 2026-05-08 -- Phase 06 execution started
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: —
 - Total execution time: —
@@ -28,6 +45,7 @@ Last activity: 2026-05-08 — Phase 6 planned (4 plans: schema rewrite, type ren
 | - | - | - | - |
 
 **Recent Trend:**
+
 - Last 5 plans: —
 - Trend: —
 

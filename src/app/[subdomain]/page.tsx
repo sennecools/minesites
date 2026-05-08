@@ -12,7 +12,7 @@ export default async function ServerPage({ params, searchParams }: Props) {
   const { preview } = await searchParams;
   const isPreviewMode = preview === "true";
 
-  const server = await db.server.findUnique({
+  const server = await db.website.findUnique({
     where: { subdomain },
     include: {
       sections: {
@@ -31,7 +31,7 @@ export default async function ServerPage({ params, searchParams }: Props) {
   const serverData = {
     name: server.name,
     subdomain: server.subdomain,
-    serverIp: server.serverIp,
+    serverIp: null as string | null,
   };
 
   const sections = server.sections.map((section) => ({

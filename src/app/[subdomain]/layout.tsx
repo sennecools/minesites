@@ -48,9 +48,9 @@ const bebasNeue = Bebas_Neue({
 // Deduplicate the DB call with page.tsx's own server row fetch within a single
 // request render pass — one SQL query executes per page load (React.cache dedup).
 const getServerData = cache((subdomain: string) =>
-  db.server.findUnique({
+  db.website.findUnique({
     where: { subdomain },
-    select: { theme: true, name: true, serverIp: true },
+    select: { theme: true, name: true },
   })
 );
 
@@ -74,7 +74,7 @@ export default async function SubdomainLayout({
   const fontFamily = FONT_FAMILY_MAP[font] ?? FONT_FAMILY_MAP[DEFAULT_THEME.font];
 
   const serverName = server?.name ?? subdomain;
-  const serverIp = server?.serverIp ?? "";
+  const serverIp = "";   // Phase 6 placeholder; Phase 7 adds MinecraftServer lookup
 
   // Apply all 5 font variable classNames so CSS vars cascade under .site-root.
   const fontClasses = [

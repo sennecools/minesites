@@ -41,7 +41,17 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   2. `Section` model has `websiteId` (not `serverId`); all foreign key relationships are correct.
   3. `npx prisma migrate dev` runs to completion on a fresh database with no errors.
   4. TypeScript compiles with zero errors after all type references are updated from `Server`/`serverId` to `Website`/`websiteId`.
-**Plans:** TBD
+**Plans:** 4 plans
+
+**Wave 1** *(schema foundation — all subsequent plans depend on this)*
+- [ ] 06-01-PLAN.md — Schema rewrite (Website + MinecraftServer models), migration, prisma generate, website.ts validation
+
+**Wave 2** *(parallel — no file overlap between plans)*
+- [ ] 06-02-PLAN.md — Core type rename: ServerData → WebsiteData in preview/types.ts and sections.ts
+- [ ] 06-03-PLAN.md — Prisma call site renames: all 14 db.server.* calls across 5 files
+
+**Wave 3** *(depends on Wave 2 — closes remaining TS surface and runs compile check)*
+- [ ] 06-04-PLAN.md — Remaining TS references (6 files) + god-component import + npx tsc --noEmit gate
 
 ### Phase 7: API Layer
 **Goal:** All server-side API routes are rebuilt to use the new `Website` and `MinecraftServer` models; sections are saved and loaded by `websiteId`; server-specific sections store a `minecraftServerId` reference.
@@ -149,7 +159,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 6. Schema Reset | 0/TBD | Not started | - |
+| 6. Schema Reset | 0/4 | Not started | - |
 | 7. API Layer | 0/TBD | Not started | - |
 | 8. Dashboard & Public Site | 0/TBD | Not started | - |
 

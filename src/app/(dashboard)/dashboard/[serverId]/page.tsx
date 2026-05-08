@@ -55,66 +55,32 @@ import {
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { ElementType } from "react";
 import { SECTION_REGISTRY } from '@/lib/section-registry';
-import type { SectionType, HeroSettings as HeroSectionSettings } from '@/types/sections';
+import type {
+  SectionType,
+  HeroSettings as HeroSectionSettings,
+  GamemodesSettings,
+  FeaturesSettings,
+  DiscordSettings,
+  GallerySettings,
+  StatsSettings,
+  StaffSettings,
+  StaffMemberSettings,
+  TextSettings,
+  SectionSettings,
+} from '@/types/sections';
 import type { WebsiteData } from '@/components/preview/types';
 import type { SiteTheme } from "@/types/site-theme";
 import { DEFAULT_THEME } from "@/types/site-theme";
 import { THEME_PRESETS, FONT_FAMILY_MAP } from "@/lib/theme-presets";
 import { AppearanceTab } from "@/components/editor/appearance-tab";
 
-type GamemodesSettings = {
-  layout?: "single" | "grid-2x2" | "grid-4" | "list";
-  cardStyle?: "default" | "compact" | "minimal";
-  alignment?: "left" | "center" | "right";
-  headerAlignment?: "left" | "center" | "right";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-  showPlayerCount?: boolean;
-  showModpack?: boolean;
-  showDescription?: boolean;
-  showBadge?: boolean;
-  showViewAllButton?: boolean;
-};
-
-type FeaturesSettings = {
-  layout?: "2x1" | "2x2";
-  headerAlignment?: "left" | "center" | "right";
-  cardAlignment?: "left" | "center" | "right";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-};
-
+// Local helper types not yet separately exported from @/types/sections
 type FeatureItem = { title: string; description: string; icon: string };
 
-type DiscordSettings = {
-  layout?: "default" | "card-left" | "centered" | "compact";
-  alignment?: "left" | "center" | "right";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-  showBadge?: boolean;
-  showStats?: boolean;
-  memberCount?: number;
-  onlineCount?: number;
-  inviteCode?: string;
-  buttonText?: string;
-  guildName?: string;
-  guildIcon?: string;
-  guildBanner?: string;
+type GalleryImage = {
+  id: string;
+  url: string;
+  label?: string;
 };
 
 type StatsServer = {
@@ -126,81 +92,7 @@ type StatsServer = {
   status?: "online" | "offline";
 };
 
-type GalleryImage = {
-  id: string;
-  url: string;
-  label?: string;
-};
-
-type GallerySettings = {
-  layout?: "bento" | "grid" | "masonry";
-  columns?: 2 | 3 | 4;
-  images?: GalleryImage[];
-  showLabels?: boolean;
-  headerAlignment?: "left" | "center" | "right";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-};
-
-type StatsSettings = {
-  mode?: "single" | "network";
-  servers?: StatsServer[];
-  layout?: "grid" | "list" | "compact";
-  showTotal?: boolean;
-  showVersion?: boolean;
-  showUptime?: boolean;
-  version?: string;
-  uptime?: string;
-  headerAlignment?: "left" | "center" | "right";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-};
-
-type StaffMemberSettings = {
-  username: string;
-  role: string;
-  roleColor: string;
-};
-
-type StaffSettings = {
-  layout?: "grid" | "list" | "compact";
-  members?: StaffMemberSettings[];
-  showOnlineStatus?: boolean;
-  headerAlignment?: "left" | "center" | "right";
-  // Background settings (using BackgroundConfig compatible fields)
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-};
-
-type TextSettings = {
-  content?: string;
-  alignment?: "left" | "center" | "right";
-  size?: "small" | "medium" | "large";
-  backgroundType?: "solid" | "gradient" | "image";
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-};
-
-// Common background settings used across sections
+// Common background settings used across sections (local to editor UI)
 type BackgroundConfig = {
   type?: "solid" | "gradient" | "image";
   color?: string;
@@ -209,27 +101,6 @@ type BackgroundConfig = {
   image?: string;
   blur?: number;
   darken?: number;
-};
-
-type SectionSettings = {
-  alignment?: "left" | "center" | "right";
-  layout?: "grid" | "list" | "cards";
-  colorScheme?: "default" | "dark" | "accent"; // Legacy - being replaced by per-section background settings
-  showBackground?: boolean;
-  content?: {
-    features?: FeatureItem[];
-    modes?: string[];
-    [key: string]: unknown;
-  };
-  // Section specific
-  hero?: HeroSectionSettings;
-  gamemodes?: GamemodesSettings;
-  features?: FeaturesSettings;
-  discord?: DiscordSettings;
-  stats?: StatsSettings;
-  gallery?: GallerySettings;
-  staff?: StaffSettings;
-  text?: TextSettings;
 };
 
 type Section = {

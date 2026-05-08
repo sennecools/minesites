@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Textarea, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
-import { updateServerSchema, type UpdateServerInput } from "@/lib/validations/server";
+import { updateWebsiteSchema, type UpdateWebsiteInput } from "@/lib/validations/website";
 import { updateServer } from "../actions";
 import { useState } from "react";
 
@@ -28,18 +28,16 @@ export function ServerSettings({ server }: ServerSettingsProps) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<UpdateServerInput>({
-    resolver: zodResolver(updateServerSchema),
+  } = useForm<UpdateWebsiteInput>({
+    resolver: zodResolver(updateWebsiteSchema),
     defaultValues: {
       name: server.name,
       subdomain: server.subdomain,
       description: server.description || "",
-      serverIp: server.serverIp || "",
-      serverPort: server.serverPort || 25565,
     },
   });
 
-  const onSubmit = async (data: UpdateServerInput) => {
+  const onSubmit = async (data: UpdateWebsiteInput) => {
     setError(null);
     setSuccess(false);
     try {
@@ -111,30 +109,6 @@ export function ServerSettings({ server }: ServerSettingsProps) {
             <Textarea {...register("description")} rows={3} error={!!errors.description} />
             {errors.description && (
               <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1.5">
-              Server IP
-            </label>
-            <Input {...register("serverIp")} error={!!errors.serverIp} />
-            {errors.serverIp && (
-              <p className="text-sm text-red-500 mt-1">{errors.serverIp.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1.5">
-              Server Port
-            </label>
-            <Input
-              type="number"
-              {...register("serverPort")}
-              error={!!errors.serverPort}
-            />
-            {errors.serverPort && (
-              <p className="text-sm text-red-500 mt-1">{errors.serverPort.message}</p>
             )}
           </div>
 

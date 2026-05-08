@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import {
   type Section,
-  type ServerData,
+  type WebsiteData,
   type StatsServer,
   type FeatureItem,
   type GalleryImage,
@@ -363,7 +363,7 @@ function PreviewGamemodes({ section }: { section: Section }) {
   );
 }
 
-function PreviewDiscord({ section, serverData }: { section: Section; serverData: ServerData }) {
+function PreviewDiscord({ section, serverData }: { section: Section; serverData: WebsiteData }) {
   const discordSettings = (section.settings.discord as Record<string, unknown>) || {};
   const { layout = "default", alignment = "left", backgroundType = "gradient", backgroundColor = "#eef2ff", gradientFrom = "#eef2ff", gradientTo = "#faf5ff", showBadge = true, showStats = true, memberCount, onlineCount, buttonText = "Join Server", guildName, guildIcon } = discordSettings;
 
@@ -730,7 +730,7 @@ function PreviewText({ section }: { section: Section }) {
 
 // Main Preview Component
 interface PreviewClientProps {
-  server: ServerData;
+  server: WebsiteData;
   sections: Section[];
   isPreviewMode: boolean;
 }

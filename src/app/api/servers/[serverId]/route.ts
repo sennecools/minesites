@@ -16,7 +16,7 @@ export async function GET(
 
     const { serverId } = await params;
 
-    const server = await db.server.findUnique({
+    const website = await db.website.findUnique({
       where: { id: serverId },
       include: {
         sections: {
@@ -25,16 +25,16 @@ export async function GET(
       },
     });
 
-    if (!server) {
+    if (!website) {
       return NextResponse.json({ error: "Server not found" }, { status: 404 });
     }
 
     // Check ownership
-    if (server.userId !== session.user.id) {
+    if (website.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    return NextResponse.json(server);
+    return NextResponse.json(website);
   } catch (error) {
     console.error("Error loading server:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -55,33 +55,31 @@ export async function PUT(
 
     const { serverId } = await params;
     const body = await request.json();
-    const { name, subdomain, description, serverIp, serverPort, logo, banner, navbar, theme, sections } = body;
+    const { name, subdomain, description, logo, banner, navbar, theme, sections } = body;
 
     // Check ownership
-    const existingServer = await db.server.findUnique({
+    const existingWebsite = await db.website.findUnique({
       where: { id: serverId },
       select: { userId: true },
     });
 
-    if (!existingServer) {
+    if (!existingWebsite) {
       return NextResponse.json({ error: "Server not found" }, { status: 404 });
     }
 
-    if (existingServer.userId !== session.user.id) {
+    if (existingWebsite.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Update server and sections in a transaction
-    const updatedServer = await db.$transaction(async (tx) => {
-      // Update server
-      const server = await tx.server.update({
+    // Update website and sections in a transaction
+    const updatedWebsite = await db.$transaction(async (tx) => {
+      // Update website
+      const website = await tx.website.update({
         where: { id: serverId },
         data: {
           name,
           subdomain,
           description,
-          serverIp,
-          serverPort,
           logo,
           banner,
           navbar,
@@ -92,7 +90,7 @@ export async function PUT(
       // Delete existing sections and recreate them
       if (sections && Array.isArray(sections)) {
         await tx.section.deleteMany({
-          where: { serverId },
+          where: { websiteId: serverId },
         });
 
         await tx.section.createMany({
@@ -111,15 +109,15 @@ export async function PUT(
             settings: (section.settings || {}) as Prisma.InputJsonValue,
             order: index,
             visible: section.visible ?? true,
-            serverId,
+            websiteId: serverId,
           })),
         });
       }
 
-      return server;
+      return website;
     });
 
-    return NextResponse.json(updatedServer);
+    return NextResponse.json(updatedWebsite);
   } catch (error) {
     console.error("Error saving server:", error);
     return NextResponse.json({ error: "Failed to save server" }, { status: 500 });

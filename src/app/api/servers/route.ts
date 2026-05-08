@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const servers = await db.server.findMany({
+    const websites = await db.website.findMany({
       where: { userId: session.user.id },
       orderBy: { updatedAt: "desc" },
       select: {
@@ -18,14 +18,13 @@ export async function GET(request: NextRequest) {
         name: true,
         subdomain: true,
         description: true,
-        serverIp: true,
         published: true,
         createdAt: true,
         updatedAt: true,
       },
     });
 
-    return NextResponse.json(servers);
+    return NextResponse.json(websites);
   } catch (error) {
     console.error("Error loading servers:", error);
     return NextResponse.json({ error: "Failed to load servers" }, { status: 500 });

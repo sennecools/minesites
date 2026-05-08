@@ -56,7 +56,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import type { ElementType } from "react";
 import { SECTION_REGISTRY } from '@/lib/section-registry';
 import type { SectionType, HeroSettings as HeroSectionSettings } from '@/types/sections';
-import type { ServerData } from '@/components/preview/types';
+import type { WebsiteData } from '@/components/preview/types';
 import type { SiteTheme } from "@/types/site-theme";
 import { DEFAULT_THEME } from "@/types/site-theme";
 import { THEME_PRESETS, FONT_FAMILY_MAP } from "@/lib/theme-presets";
@@ -2301,7 +2301,7 @@ function PreviewVideo({ section }: { section: Section }) {
   );
 }
 
-function SectionPreview({ section, serverData }: { section: Section; serverData: ServerData }) {
+function SectionPreview({ section, serverData }: { section: Section; serverData: WebsiteData }) {
   const entry = SECTION_REGISTRY[section.type as SectionType];
   if (!entry) {
     return (

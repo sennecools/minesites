@@ -13,7 +13,7 @@ import {
   ModalContent,
   ModalFooter,
 } from "@/components/ui";
-import { createServerSchema, type CreateServerInput } from "@/lib/validations/server";
+import { createWebsiteSchema, type CreateWebsiteInput } from "@/lib/validations/website";
 import { createServer } from "./actions";
 
 export function CreateServerDialog() {
@@ -25,11 +25,11 @@ export function CreateServerDialog() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<CreateServerInput>({
-    resolver: zodResolver(createServerSchema),
+  } = useForm<CreateWebsiteInput>({
+    resolver: zodResolver(createWebsiteSchema),
   });
 
-  const onSubmit = async (data: CreateServerInput) => {
+  const onSubmit = async (data: CreateWebsiteInput) => {
     setError(null);
     try {
       const formData = new FormData();
@@ -120,19 +120,6 @@ export function CreateServerDialog() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1.5">
-                Server IP (optional)
-              </label>
-              <Input
-                {...register("serverIp")}
-                placeholder="play.myserver.com"
-                error={!!errors.serverIp}
-              />
-              {errors.serverIp && (
-                <p className="text-sm text-red-500 mt-1">{errors.serverIp.message}</p>
-              )}
-            </div>
           </ModalContent>
           <ModalFooter>
             <Button type="button" variant="ghost" onClick={handleClose}>

@@ -26,25 +26,23 @@ async function main() {
 
   console.log("Found user:", user.id, user.email);
 
-  // Check if server already exists
-  const existingServer = await db.server.findFirst({
+  // Check if website already exists
+  const existingServer = await db.website.findFirst({
     where: { userId: user.id },
   });
 
   if (existingServer) {
-    console.log("Server already exists:", existingServer.id, existingServer.subdomain);
+    console.log("Website already exists:", existingServer.id, existingServer.subdomain);
     await pool.end();
     return;
   }
 
-  // Create a new server with sections
-  const server = await db.server.create({
+  // Create a new website with sections
+  const server = await db.website.create({
     data: {
       name: "EpicCraft Network",
       subdomain: "epiccraft",
       description: "The best survival and skyblock experience",
-      serverIp: "play.epiccraft.net",
-      serverPort: 25565,
       published: false,
       userId: user.id,
       navbar: {

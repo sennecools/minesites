@@ -14,19 +14,18 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface ServerData {
+interface WebsiteData {
   id: string;
   name: string;
   subdomain: string;
   description: string | null;
-  serverIp: string | null;
   published: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export default function DashboardPage() {
-  const [servers, setServers] = useState<ServerData[]>([]);
+  const [servers, setServers] = useState<WebsiteData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -210,12 +209,6 @@ export default function DashboardPage() {
 
                 {/* Info */}
                 <div className="flex items-center gap-4 mb-4">
-                  {server.serverIp && (
-                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                      <Server className="w-3.5 h-3.5" />
-                      <span className="font-mono">{server.serverIp}</span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Footer */}

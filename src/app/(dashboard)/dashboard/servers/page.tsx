@@ -16,12 +16,11 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface ServerData {
+interface WebsiteData {
   id: string;
   name: string;
   subdomain: string;
   description: string | null;
-  serverIp: string | null;
   published: boolean;
   createdAt: string;
   updatedAt: string;
@@ -30,7 +29,7 @@ interface ServerData {
 export default function ServersPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [servers, setServers] = useState<ServerData[]>([]);
+  const [servers, setServers] = useState<WebsiteData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -224,12 +223,6 @@ export default function ServersPage() {
 
                   {/* Info */}
                   <div className="flex items-center gap-4 mb-4">
-                    {server.serverIp && (
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                        <Server className="w-3.5 h-3.5" />
-                        <span className="font-mono">{server.serverIp}</span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Footer */}
@@ -280,7 +273,6 @@ export default function ServersPage() {
               <tr className="border-b border-zinc-100">
                 <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Server</th>
                 <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Status</th>
-                <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Server IP</th>
                 <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Updated</th>
                 <th className="text-right text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3"></th>
               </tr>
@@ -319,11 +311,6 @@ export default function ServersPage() {
                         server.published ? 'bg-emerald-500' : 'bg-zinc-400'
                       }`} />
                       {server.published ? 'Live' : 'Draft'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-zinc-600 font-mono">
-                      {server.serverIp || "-"}
                     </span>
                   </td>
                   <td className="px-6 py-4">

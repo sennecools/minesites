@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isRedirectError } from "next/dist/client/components/redirect";
 import {
   Button,
   Input,
@@ -16,9 +17,20 @@ import {
 import { createWebsiteSchema, type CreateWebsiteInput } from "@/lib/validations/website";
 import { createServer } from "./actions";
 
-export function CreateServerDialog() {
-  const [isOpen, setIsOpen] = useState(false);
+interface CreateServerDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function CreateServerDialog({ open, onOpenChange }: CreateServerDialogProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isOpen = open !== undefined ? open : internalOpen;
+  const setIsOpen = (value: boolean) => {
+    setInternalOpen(value);
+    onOpenChange?.(value);
+  };
 
   const {
     register,
@@ -40,6 +52,7 @@ export function CreateServerDialog() {
       });
       await createServer(formData);
     } catch (err) {
+      if (isRedirectError(err)) throw err; // let Next.js handle the redirect
       setError(err instanceof Error ? err.message : "Something went wrong");
     }
   };
@@ -52,12 +65,14 @@ export function CreateServerDialog() {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>
-        <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Create Server
-      </Button>
+      {open === undefined && (
+        <Button onClick={() => setIsOpen(true)}>
+          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Create Server
+        </Button>
+      )}
 
       <Modal isOpen={isOpen} onClose={handleClose}>
         <form onSubmit={handleSubmit(onSubmit)}>

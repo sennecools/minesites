@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { createWebsiteSchema, updateWebsiteSchema } from "@/lib/validations/website";
+import { Prisma } from "@prisma/client";
 
 export async function createServer(formData: FormData) {
   const session = await auth();
@@ -28,21 +29,29 @@ export async function createServer(formData: FormData) {
     throw new Error("Subdomain is already taken");
   }
 
-  const server = await db.website.create({
-    data: {
-      ...validated,
-      userId: session.user.id,
-      sections: {
-        create: {
-          type: "hero",
-          title: validated.name,
-          subtitle: "Welcome to our Minecraft server!",
-          settings: {},
-          order: 0,
+  let server;
+  try {
+    server = await db.website.create({
+      data: {
+        ...validated,
+        userId: session.user.id,
+        sections: {
+          create: {
+            type: "hero",
+            title: validated.name,
+            subtitle: "Welcome to our Minecraft server!",
+            settings: {},
+            order: 0,
+          },
         },
       },
-    },
-  });
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      throw new Error("Subdomain is already taken");
+    }
+    throw error;
+  }
 
   revalidatePath("/dashboard");
   redirect(`/dashboard/${server.id}`);
@@ -79,10 +88,17 @@ export async function updateServer(serverId: string, formData: FormData) {
     }
   }
 
-  await db.website.update({
-    where: { id: serverId },
-    data: validated,
-  });
+  try {
+    await db.website.update({
+      where: { id: serverId },
+      data: validated,
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      throw new Error("Subdomain is already taken");
+    }
+    throw error;
+  }
 
   revalidatePath(`/dashboard/${serverId}`);
   revalidatePath("/dashboard");

@@ -47,8 +47,8 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 - [x] 06-01-PLAN.md — Schema rewrite (Website + MinecraftServer models), migration, prisma generate, website.ts validation
 
 **Wave 2** *(parallel — no file overlap between plans)*
-- [ ] 06-02-PLAN.md — Core type rename: ServerData → WebsiteData in preview/types.ts and sections.ts
-- [ ] 06-03-PLAN.md — Prisma call site renames: all 14 db.server.* calls across 5 files
+- [x] 06-02-PLAN.md — Core type rename: ServerData → WebsiteData in preview/types.ts and sections.ts
+- [x] 06-03-PLAN.md — Prisma call site renames: all 14 db.server.* calls across 5 files
 
 **Wave 3** *(depends on Wave 2 — closes remaining TS surface and runs compile check)*
 - [ ] 06-04-PLAN.md — Remaining TS references (6 files) + god-component import + npx tsc --noEmit gate

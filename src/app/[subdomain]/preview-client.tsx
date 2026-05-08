@@ -691,7 +691,7 @@ function PreviewText({ section }: { section: Section }) {
     imageDarken = 40,
   } = textSettings;
 
-  const hasImage = backgroundType === "image" && backgroundImage;
+  const hasImage = backgroundType === "image" && !!backgroundImage;
   const isDark = hasImage || (backgroundType === "solid" && isColorDark(backgroundColor as string)) ||
     (backgroundType === "gradient" && isColorDark(gradientFrom as string));
 

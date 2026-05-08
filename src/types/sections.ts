@@ -174,6 +174,7 @@ export interface TextSettings {
 // ---------- Wrapper applied to Section.settings ----------
 // Per the on-disk shape in the database: `section.settings.hero`, `section.settings.gamemodes`, etc.
 export interface SectionSettings {
+  [key: string]: unknown;
   alignment?: 'left' | 'center' | 'right';
   layout?: 'grid' | 'list' | 'cards';
   colorScheme?: 'default' | 'dark' | 'accent'; // Legacy — retained for stub compatibility

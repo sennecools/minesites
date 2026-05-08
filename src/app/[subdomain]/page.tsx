@@ -16,7 +16,8 @@ export default async function ServerPage({ params, searchParams }: Props) {
     where: { subdomain },
     include: {
       sections: {
-        where: { visible: true },
+        // Show all sections in preview mode; only visible ones on the live site
+        where: isPreviewMode ? undefined : { visible: true },
         orderBy: { order: "asc" },
       },
     },

@@ -22,6 +22,15 @@ export type SectionType =
   | 'faq'
   | 'video';
 
+// ---------- ServerScopedSettings ----------
+// Per Phase 7 D-10, D-11: server-specific section types (Live Player Count, Server Info,
+// and any future server-scoped types) reference a connected MinecraftServer record by id
+// stored as a top-level key inside `section.settings`. Future section settings interfaces
+// extend or include this shape.
+export interface ServerScopedSettings {
+  minecraftServerId?: string;
+}
+
 // ---------- Hero (full definition, extracted from page.tsx lines 70-85) ----------
 export interface HeroSettings {
   alignment?: 'left' | 'center' | 'right';

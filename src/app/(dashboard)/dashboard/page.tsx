@@ -55,20 +55,9 @@ export default function DashboardPage() {
     { label: "Active Servers", value: servers.filter(s => s.published).length.toString(), change: "-", icon: Server, color: "from-violet-500 to-purple-500" },
   ];
 
-  function formatRelativeTime(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-    return date.toLocaleDateString();
-  }
+  // WR-09: formatRelativeTime was previously defined here as dead code (never
+  // called in this file). The shared implementation lives in src/lib/utils.ts;
+  // import from there if/when this page needs to render relative timestamps.
 
   if (isLoading) {
     return (

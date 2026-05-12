@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CreateServerDialog } from "../create-server-dialog";
+import { formatRelativeTime } from "@/lib/utils";
 
 interface WebsiteData {
   id: string;
@@ -59,20 +60,9 @@ export default function ServersPage() {
       server.subdomain.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  function formatRelativeTime(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-    return date.toLocaleDateString();
-  }
+  // WR-09: formatRelativeTime now lives in src/lib/utils.ts so the dashboard
+  // list pages share one implementation. The previous duplicate definitions
+  // were begging to drift.
 
   if (isLoading) {
     return (

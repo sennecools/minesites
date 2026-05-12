@@ -37,18 +37,17 @@ Declared values (must be multiples of 4):
 | xs | 4px | Icon gaps, dot indicators, inline badge padding |
 | sm | 8px | Button icon-to-label gap, row action button padding |
 | md | 16px | Modal content padding, form field stacking, card body padding |
-| lg | 24px | Modal header/footer padding, card header/footer padding |
+| lg | 24px | Modal header/footer padding, card header/footer padding, WebsiteCard outer padding (`p-6`) |
 | xl | 32px | Section heading-to-content gap |
 | 2xl | 48px | Dashboard section breaks |
 | 3xl | 64px | Empty state vertical centering (min-height context) |
 
 Exceptions:
-- Card outer padding: 20px (`p-5`) — established pattern in existing grid; do not change to 24px
 - Modal max-width: 448px (`max-w-md`) for create-website dialog; 560px (`max-w-lg`) for connections modal (wider to accommodate two-column form layout)
 - Connections modal internal list rows: 16px top/bottom padding per row (`py-4`) — matches `CardContent` rhythm
 - Touch/click target floor: 32px minimum height for all interactive row controls (`edit`, `delete`, `cancel`, `confirm`)
 
-Source: `src/components/ui/modal.tsx` (max-w-md), `src/components/ui/card.tsx` (px-6 py-4), `src/app/(dashboard)/dashboard/page.tsx` (p-5 card)
+Source: `src/components/ui/modal.tsx` (max-w-md), `src/components/ui/card.tsx` (px-6 py-4), `src/app/(dashboard)/dashboard/page.tsx`
 
 ---
 
@@ -57,18 +56,15 @@ Source: `src/components/ui/modal.tsx` (max-w-md), `src/components/ui/card.tsx` (
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | Card description, form helper text, modal body copy, row secondary line |
-| Label | 13px | 500 (medium) | 1.4 | Form field labels, settings labels, badge text, metadata row |
+| Label | 13px | 500 (medium) | 1.4 | Form field labels, settings labels, badge text, metadata row, connections row muted IP:port |
 | Heading | 18px | 600 (semibold) | 1.2 | Modal titles (`ModalTitle`), card section headings (`h2`), connections list heading |
-| Display | 24px | 700 (bold) | 1.2 | Dashboard page heading ("Welcome back", "Your Websites") |
-
-Additional sizes in use (carry-forward, do not introduce new sizes):
-- 11px / 500 / 1.4: `settings-label` utility class (uppercase, letter-spacing 0.05em) — used only in editor sidebar labels
-- 12px / 400 / 1.4: card subdomain URL, card meta timestamps (`text-xs text-zinc-400`)
-- 16px / 600 / 1.25: god-component editor section labels, top-bar button labels
+| Display | 24px | 600 (semibold) | 1.2 | Dashboard page heading ("Welcome back", "Your Websites") |
 
 Font family rules:
 - `font-display` (Plus Jakarta Sans): page-level h1/h2 headings only
 - `font-sans` (Inter): all other text, labels, inputs, modal content
+
+Note — existing codebase reference (not Phase 8 scope, excluded from type scale above): the god-component editor sidebar uses 11px/500 (`settings-label` utility), 12px/400 (`text-xs` card meta), and 16px/600 (editor section labels). These are carry-forward from pre-Phase-8 code; Phase 8 does not introduce them and does not alter them.
 
 Source: `src/app/globals.css` (`--font-sans`, `--font-display`), `src/components/ui/card.tsx` (`text-lg font-semibold`), `src/app/(dashboard)/dashboard/page.tsx` (`font-display text-2xl font-bold`, `text-lg font-semibold`)
 
@@ -105,12 +101,19 @@ Source: `src/app/globals.css` (`:root` tokens), `src/components/ui/button.tsx`, 
 
 ---
 
+## Visual Hierarchy
+
+Primary focal point: the `WebsiteCard` grid (or the empty-state CTA gradient button when no websites exist). The page heading ("Your Websites") is the secondary anchor.
+
+---
+
 ## Component Inventory
 
 New components to create in this phase:
 
 ### `src/components/dashboard/website-card.tsx`
 - Outer shell: `Card` from `src/components/ui/card.tsx` (white, rounded-2xl, border-zinc-200, shadow-sm)
+- Outer padding: `p-6` (24px) — Phase 8 introduces this component fresh; use the standard 24px token
 - Hover: `y: -4` framer-motion translate + `hover:shadow-lg hover:border-cyan-200/50` — carry-forward from existing card
 - Header row: 40px icon avatar (gradient `from-cyan-500 to-emerald-500` when published, `bg-zinc-200` when draft) + name (`font-semibold text-zinc-900`) + subdomain URL (`text-xs text-zinc-400`) + `MoreHorizontal` ghost button (right-aligned)
 - Description: `text-sm text-zinc-500 line-clamp-2` — only renders when non-null

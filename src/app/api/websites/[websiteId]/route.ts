@@ -138,7 +138,7 @@ export async function PUT(
     // D-21: section.settings is canonical home; minecraftServerId is a top-level key
     // INSIDE settings JSON, persisted as-is without special handling.
     try {
-      const updatedWebsite = await db.$transaction(async (tx) => {
+      const updatedResult = await db.$transaction(async (tx) => {
         const website = await tx.website.update({
           where: { id: websiteId },
           data: { name, subdomain, description, logo, banner, navbar, theme },
@@ -167,10 +167,22 @@ export async function PUT(
           });
         }
 
-        return website;
+        // WR-03: re-read sections in the same tx so the response carries the
+        // post-write canonical state (correct order tie-breaks, Prisma-normalized
+        // values, defaults). The editor's saveServer() can then hydrate without
+        // a separate GET round-trip.
+        const updatedSections = await tx.section.findMany({
+          where: { websiteId },
+          orderBy: { order: "asc" },
+        });
+
+        return { website, sections: updatedSections };
       });
 
-      return NextResponse.json(updatedWebsite);
+      return NextResponse.json({
+        ...updatedResult.website,
+        sections: updatedResult.sections,
+      });
     } catch (error) {
       // D-19 (WR-05) + BL-02: P2002 catch covers TOCTOU race on the subdomain
       // unique constraint, but the same code fires for ANY unique violation in

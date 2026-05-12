@@ -73,8 +73,8 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 - [x] 07-04-PLAN.md — Rename actions (createServer/updateServer/deleteServer -> createWebsite/updateWebsite/deleteWebsite); update create-server-dialog + server-actions + server-settings imports; update fetch URLs in dashboard/page.tsx and dashboard/servers/page.tsx
 
 **Wave 3** *(blocked on Wave 2 — editor cleanup + final delete)*
-- [ ] 07-05-PLAN.md — Editor god-component: swap fetch URLs to /api/websites; drop serverIp from ServerDataState, remove IP display block, handleCopyIP, Copy icon import
-- [ ] 07-06-PLAN.md — Delete src/app/api/servers/ + src/lib/validations/server.ts; final npx tsc --noEmit gate
+- [x] 07-05-PLAN.md — Editor god-component: swap fetch URLs to /api/websites; drop serverIp from ServerDataState, remove IP display block, handleCopyIP, Copy icon import
+- [x] 07-06-PLAN.md — Delete src/app/api/servers/ + src/lib/validations/server.ts; final npx tsc --noEmit gate
 
 ### Phase 8: Dashboard & Public Site
 **Goal:** The dashboard shows a list of the user's websites; users can create a website, manage its connected servers in the editor, and view the live public site routed by the website's custom subdomain.

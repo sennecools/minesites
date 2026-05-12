@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 import { createWebsiteSchema, updateWebsiteSchema } from "@/lib/validations/website";
 import { Prisma } from "@prisma/client";
 
-export async function createServer(formData: FormData) {
+export async function createWebsite(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
@@ -65,7 +65,7 @@ export async function createServer(formData: FormData) {
   redirect(`/dashboard/${server.id}`);
 }
 
-export async function updateServer(serverId: string, formData: FormData) {
+export async function updateWebsite(serverId: string, formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
@@ -112,7 +112,7 @@ export async function updateServer(serverId: string, formData: FormData) {
   revalidatePath("/dashboard");
 }
 
-export async function deleteServer(serverId: string) {
+export async function deleteWebsite(serverId: string) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");

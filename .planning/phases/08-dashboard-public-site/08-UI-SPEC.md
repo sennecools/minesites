@@ -1,10 +1,11 @@
 ---
 phase: 8
 slug: dashboard-public-site
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-05-12
+reviewed_at: 2026-05-12
 ---
 
 # Phase 8 — UI Design Contract

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -9,11 +8,11 @@ import {
   Eye,
   ArrowUpRight,
   Sparkles,
-  MoreHorizontal,
   Loader2
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { CreateServerDialog } from "./create-server-dialog";
+import { CreateWebsiteDialog } from "./create-website-dialog";
+import { WebsiteCard } from "@/components/dashboard";
 
 interface WebsiteData {
   id: string;
@@ -23,6 +22,7 @@ interface WebsiteData {
   published: boolean;
   createdAt: string;
   updatedAt: string;
+  _count: { sections: number };
 }
 
 export default function DashboardPage() {
@@ -140,80 +140,13 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold text-zinc-900">Your Websites</h2>
           <p className="text-sm text-zinc-500">Manage your Minecraft server websites</p>
         </div>
-        <CreateServerDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+        <CreateWebsiteDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
       </div>
 
       {/* Server Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {servers.map((server, i) => (
-          <motion.div
-            key={server.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + i * 0.1 }}
-          >
-            <Link href={`/dashboard/${server.id}`}>
-              <motion.div
-                whileHover={{ y: -4, transition: { duration: 0.15 } }}
-                className="group p-5 rounded-2xl bg-white border border-zinc-200/80 shadow-sm hover:shadow-lg hover:border-cyan-200/50 transition-all cursor-pointer"
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      server.published
-                        ? 'bg-gradient-to-br from-cyan-500 to-emerald-500'
-                        : 'bg-zinc-200'
-                    }`}>
-                      <Server className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-zinc-900 group-hover:text-cyan-600 transition-colors">
-                        {server.name}
-                      </h3>
-                      <p className="text-xs text-zinc-400">{server.subdomain}.minesites.net</p>
-                    </div>
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={(e) => e.preventDefault()}
-                    className="p-1.5 rounded-lg hover:bg-zinc-100 transition-colors"
-                  >
-                    <MoreHorizontal className="w-4 h-4 text-zinc-400" />
-                  </motion.button>
-                </div>
-
-                {/* Description */}
-                {server.description && (
-                  <p className="text-sm text-zinc-500 mb-4 line-clamp-2">
-                    {server.description}
-                  </p>
-                )}
-
-                {/* Info */}
-                <div className="flex items-center gap-4 mb-4">
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                    server.published
-                      ? 'bg-emerald-50 text-emerald-600'
-                      : 'bg-zinc-100 text-zinc-500'
-                  }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${
-                      server.published ? 'bg-emerald-500' : 'bg-zinc-400'
-                    }`} />
-                    {server.published ? 'Live' : 'Draft'}
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Edit <ArrowUpRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </motion.div>
-            </Link>
-          </motion.div>
+        {servers.map((website, i) => (
+          <WebsiteCard key={website.id} website={website} index={i} />
         ))}
 
         {/* Create New Server Card */}

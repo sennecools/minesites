@@ -62,7 +62,19 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   2. `GET/PUT/DELETE /api/websites/[websiteId]` reads, updates (name, subdomain, theme, sections), and deletes a website owned by the authenticated user.
   3. `POST/PUT/DELETE /api/websites/[websiteId]/servers` manages MinecraftServer connection records linked to the website.
   4. Section save payload accepts a `minecraftServerId` field in settings; server-specific sections (Live Player Count, Server Info) persist and retrieve which server connection to use.
-**Plans:** TBD
+**Plans:** 6 plans
+
+**Wave 1** *(foundations — schemas + types)*
+- [ ] 07-01-PLAN.md — Create src/lib/validations/mcserver.ts + ServerScopedSettings type in src/types/sections.ts
+
+**Wave 2** *(parallel — no file overlap between plans)*
+- [ ] 07-02-PLAN.md — New /api/websites + /api/websites/[websiteId] routes (GET/POST list+create, GET/PUT/DELETE single); preserves Phase 6 carry-forward guards (CR-01, CR-03, WR-05); section.settings minecraftServerId persistence
+- [ ] 07-03-PLAN.md — New /api/websites/[websiteId]/servers + /servers/[serverId] routes (POST/PUT/DELETE MinecraftServer CRUD with double ownership chain)
+- [ ] 07-04-PLAN.md — Rename actions (createServer/updateServer/deleteServer -> createWebsite/updateWebsite/deleteWebsite); update create-server-dialog + server-actions + server-settings imports; update fetch URLs in dashboard/page.tsx and dashboard/servers/page.tsx
+
+**Wave 3** *(blocked on Wave 2 — editor cleanup + final delete)*
+- [ ] 07-05-PLAN.md — Editor god-component: swap fetch URLs to /api/websites; drop serverIp from ServerDataState, remove IP display block, handleCopyIP, Copy icon import
+- [ ] 07-06-PLAN.md — Delete src/app/api/servers/ + src/lib/validations/server.ts; final npx tsc --noEmit gate
 
 ### Phase 8: Dashboard & Public Site
 **Goal:** The dashboard shows a list of the user's websites; users can create a website, manage its connected servers in the editor, and view the live public site routed by the website's custom subdomain.
@@ -160,7 +172,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 6. Schema Reset | 0/4 | Not started | - |
-| 7. API Layer | 0/TBD | Not started | - |
+| 7. API Layer | 0/6 | Not started | - |
 | 8. Dashboard & Public Site | 0/TBD | Not started | - |
 
 ### v1.0

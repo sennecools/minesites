@@ -3,7 +3,6 @@
 export interface WebsiteData {
   name: string;
   subdomain: string;
-  serverIp: string | null;
   players?: number;
   maxPlayers?: number;
   version?: string;

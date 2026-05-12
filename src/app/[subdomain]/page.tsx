@@ -32,7 +32,6 @@ export default async function ServerPage({ params, searchParams }: Props) {
   const serverData = {
     name: server.name,
     subdomain: server.subdomain,
-    serverIp: null as string | null,
   };
 
   const sections = server.sections.map((section) => ({

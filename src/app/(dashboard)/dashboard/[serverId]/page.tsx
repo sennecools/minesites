@@ -2392,7 +2392,21 @@ export default function ServerEditorPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save");
+        // WR-04: surface the server's error envelope in the toast instead of
+        // collapsing every non-OK status to a generic "Failed to save". The
+        // route returns { error, details? } for 400/403/409/500, so reading
+        // the JSON body and preferring `error` gives the user a specific
+        // message (e.g. "Free plan is limited to 5 sections" for 403).
+        let serverMessage = "Failed to save";
+        try {
+          const errorBody = await response.json();
+          if (errorBody && typeof errorBody.error === "string") {
+            serverMessage = errorBody.error;
+          }
+        } catch {
+          // Body wasn't JSON — keep the default message.
+        }
+        throw new Error(serverMessage);
       }
 
       // Update saved state ref to current state

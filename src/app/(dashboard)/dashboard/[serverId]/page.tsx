@@ -12,7 +12,6 @@ import {
   Image,
   Users,
   BarChart3,
-  Copy,
   Check,
   GripVertical,
   Plus,
@@ -2248,7 +2247,6 @@ export default function ServerEditorPage() {
     name: string;
     subdomain: string;
     description: string;
-    serverIp: string;
     published: boolean;
     players: number;
     maxPlayers: number;
@@ -2264,7 +2262,6 @@ export default function ServerEditorPage() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [showAddSection, setShowAddSection] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string>("Essential");
 
   // Server data state
@@ -2279,7 +2276,7 @@ export default function ServerEditorPage() {
   useEffect(() => {
     const loadServerData = async () => {
       try {
-        const response = await fetch(`/api/servers/${serverId}`);
+        const response = await fetch(`/api/websites/${serverId}`);
         if (!response.ok) {
           throw new Error("Failed to load server data");
         }
@@ -2291,7 +2288,6 @@ export default function ServerEditorPage() {
           name: data.name,
           subdomain: data.subdomain,
           description: data.description || "",
-          serverIp: data.serverIp || "",
           published: data.published || false,
           players: 0, // Would come from a live status API
           maxPlayers: 500,
@@ -2372,7 +2368,7 @@ export default function ServerEditorPage() {
     setSaveError(null);
 
     try {
-      const response = await fetch(`/api/servers/${serverId}`, {
+      const response = await fetch(`/api/websites/${serverId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2475,12 +2471,6 @@ export default function ServerEditorPage() {
 
   const updateSection = (id: string, updates: Partial<Section>) => {
     setSections(sections.map((s) => (s.id === id ? { ...s, ...updates } : s)));
-  };
-
-  const handleCopyIP = () => {
-    navigator.clipboard.writeText(serverData?.serverIp ?? "");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const previewWidth = {
@@ -2757,26 +2747,6 @@ export default function ServerEditorPage() {
               )}
             </div>
 
-            {/* Server Info */}
-            <div className="pt-2 mt-2 border-t border-zinc-100">
-              <div className="flex items-center gap-2">
-                <code className="flex-1 px-2 py-1.5 bg-zinc-50 rounded-lg text-xs font-mono text-zinc-600 truncate">
-                  {serverData.serverIp}
-                </code>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCopyIP}
-                  className="p-1.5 rounded-lg hover:bg-zinc-100 transition-colors"
-                >
-                  {copied ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5 text-zinc-400" />
-                  )}
-                </motion.button>
-              </div>
-            </div>
             </>
             )}
           </div>
@@ -2932,7 +2902,7 @@ export default function ServerEditorPage() {
                         onClick={() => setSelectedSection(section.id)}
                         className="relative cursor-pointer group"
                       >
-                        <SectionPreview section={section} serverData={{ name: serverData.name, subdomain: serverData.subdomain, serverIp: serverData.serverIp, players: serverData.players, maxPlayers: serverData.maxPlayers, version: serverData.version }} />
+                        <SectionPreview section={section} serverData={{ name: serverData.name, subdomain: serverData.subdomain, serverIp: null, players: serverData.players, maxPlayers: serverData.maxPlayers, version: serverData.version }} />
                         {/* Hover/Selected border overlay */}
                         <div className={`absolute inset-0 pointer-events-none transition-all border-2 ${
                           selectedSection === section.id

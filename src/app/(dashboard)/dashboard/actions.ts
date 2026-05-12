@@ -13,10 +13,17 @@ export async function createWebsite(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
+  // BL-06: `description` is treated as create-time optional. Empty string → undefined
+  // so Prisma applies its default (null) on create. On update (see updateWebsite)
+  // empty string is mapped to `null` to allow explicit clearing.
+  const descriptionRaw = formData.get("description");
   const rawData = {
     name: formData.get("name"),
     subdomain: formData.get("subdomain"),
-    description: formData.get("description") || undefined,
+    description:
+      typeof descriptionRaw === "string" && descriptionRaw.length > 0
+        ? descriptionRaw
+        : undefined,
   };
 
   const validated = createWebsiteSchema.parse(rawData);
@@ -79,10 +86,24 @@ export async function updateWebsite(serverId: string, formData: FormData) {
     throw new Error("Server not found");
   }
 
+  // BL-06: distinguish "field absent" (do not change) from "field empty" (clear it).
+  // FormData.has → user submitted the field at all; empty value → set to `null`.
+  const nameRaw = formData.get("name");
+  const subdomainRaw = formData.get("subdomain");
+  const descriptionRaw = formData.get("description");
   const rawData = {
-    name: formData.get("name") || undefined,
-    subdomain: formData.get("subdomain") || undefined,
-    description: formData.get("description") || undefined,
+    name: typeof nameRaw === "string" && nameRaw.length > 0 ? nameRaw : undefined,
+    subdomain:
+      typeof subdomainRaw === "string" && subdomainRaw.length > 0
+        ? subdomainRaw
+        : undefined,
+    // If the form submitted `description` at all, honor it: empty string → null
+    // (explicit clear); non-empty string → keep. If absent, leave as undefined.
+    description: formData.has("description")
+      ? typeof descriptionRaw === "string" && descriptionRaw.length > 0
+        ? descriptionRaw
+        : null
+      : undefined,
   };
 
   const validated = updateWebsiteSchema.parse(rawData);

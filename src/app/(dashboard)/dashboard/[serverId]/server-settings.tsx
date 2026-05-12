@@ -42,8 +42,16 @@ export function ServerSettings({ server }: ServerSettingsProps) {
     setSuccess(false);
     try {
       const formData = new FormData();
+      // BL-06: always include `description` (even when empty) so the server can
+      // distinguish "user wants to clear" (empty string → null) from
+      // "field not submitted" (do not change). For other fields, empty strings
+      // are stripped so the partial update schema treats them as "do not change".
       Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== "") {
+        if (key === "description") {
+          // Send "" so the server action sees `formData.has("description")` and
+          // maps the empty value to null (explicit clear).
+          formData.append(key, value === undefined || value === null ? "" : String(value));
+        } else if (value !== undefined && value !== null && value !== "") {
           formData.append(key, String(value));
         }
       });

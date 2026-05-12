@@ -34,7 +34,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadServers() {
       try {
-        const response = await fetch("/api/servers");
+        const response = await fetch("/api/websites");
         if (!response.ok) {
           throw new Error("Failed to load servers");
         }

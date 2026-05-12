@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { createMcserverSchema } from "@/lib/validations/mcserver";
+import { apiErrorResponse } from "@/lib/api-error";
 
 // POST /api/websites/[websiteId]/servers
 // Create a new MinecraftServer connection linked to the parent Website.
@@ -56,7 +57,9 @@ export async function POST(
 
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
-    console.error("Error creating Minecraft server:", error);
-    return NextResponse.json({ error: "Failed to create Minecraft server" }, { status: 500 });
+    return apiErrorResponse(error, {
+      fallback: "Failed to create Minecraft server",
+      context: "POST /api/websites/[websiteId]/servers",
+    });
   }
 }

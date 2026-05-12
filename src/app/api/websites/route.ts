@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { createWebsiteSchema } from "@/lib/validations/website";
+import { apiErrorResponse } from "@/lib/api-error";
 
 // GET /api/websites - List all websites for the current user
 export async function GET() {
@@ -28,8 +29,10 @@ export async function GET() {
 
     return NextResponse.json(websites);
   } catch (error) {
-    console.error("Error loading websites:", error);
-    return NextResponse.json({ error: "Failed to load websites" }, { status: 500 });
+    return apiErrorResponse(error, {
+      fallback: "Failed to load websites",
+      context: "GET /api/websites",
+    });
   }
 }
 
@@ -100,7 +103,9 @@ export async function POST(request: NextRequest) {
       throw error;
     }
   } catch (error) {
-    console.error("Error creating website:", error);
-    return NextResponse.json({ error: "Failed to create website" }, { status: 500 });
+    return apiErrorResponse(error, {
+      fallback: "Failed to create website",
+      context: "POST /api/websites",
+    });
   }
 }

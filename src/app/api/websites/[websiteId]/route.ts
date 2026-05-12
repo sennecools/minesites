@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { updateWebsiteFullSchema } from "@/lib/validations/website";
 import { getPlanLimits } from "@/lib/plan";
+import { apiErrorResponse } from "@/lib/api-error";
 
 // GET /api/websites/[websiteId] - Load website with sections
 export async function GET(
@@ -36,9 +37,12 @@ export async function GET(
 
     return NextResponse.json(website);
   } catch (error) {
-    console.error("Error loading website:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: "Failed to load website", details: message }, { status: 500 });
+    // WR-01: route through the shared error helper so Zod/Prisma errors get
+    // proper 400/404/409 responses instead of collapsing to a generic 500.
+    return apiErrorResponse(error, {
+      fallback: "Failed to load website",
+      context: "GET /api/websites/[websiteId]",
+    });
   }
 }
 
@@ -189,8 +193,15 @@ export async function PUT(
       throw error;
     }
   } catch (error) {
-    console.error("Error saving website:", error);
-    return NextResponse.json({ error: "Failed to save website" }, { status: 500 });
+    // WR-01: shared helper covers ZodError, Prisma known errors, and falls
+    // back to 500 with `error.message` in details. The inner try/catch
+    // already handles the subdomain-specific P2002 path before rethrowing,
+    // but routing the rethrown error through the helper also picks up the
+    // target-specific P2002 mapping for non-subdomain unique conflicts.
+    return apiErrorResponse(error, {
+      fallback: "Failed to save website",
+      context: "PUT /api/websites/[websiteId]",
+    });
   }
 }
 
@@ -225,7 +236,9 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("Error deleting website:", error);
-    return NextResponse.json({ error: "Failed to delete website" }, { status: 500 });
+    return apiErrorResponse(error, {
+      fallback: "Failed to delete website",
+      context: "DELETE /api/websites/[websiteId]",
+    });
   }
 }

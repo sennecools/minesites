@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { updateMcserverSchema } from "@/lib/validations/mcserver";
+import { apiErrorResponse } from "@/lib/api-error";
 
 // PUT /api/websites/[websiteId]/servers/[serverId]
 // Update a MinecraftServer connection. Body is a partial of the create shape.
@@ -58,8 +59,10 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating Minecraft server:", error);
-    return NextResponse.json({ error: "Failed to update Minecraft server" }, { status: 500 });
+    return apiErrorResponse(error, {
+      fallback: "Failed to update Minecraft server",
+      context: "PUT /api/websites/[websiteId]/servers/[serverId]",
+    });
   }
 }
 
@@ -106,7 +109,9 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("Error deleting Minecraft server:", error);
-    return NextResponse.json({ error: "Failed to delete Minecraft server" }, { status: 500 });
+    return apiErrorResponse(error, {
+      fallback: "Failed to delete Minecraft server",
+      context: "DELETE /api/websites/[websiteId]/servers/[serverId]",
+    });
   }
 }

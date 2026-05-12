@@ -56,13 +56,15 @@ Source: `src/components/ui/modal.tsx` (max-w-md), `src/components/ui/card.tsx` (
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | Card description, form helper text, modal body copy, row secondary line |
-| Label | 13px | 500 (medium) | 1.4 | Form field labels, settings labels, badge text, metadata row, connections row muted IP:port |
+| Label | 13px | 400 (regular) | 1.4 | Form field labels, settings labels, badge text, metadata row, connections row muted IP:port — differentiated from Body by size (13px vs 14px) only |
 | Heading | 18px | 600 (semibold) | 1.2 | Modal titles (`ModalTitle`), card section headings (`h2`), connections list heading |
 | Display | 24px | 600 (semibold) | 1.2 | Dashboard page heading ("Welcome back", "Your Websites") |
 
 Font family rules:
 - `font-display` (Plus Jakarta Sans): page-level h1/h2 headings only
 - `font-sans` (Inter): all other text, labels, inputs, modal content
+
+Weights in use: **400 (regular)** and **600 (semibold)** only. No 500/medium weight is introduced by this phase.
 
 Note — existing codebase reference (not Phase 8 scope, excluded from type scale above): the god-component editor sidebar uses 11px/500 (`settings-label` utility), 12px/400 (`text-xs` card meta), and 16px/600 (editor section labels). These are carry-forward from pre-Phase-8 code; Phase 8 does not introduce them and does not alter them.
 
@@ -129,16 +131,16 @@ New components to create in this phase:
 - Loading state: centered `<Loader2 className="w-5 h-5 animate-spin text-zinc-400" />` with `<p className="text-sm text-zinc-500 mt-2">Loading servers...</p>`
 - Empty state: centered `<Server className="w-8 h-8 text-zinc-300" />` icon + heading "No servers connected yet" + body "Add a Minecraft server to enable Live Player Count and Server Info sections." + `<Button variant="primary" size="sm">Add Server</Button>` CTA
 - Server rows (read mode): two-line layout
-  - Line 1: `font-medium text-zinc-900` name + `font-mono text-xs text-zinc-500` IP:port (right side of flex row) + edit icon button + delete icon button (far right)
+  - Line 1: `font-semibold text-zinc-900` name + `font-mono text-xs text-zinc-500` IP:port (right side of flex row) + edit icon button + delete icon button (far right)
   - Line 2: `text-sm text-zinc-500 line-clamp-1` description (if present; omit line if null)
   - Row background: white; `hover:bg-zinc-50` on hover; `rounded-xl` border-radius; `px-4 py-3` padding
   - Divider between rows: `border-b border-zinc-100` (omit on last row)
-- Server rows (delete confirm mode): row swaps to `bg-red-50 rounded-xl px-4 py-3`; text `"Delete '{name}'?"` in `text-sm font-medium text-zinc-900`; right-aligned `[Cancel]` (ghost Button, size sm) + `[Delete]` (red-filled: `bg-red-500 text-white hover:bg-red-600`, size sm, rounded-xl)
+- Server rows (delete confirm mode): row swaps to `bg-red-50 rounded-xl px-4 py-3`; text `"Delete '{name}'?"` in `text-sm font-semibold text-zinc-900`; right-aligned `[Cancel]` (ghost Button, size sm) + `[Delete]` (red-filled: `bg-red-500 text-white hover:bg-red-600`, size sm, rounded-xl)
 - Inline add/edit form (expanded state):
   - Activation: "Add server" ghost button at bottom of list expands into inline form card (`bg-zinc-50 rounded-xl border border-zinc-200 p-4`)
   - Two-column layout at modal width (≥ 480px): col-1 Name field, col-2 IP/hostname field; row 2: col-1 Port field, col-2 empty; row 3: Description textarea full-width
   - All fields use `<Input>` and `<Textarea>` from `src/components/ui/`; port placeholder `25565`
-  - Field labels: `text-sm font-medium text-zinc-700 mb-1.5` (matching create-website-dialog pattern)
+  - Field labels: `text-sm font-normal text-zinc-700 mb-1.5` — weight 400 (regular); Label size (13px via `text-xs`) is used where the label sits above an input; differentiated from body copy by size alone
   - Inline field errors: `text-sm text-red-500 mt-1` below each field
   - Form footer (inside the inline form card): right-aligned `[Cancel]` (ghost) + `[Save Server]` / `[Update Server]` (primary gradient)
   - Single-column collapse: below 480px, all fields stack full-width

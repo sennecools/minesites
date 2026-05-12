@@ -98,12 +98,24 @@ export async function PUT(
       }
     }
 
-    // D-18 (CR-03): freemium section count enforcement, sourced from src/lib/plan.ts
+    // D-18 (CR-03): freemium section count enforcement, sourced from src/lib/plan.ts.
+    // BL-01: explicit null-check on the user lookup. Without it, a stale session
+    // (D-20: User row deleted after session issuance) silently falls through the
+    // optional-chain guard `user?.plan !== "pro"` (both inequality checks evaluate
+    // to `true` when `user` is null), entering the limit block but then continuing
+    // the request even though the FK is gone. The PUT must reject 401 here just
+    // like POST does — D-20 is enforced asymmetrically otherwise.
     const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: { plan: true },
     });
-    if (sections && Array.isArray(sections) && user?.plan !== "pro" && user?.plan !== "paid") {
+    if (!user) {
+      return NextResponse.json(
+        { error: "Session expired. Please sign out and sign back in." },
+        { status: 401 }
+      );
+    }
+    if (sections && Array.isArray(sections) && user.plan !== "pro" && user.plan !== "paid") {
       const freeLimit = getPlanLimits("free").maxSections;
       if (sections.length > freeLimit) {
         return NextResponse.json(

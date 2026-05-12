@@ -12,49 +12,25 @@ import {
   ChevronRight,
   Loader2
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CreateWebsiteDialog } from "../create-website-dialog";
-import { WebsiteCard, type WebsiteCardData } from "@/components/dashboard";
+import { WebsiteCard, useWebsites } from "@/components/dashboard";
 import { formatRelativeTime } from "@/lib/utils";
 
 export default function ServersPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  // WR-03: share WebsiteCardData from @/components/dashboard so the shape
-  // cannot drift between this page and /dashboard. (`WebsiteData` in
-  // src/components/preview/types.ts is a different shape and stays put.)
-  const [servers, setServers] = useState<WebsiteCardData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // WR-03 / WR-04: shared loader from @/components/dashboard. Both list
+  // pages call useWebsites() so the fetch path, error/loading state, and
+  // refetch handler stay in lockstep.
+  const { websites: servers, isLoading, error, refetch } = useWebsites();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-
-  useEffect(() => {
-    async function loadServers() {
-      try {
-        const response = await fetch("/api/websites");
-        if (!response.ok) {
-          throw new Error("Failed to load servers");
-        }
-        const data = await response.json();
-        setServers(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load servers");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadServers();
-  }, []);
 
   const filteredServers = servers.filter(
     (server) =>
       server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       server.subdomain.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  // WR-09: formatRelativeTime now lives in src/lib/utils.ts so the dashboard
-  // list pages share one implementation. The previous duplicate definitions
-  // were begging to drift.
 
   if (isLoading) {
     return (
@@ -73,7 +49,7 @@ export default function ServersPage() {
         <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-center">
           <p className="text-red-600 font-medium">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={refetch}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
           >
             Retry

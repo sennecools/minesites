@@ -10,48 +10,22 @@ import {
   Sparkles,
   Loader2
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CreateWebsiteDialog } from "./create-website-dialog";
-import { WebsiteCard, type WebsiteCardData } from "@/components/dashboard";
+import { WebsiteCard, useWebsites } from "@/components/dashboard";
 
 export default function DashboardPage() {
-  // WR-03: WebsiteCardData (from @/components/dashboard) is the single source
-  // of truth for the dashboard-list shape returned by GET /api/websites. The
-  // local `WebsiteData` interface previously declared here is gone; the
-  // similarly-named `WebsiteData` in src/components/preview/types.ts is a
-  // different shape (public-site render data) and is intentionally untouched.
-  const [servers, setServers] = useState<WebsiteCardData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // WR-03 / WR-04: useWebsites() is the shared loader from
+  // @/components/dashboard. Both list pages call it so the fetch lifecycle,
+  // loading flag, error message, and refetch path are defined once.
+  const { websites: servers, isLoading, error, refetch } = useWebsites();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-
-  useEffect(() => {
-    async function loadServers() {
-      try {
-        const response = await fetch("/api/websites");
-        if (!response.ok) {
-          throw new Error("Failed to load servers");
-        }
-        const data = await response.json();
-        setServers(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load servers");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadServers();
-  }, []);
 
   const stats = [
     { label: "Total Views", value: "0", change: "-", icon: Eye, color: "from-cyan-500 to-blue-500" },
     { label: "Total Players", value: "0", change: "-", icon: Users, color: "from-emerald-500 to-teal-500" },
     { label: "Active Servers", value: servers.filter(s => s.published).length.toString(), change: "-", icon: Server, color: "from-violet-500 to-purple-500" },
   ];
-
-  // WR-09: formatRelativeTime was previously defined here as dead code (never
-  // called in this file). The shared implementation lives in src/lib/utils.ts;
-  // import from there if/when this page needs to render relative timestamps.
 
   if (isLoading) {
     return (
@@ -70,7 +44,7 @@ export default function DashboardPage() {
         <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-center">
           <p className="text-red-600 font-medium">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={refetch}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
           >
             Retry

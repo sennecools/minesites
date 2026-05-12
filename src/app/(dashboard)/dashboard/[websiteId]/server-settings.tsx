@@ -7,17 +7,15 @@ import { updateWebsiteSchema, type UpdateWebsiteInput } from "@/lib/validations/
 import { updateWebsite } from "../actions";
 import { useState } from "react";
 
-interface Server {
+interface Website {
   id: string;
   name: string;
   subdomain: string;
   description: string | null;
-  serverIp: string | null;
-  serverPort: number | null;
 }
 
 interface ServerSettingsProps {
-  server: Server;
+  server: Website;
 }
 
 export function ServerSettings({ server }: ServerSettingsProps) {

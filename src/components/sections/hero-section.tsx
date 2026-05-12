@@ -1,16 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui";
 
 interface HeroSectionProps {
   title: string;
   subtitle?: string | null;
   settings: Record<string, unknown>;
-  serverIp?: string | null;
 }
 
-export function HeroSection({ title, subtitle, settings, serverIp }: HeroSectionProps) {
+export function HeroSection({ title, subtitle, settings }: HeroSectionProps) {
   const heroSettings = (settings.hero as Record<string, unknown>) || {};
   const backgroundImage = heroSettings.backgroundImage as string | undefined;
 
@@ -53,32 +51,6 @@ export function HeroSection({ title, subtitle, settings, serverIp }: HeroSection
           >
             {subtitle}
           </motion.p>
-        )}
-
-        {serverIp && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-8"
-          >
-            <div className="inline-flex items-center gap-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-3">
-              <span className={backgroundImage ? "text-white/70" : "text-zinc-500"}>
-                Server IP:
-              </span>
-              <span className={`font-mono font-semibold ${backgroundImage ? "text-white" : "text-zinc-900"}`}>
-                {serverIp}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigator.clipboard.writeText(serverIp)}
-                className={backgroundImage ? "text-white hover:text-white/80" : ""}
-              >
-                Copy
-              </Button>
-            </div>
-          </motion.div>
         )}
       </div>
     </section>

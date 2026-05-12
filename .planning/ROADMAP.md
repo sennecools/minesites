@@ -92,7 +92,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 - [x] 08-03-PLAN.md — API `_count.sections` + shared `WebsiteCard` extraction + full `create-server-dialog.tsx` → `create-website-dialog.tsx` rename (DASH-01, DASH-02, DASH-04; D-08, D-09, D-10, D-13)
 
 **Wave 2** *(blocked on 08-01)*
-- [ ] 08-02-PLAN.md — Public path cleanup: drop `serverIp` from WebsiteData/preview-client/layout/SiteNav/hero-section + god-component SectionPreview literal (D-14, D-17, D-18; success criterion 4 verification) — DASH-04
+- [x] 08-02-PLAN.md — Public path cleanup: drop `serverIp` from WebsiteData/preview-client/layout/SiteNav/hero-section + god-component SectionPreview literal (D-14, D-17, D-18; success criterion 4 verification) — DASH-04
 
 **Wave 3** *(blocked on 08-01, 08-02, 08-03)*
 - [ ] 08-04-PLAN.md — `ConnectionsModal` + "Manage Servers" top-bar button mount in editor god-component (DASH-03; D-01..D-07)

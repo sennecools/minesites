@@ -8,9 +8,31 @@ interface HeroSectionProps {
   settings: Record<string, unknown>;
 }
 
+/**
+ * WR-06: validates a user-supplied background URL before embedding in a
+ * CSS url() call. Mirrors `safeBackgroundUrl` in
+ * src/components/sections/render/hero-render.tsx — only http(s) absolute
+ * URLs pass. A settings value like
+ *   "img.png\"); background-image: url(\"evil"
+ * could otherwise break out of the CSS context and inject a different
+ * background. This file is orphaned today (live renderer is HeroRender),
+ * but the guard ensures a future contributor who wires this back up
+ * inherits the same protection.
+ */
+function safeBackgroundUrl(url: string): string | undefined {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return undefined;
+    return url;
+  } catch {
+    return undefined;
+  }
+}
+
 export function HeroSection({ title, subtitle, settings }: HeroSectionProps) {
   const heroSettings = (settings.hero as Record<string, unknown>) || {};
-  const backgroundImage = heroSettings.backgroundImage as string | undefined;
+  const rawBackgroundImage = heroSettings.backgroundImage as string | undefined;
+  const backgroundImage = rawBackgroundImage ? safeBackgroundUrl(rawBackgroundImage) : undefined;
 
   return (
     <section

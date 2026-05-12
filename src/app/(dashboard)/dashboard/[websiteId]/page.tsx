@@ -2240,9 +2240,9 @@ const initialNavbarSettings: NavbarSettings = {
 
 export default function ServerEditorPage() {
   const params = useParams();
-  const serverId = params.serverId as string;
+  const websiteId = params.websiteId as string;
 
-  type ServerDataState = {
+  type WebsiteDataState = {
     id: string;
     name: string;
     subdomain: string;
@@ -2265,7 +2265,7 @@ export default function ServerEditorPage() {
   const [expandedCategory, setExpandedCategory] = useState<string>("Essential");
 
   // Server data state
-  const [serverData, setServerData] = useState<ServerDataState | null>(null);
+  const [serverData, setServerData] = useState<WebsiteDataState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -2276,7 +2276,7 @@ export default function ServerEditorPage() {
   useEffect(() => {
     const loadServerData = async () => {
       try {
-        const response = await fetch(`/api/websites/${serverId}`);
+        const response = await fetch(`/api/websites/${websiteId}`);
         if (!response.ok) {
           throw new Error("Failed to load server data");
         }
@@ -2328,7 +2328,7 @@ export default function ServerEditorPage() {
     };
 
     loadServerData();
-  }, [serverId]);
+  }, [websiteId]);
 
   // Ref to the preview panel .site-root wrapper for live CSS var mutation
   const previewRootRef = useRef<HTMLDivElement>(null);
@@ -2374,7 +2374,7 @@ export default function ServerEditorPage() {
       // action. Sending them on every editor save coupled validation failures
       // on those fields (e.g. a legacy subdomain that violates the current
       // regex) to unrelated section edits.
-      const response = await fetch(`/api/websites/${serverId}`, {
+      const response = await fetch(`/api/websites/${websiteId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2422,7 +2422,7 @@ export default function ServerEditorPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [serverId, serverData, navbarSettings, themeSettings, sections]);
+  }, [websiteId, serverData, navbarSettings, themeSettings, sections]);
 
   // Track changes for undo/redo
   const setSections = (newSections: Section[] | ((prev: Section[]) => Section[])) => {

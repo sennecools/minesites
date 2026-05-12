@@ -14,23 +14,23 @@ import {
 } from "@/components/ui";
 import { togglePublished, deleteWebsite } from "../actions";
 
-interface ServerActionsProps {
-  serverId: string;
+interface WebsiteActionsProps {
+  websiteId: string;
   published: boolean;
 }
 
-export function ServerActions({ serverId, published }: ServerActionsProps) {
+export function ServerActions({ websiteId, published }: WebsiteActionsProps) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleTogglePublished = async () => {
-    await togglePublished(serverId);
+    await togglePublished(websiteId);
   };
 
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await deleteWebsite(serverId);
+      await deleteWebsite(websiteId);
     } catch {
       setIsDeleting(false);
     }

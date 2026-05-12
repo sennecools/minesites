@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import { updateWebsiteSchema } from "@/lib/validations/website";
+import { updateWebsiteFullSchema } from "@/lib/validations/website";
 import { getPlanLimits } from "@/lib/plan";
 
 // GET /api/websites/[websiteId] - Load website with sections
@@ -60,21 +60,28 @@ export async function PUT(
 
     const { websiteId } = await params;
     const body = await request.json();
-    const { logo, banner, navbar, theme, sections } = body;
 
-    // D-17 (CR-01): Validate name/subdomain/description fields
-    const parseResult = updateWebsiteSchema.safeParse({
-      name: body.name,
-      subdomain: body.subdomain,
-      description: body.description,
-    });
+    // D-17 (CR-01) + BL-03 + BL-04: validate the full PUT body in a single pass.
+    // updateWebsiteFullSchema covers name/subdomain/description (carry-forward)
+    // plus logo/banner URL schemes (BL-03), navbar/theme strict shapes (BL-03),
+    // and the sections array shape + duplicate-id check (BL-04, WR-05).
+    const parseResult = updateWebsiteFullSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(
         { error: "Invalid input", details: parseResult.error.flatten() },
         { status: 400 }
       );
     }
-    const { name, subdomain, description } = parseResult.data;
+    const {
+      name,
+      subdomain,
+      description,
+      logo,
+      banner,
+      navbar,
+      theme,
+      sections,
+    } = parseResult.data;
 
     // Ownership check (D-05 pattern from CONTEXT)
     const existingWebsite = await db.website.findUnique({
@@ -135,25 +142,22 @@ export async function PUT(
           data: { name, subdomain, description, logo, banner, navbar, theme },
         });
 
-        if (sections && Array.isArray(sections)) {
+        if (sections) {
           await tx.section.deleteMany({ where: { websiteId } });
 
           await tx.section.createMany({
-            data: sections.map((section: {
-              id: string;
-              type: string;
-              title?: string;
-              subtitle?: string;
-              settings?: Record<string, unknown>;
-              visible?: boolean;
-            }, index: number) => ({
+            data: sections.map((section, index) => ({
               id: section.id,
               type: section.type,
               title: section.title || null,
               subtitle: section.subtitle || null,
               // D-10 / D-21: settings is passed through unchanged so any top-level
-              // key (including minecraftServerId) is persisted as-is.
+              // key (including minecraftServerId) is persisted as-is. The Zod
+              // schema (sectionSchema in validations/website.ts) only enforces
+              // the outer envelope; per-type field shapes are documented in
+              // src/types/sections.ts and applied at render time.
               settings: (section.settings || {}) as Prisma.InputJsonValue,
+              // BL-04: order is server-controlled, not trusted from the client.
               order: index,
               visible: section.visible ?? true,
               websiteId,

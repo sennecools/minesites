@@ -2368,15 +2368,16 @@ export default function ServerEditorPage() {
     setSaveError(null);
 
     try {
+      // WR-07: scope the editor save body to the fields the editor actually
+      // owns (navbar, theme, sections). Name/subdomain/description are edited
+      // in the settings form (server-settings.tsx) and have their own server
+      // action. Sending them on every editor save coupled validation failures
+      // on those fields (e.g. a legacy subdomain that violates the current
+      // regex) to unrelated section edits.
       const response = await fetch(`/api/websites/${serverId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: serverData.name,
-          subdomain: serverData.subdomain,
-          description: serverData.description,
-          // serverIp lives on the MinecraftServer child model, not the Website model;
-          // omit it here until the MinecraftServer relationship is surfaced in the editor
           navbar: navbarSettings,
           theme: themeSettings,
           sections: sections.map((s, index) => ({

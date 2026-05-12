@@ -85,15 +85,17 @@ Starting from a working but visually inconsistent brownfield app, this milestone
   2. "New Website" button opens a dialog; user enters name and subdomain; subdomain uniqueness is validated before save.
   3. Website editor includes a "Servers" tab listing connected MinecraftServer records with add/edit/remove controls.
   4. Visiting `[subdomain].minesites.net` renders the Website's published sections (not a Server's) — the public routing layer uses the `Website.subdomain` field.
-**Plans:** 4 plans
+**Plans:** 4 plans (3 waves)
 
-**Wave 1** *(parallel — no file overlap among plans)*
-- [ ] 08-01-PLAN.md — Route directory rename `[serverId]` → `[websiteId]` + god-component param sweep + drop `serverIp`/`serverPort` from server-settings.tsx (D-12, D-14, D-15)
-- [ ] 08-02-PLAN.md — Public path cleanup: drop `serverIp` from WebsiteData/preview-client/layout/SiteNav/hero-section (D-14, D-17, D-18; success criterion 4 verification)
-- [ ] 08-03-PLAN.md — API `_count.sections` + shared `WebsiteCard` extraction + `CreateServerDialog` → `CreateWebsiteDialog` rename (DASH-01, DASH-02, DASH-04, D-08, D-09, D-10, D-13)
+**Wave 1** *(parallel — zero file overlap)*
+- [ ] 08-01-PLAN.md — Route directory rename `[serverId]` → `[websiteId]` + god-component param sweep + drop `serverIp`/`serverPort` from server-settings.tsx (D-12, D-14, D-15) — DASH-03
+- [ ] 08-03-PLAN.md — API `_count.sections` + shared `WebsiteCard` extraction + full `create-server-dialog.tsx` → `create-website-dialog.tsx` rename (DASH-01, DASH-02, DASH-04; D-08, D-09, D-10, D-13)
 
-**Wave 2** *(blocked on Plan 08-01)*
-- [ ] 08-04-PLAN.md — `ConnectionsModal` + "Manage Servers" top-bar button mount in editor god-component (DASH-03, D-01..D-07)
+**Wave 2** *(blocked on 08-01)*
+- [ ] 08-02-PLAN.md — Public path cleanup: drop `serverIp` from WebsiteData/preview-client/layout/SiteNav/hero-section + god-component SectionPreview literal (D-14, D-17, D-18; success criterion 4 verification) — DASH-04
+
+**Wave 3** *(blocked on 08-01, 08-02, 08-03)*
+- [ ] 08-04-PLAN.md — `ConnectionsModal` + "Manage Servers" top-bar button mount in editor god-component (DASH-03; D-01..D-07)
 
 ---
 

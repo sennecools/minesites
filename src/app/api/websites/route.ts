@@ -83,9 +83,19 @@ export async function POST(request: NextRequest) {
       });
       return NextResponse.json(website, { status: 201 });
     } catch (error) {
-      // D-19: P2002 catch on unique constraint (subdomain)
+      // D-19 + BL-02: target-specific P2002 mapping. The POST path only has a
+      // subdomain unique constraint right now, but disambiguating future
+      // constraints up-front keeps the error contract honest.
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-        return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
+        const target = error.meta?.target as string[] | string | undefined;
+        const targetStr = Array.isArray(target) ? target.join(",") : target ?? "";
+        if (targetStr.includes("subdomain")) {
+          return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
+        }
+        return NextResponse.json(
+          { error: "Conflict on unique constraint", details: targetStr || "unknown" },
+          { status: 409 }
+        );
       }
       throw error;
     }

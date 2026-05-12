@@ -166,9 +166,22 @@ export async function PUT(
 
       return NextResponse.json(updatedWebsite);
     } catch (error) {
-      // D-19 (WR-05): P2002 catch covers TOCTOU race on subdomain unique constraint
+      // D-19 (WR-05) + BL-02: P2002 catch covers TOCTOU race on the subdomain
+      // unique constraint, but the same code fires for ANY unique violation in
+      // the transaction (notably Section.id collisions when the client supplies
+      // duplicate or already-used section IDs). Disambiguate on `error.meta.target`
+      // so non-subdomain collisions return a generic 409 with the constraint name
+      // rather than a misleading "Subdomain is already taken" message.
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-        return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
+        const target = error.meta?.target as string[] | string | undefined;
+        const targetStr = Array.isArray(target) ? target.join(",") : target ?? "";
+        if (targetStr.includes("subdomain")) {
+          return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
+        }
+        return NextResponse.json(
+          { error: "Conflict on unique constraint", details: targetStr || "unknown" },
+          { status: 409 }
+        );
       }
       throw error;
     }

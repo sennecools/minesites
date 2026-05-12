@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { updateWebsiteFullSchema } from "@/lib/validations/website";
 import { getPlanLimits } from "@/lib/plan";
 import { apiErrorResponse } from "@/lib/api-error";
+import { requireUser } from "@/lib/api-auth";
 
 // GET /api/websites/[websiteId] - Load website with sections
 export async function GET(
@@ -57,10 +58,9 @@ export async function PUT(
   { params }: { params: Promise<{ websiteId: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // WR-02 / D-20: write path — require session + present User row.
+    const authCtx = await requireUser();
+    if ("response" in authCtx) return authCtx.response;
 
     const { websiteId } = await params;
     const body = await request.json();
@@ -97,7 +97,7 @@ export async function PUT(
       return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
 
-    if (existingWebsite.userId !== session.user.id) {
+    if (existingWebsite.userId !== authCtx.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -108,17 +108,16 @@ export async function PUT(
     // the P2002 catch to disambiguate by constraint target, the catch alone
     // is both correct AND race-free.
 
-    // D-18 (CR-03): freemium section count enforcement, sourced from src/lib/plan.ts.
-    // BL-01: explicit null-check on the user lookup. Without it, a stale session
-    // (D-20: User row deleted after session issuance) silently falls through the
-    // optional-chain guard `user?.plan !== "pro"` (both inequality checks evaluate
-    // to `true` when `user` is null), entering the limit block but then continuing
-    // the request even though the FK is gone. The PUT must reject 401 here just
-    // like POST does — D-20 is enforced asymmetrically otherwise.
+    // D-18 (CR-03) + BL-01: freemium section count enforcement. requireUser()
+    // above already guaranteed the User row exists (D-20); we just need
+    // user.plan now, so a second findUnique is a quick read.
     const user = await db.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: authCtx.userId },
       select: { plan: true },
     });
+    // Defensive: between requireUser() and here a race could delete the User,
+    // but the parent ownership check (existingWebsite.userId !== authCtx.userId)
+    // would still fail on subsequent requests. Treat null as 401 for safety.
     if (!user) {
       return NextResponse.json(
         { error: "Session expired. Please sign out and sign back in." },
@@ -212,10 +211,9 @@ export async function DELETE(
   { params }: { params: Promise<{ websiteId: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // WR-02 / D-20: write paths must verify the User row still exists.
+    const authCtx = await requireUser();
+    if ("response" in authCtx) return authCtx.response;
 
     const { websiteId } = await params;
 
@@ -228,7 +226,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
 
-    if (existing.userId !== session.user.id) {
+    if (existing.userId !== authCtx.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

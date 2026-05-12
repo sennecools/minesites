@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { updateMcserverSchema } from "@/lib/validations/mcserver";
 import { apiErrorResponse } from "@/lib/api-error";
+import { requireUser } from "@/lib/api-auth";
 
 // PUT /api/websites/[websiteId]/servers/[serverId]
 // Update a MinecraftServer connection. Body is a partial of the create shape.
@@ -11,10 +11,9 @@ export async function PUT(
   { params }: { params: Promise<{ websiteId: string; serverId: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // WR-02 / D-20: write path — require session + present User row.
+    const authCtx = await requireUser();
+    if ("response" in authCtx) return authCtx.response;
 
     const { websiteId, serverId } = await params;
 
@@ -28,7 +27,7 @@ export async function PUT(
       return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
 
-    if (website.userId !== session.user.id) {
+    if (website.userId !== authCtx.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -74,10 +73,9 @@ export async function DELETE(
   { params }: { params: Promise<{ websiteId: string; serverId: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // WR-02 / D-20: write path — require session + present User row.
+    const authCtx = await requireUser();
+    if ("response" in authCtx) return authCtx.response;
 
     const { websiteId, serverId } = await params;
 
@@ -91,7 +89,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
 
-    if (website.userId !== session.user.id) {
+    if (website.userId !== authCtx.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

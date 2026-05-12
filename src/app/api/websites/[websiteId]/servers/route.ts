@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { createMcserverSchema } from "@/lib/validations/mcserver";
 import { apiErrorResponse } from "@/lib/api-error";
+import { requireUser } from "@/lib/api-auth";
 
 // POST /api/websites/[websiteId]/servers
 // Create a new MinecraftServer connection linked to the parent Website.
@@ -12,10 +12,10 @@ export async function POST(
   { params }: { params: Promise<{ websiteId: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // WR-02 / D-20: this is a write path; require both a valid session AND a
+    // present User row to avoid orphaned FK references.
+    const authCtx = await requireUser();
+    if ("response" in authCtx) return authCtx.response;
 
     const { websiteId } = await params;
 
@@ -29,7 +29,7 @@ export async function POST(
       return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
 
-    if (website.userId !== session.user.id) {
+    if (website.userId !== authCtx.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

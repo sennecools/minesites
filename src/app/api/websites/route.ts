@@ -24,6 +24,7 @@ export async function GET() {
         published: true,
         createdAt: true,
         updatedAt: true,
+        _count: { select: { sections: true } },
       },
     });
 

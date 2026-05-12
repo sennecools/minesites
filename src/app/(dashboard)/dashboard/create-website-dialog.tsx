@@ -17,12 +17,12 @@ import {
 import { createWebsiteSchema, type CreateWebsiteInput } from "@/lib/validations/website";
 import { createWebsite } from "./actions";
 
-interface CreateServerDialogProps {
+interface CreateWebsiteDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function CreateServerDialog({ open, onOpenChange }: CreateServerDialogProps = {}) {
+export function CreateWebsiteDialog({ open, onOpenChange }: CreateWebsiteDialogProps = {}) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

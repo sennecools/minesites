@@ -2917,7 +2917,7 @@ export default function ServerEditorPage() {
                         onClick={() => setSelectedSection(section.id)}
                         className="relative cursor-pointer group"
                       >
-                        <SectionPreview section={section} serverData={{ name: serverData.name, subdomain: serverData.subdomain, serverIp: null, players: serverData.players, maxPlayers: serverData.maxPlayers, version: serverData.version }} />
+                        <SectionPreview section={section} serverData={{ name: serverData.name, subdomain: serverData.subdomain, players: serverData.players, maxPlayers: serverData.maxPlayers, version: serverData.version }} />
                         {/* Hover/Selected border overlay */}
                         <div className={`absolute inset-0 pointer-events-none transition-all border-2 ${
                           selectedSection === section.id

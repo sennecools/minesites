@@ -12,7 +12,7 @@ import {
   ModalContent,
   ModalFooter,
 } from "@/components/ui";
-import { togglePublished, deleteServer } from "../actions";
+import { togglePublished, deleteWebsite } from "../actions";
 
 interface ServerActionsProps {
   serverId: string;
@@ -30,7 +30,7 @@ export function ServerActions({ serverId, published }: ServerActionsProps) {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await deleteServer(serverId);
+      await deleteWebsite(serverId);
     } catch {
       setIsDeleting(false);
     }

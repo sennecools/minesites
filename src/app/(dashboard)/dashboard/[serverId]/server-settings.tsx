@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Textarea, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { updateWebsiteSchema, type UpdateWebsiteInput } from "@/lib/validations/website";
-import { updateServer } from "../actions";
+import { updateWebsite } from "../actions";
 import { useState } from "react";
 
 interface Server {
@@ -47,7 +47,7 @@ export function ServerSettings({ server }: ServerSettingsProps) {
           formData.append(key, String(value));
         }
       });
-      await updateServer(server.id, formData);
+      await updateWebsite(server.id, formData);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {

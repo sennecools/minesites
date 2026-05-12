@@ -15,7 +15,7 @@ import {
   ModalFooter,
 } from "@/components/ui";
 import { createWebsiteSchema, type CreateWebsiteInput } from "@/lib/validations/website";
-import { createServer } from "./actions";
+import { createWebsite } from "./actions";
 
 interface CreateServerDialogProps {
   open?: boolean;
@@ -50,7 +50,7 @@ export function CreateServerDialog({ open, onOpenChange }: CreateServerDialogPro
           formData.append(key, String(value));
         }
       });
-      await createServer(formData);
+      await createWebsite(formData);
     } catch (err) {
       if (isRedirectError(err)) throw err; // let Next.js handle the redirect
       setError(err instanceof Error ? err.message : "Something went wrong");

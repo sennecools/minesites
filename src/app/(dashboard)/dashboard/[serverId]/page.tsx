@@ -2279,7 +2279,7 @@ export default function ServerEditorPage() {
   useEffect(() => {
     const loadServerData = async () => {
       try {
-        const response = await fetch(`/api/servers/${serverId}`);
+        const response = await fetch(`/api/websites/${serverId}`);
         if (!response.ok) {
           throw new Error("Failed to load server data");
         }
@@ -2372,7 +2372,7 @@ export default function ServerEditorPage() {
     setSaveError(null);
 
     try {
-      const response = await fetch(`/api/servers/${serverId}`, {
+      const response = await fetch(`/api/websites/${serverId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

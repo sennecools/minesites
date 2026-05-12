@@ -80,21 +80,22 @@ export function ServerSettings({ server }: ServerSettingsProps) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+            <label htmlFor="server-settings-name" className="block text-sm font-medium text-zinc-700 mb-1.5">
               Server Name
             </label>
-            <Input {...register("name")} error={!!errors.name} />
+            <Input id="server-settings-name" {...register("name")} error={!!errors.name} />
             {errors.name && (
               <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+            <label htmlFor="server-settings-subdomain" className="block text-sm font-medium text-zinc-700 mb-1.5">
               Subdomain
             </label>
             <div className="flex items-center">
               <Input
+                id="server-settings-subdomain"
                 {...register("subdomain")}
                 error={!!errors.subdomain}
                 className="rounded-r-none"
@@ -109,10 +110,10 @@ export function ServerSettings({ server }: ServerSettingsProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+            <label htmlFor="server-settings-description" className="block text-sm font-medium text-zinc-700 mb-1.5">
               Description
             </label>
-            <Textarea {...register("description")} rows={3} error={!!errors.description} />
+            <Textarea id="server-settings-description" {...register("description")} rows={3} error={!!errors.description} />
             {errors.description && (
               <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>
             )}

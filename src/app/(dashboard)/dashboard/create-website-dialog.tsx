@@ -87,10 +87,11 @@ export function CreateWebsiteDialog({ open, onOpenChange }: CreateWebsiteDialogP
             )}
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+              <label htmlFor="create-website-name" className="block text-sm font-medium text-zinc-700 mb-1.5">
                 Website Name
               </label>
               <Input
+                id="create-website-name"
                 {...register("name")}
                 placeholder="My Awesome Server"
                 error={!!errors.name}
@@ -101,11 +102,12 @@ export function CreateWebsiteDialog({ open, onOpenChange }: CreateWebsiteDialogP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+              <label htmlFor="create-website-subdomain" className="block text-sm font-medium text-zinc-700 mb-1.5">
                 Subdomain
               </label>
               <div className="flex items-center">
                 <Input
+                  id="create-website-subdomain"
                   {...register("subdomain")}
                   placeholder="my-server"
                   error={!!errors.subdomain}
@@ -121,10 +123,11 @@ export function CreateWebsiteDialog({ open, onOpenChange }: CreateWebsiteDialogP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+              <label htmlFor="create-website-description" className="block text-sm font-medium text-zinc-700 mb-1.5">
                 Description (optional)
               </label>
               <Textarea
+                id="create-website-description"
                 {...register("description")}
                 placeholder="Tell players about your server..."
                 rows={3}

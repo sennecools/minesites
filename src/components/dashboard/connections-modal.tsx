@@ -334,6 +334,15 @@ interface ServerFormProps {
 }
 
 function ServerForm({ mode, initial, onSubmit, onCancel }: ServerFormProps) {
+  // WR-01 + IN-02 (latter already addressed below): each <label> binds to its
+  // input via htmlFor/id. Suffix the field ids with `initial?.id ?? "new"` so
+  // multiple ServerForm instances (read rows + the persistent add row)
+  // cannot share DOM ids — htmlFor must be unique per document.
+  const formId = initial?.id ?? "new";
+  const nameId = `mcserver-${formId}-name`;
+  const ipId = `mcserver-${formId}-ip`;
+  const portId = `mcserver-${formId}-port`;
+  const descId = `mcserver-${formId}-description`;
   const {
     register,
     handleSubmit,
@@ -360,8 +369,9 @@ function ServerForm({ mode, initial, onSubmit, onCancel }: ServerFormProps) {
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-3">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-normal text-zinc-700 mb-1.5">Name</label>
+          <label htmlFor={nameId} className="block text-sm font-normal text-zinc-700 mb-1.5">Name</label>
           <Input
+            id={nameId}
             {...register("name")}
             placeholder="My SMP Server"
             error={!!errors.name}
@@ -372,10 +382,11 @@ function ServerForm({ mode, initial, onSubmit, onCancel }: ServerFormProps) {
           )}
         </div>
         <div>
-          <label className="block text-sm font-normal text-zinc-700 mb-1.5">
+          <label htmlFor={ipId} className="block text-sm font-normal text-zinc-700 mb-1.5">
             IP / Hostname
           </label>
           <Input
+            id={ipId}
             {...register("ip")}
             placeholder="play.example.net"
             error={!!errors.ip}
@@ -387,10 +398,10 @@ function ServerForm({ mode, initial, onSubmit, onCancel }: ServerFormProps) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-normal text-zinc-700 mb-1.5">Port</label>
+          <label htmlFor={portId} className="block text-sm font-normal text-zinc-700 mb-1.5">Port</label>
           <Input
+            id={portId}
             {...register("port", {
-              valueAsNumber: true,
               setValueAs: (v) =>
                 v === "" || v === undefined || v === null ? undefined : Number(v),
             })}
@@ -405,10 +416,11 @@ function ServerForm({ mode, initial, onSubmit, onCancel }: ServerFormProps) {
         <div />
       </div>
       <div>
-        <label className="block text-sm font-normal text-zinc-700 mb-1.5">
+        <label htmlFor={descId} className="block text-sm font-normal text-zinc-700 mb-1.5">
           Description (optional)
         </label>
         <Textarea
+          id={descId}
           {...register("description")}
           placeholder="What makes this server special..."
           rows={2}

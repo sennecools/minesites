@@ -5,47 +5,51 @@ subsystem: ui
 tags: [react, nextjs, tailwind, framer-motion, prisma, dashboard]
 
 requires:
-  - phase: 06-schema-reset
-    provides: Website model with Section relation (sections aggregated via Prisma _count)
-  - phase: 07-api-layer
-    provides: GET /api/websites list endpoint; Phase 7 carry-forwards (D-19 P2002 subdomain 409, D-20 user existence check, BL-02 target-specific 409, apiErrorResponse wrapping)
+    - phase: 06-schema-reset
+      provides: Website model with Section relation (sections aggregated via Prisma _count)
+    - phase: 07-api-layer
+      provides: GET /api/websites list endpoint; Phase 7 carry-forwards (D-19 P2002 subdomain 409, D-20 user existence check, BL-02 target-specific 409, apiErrorResponse wrapping)
 provides:
-  - Shared WebsiteCard component (src/components/dashboard/website-card.tsx) consumed by both /dashboard and /dashboard/servers
-  - Section count on Website cards via Prisma _count.sections (server-aggregated)
-  - Live URL visit affordance on Website cards with reverse-tab-nabbing mitigation (target=_blank + rel=noreferrer noopener + stopPropagation)
-  - Renamed dialog: CreateWebsiteDialog at create-website-dialog.tsx (D-13 full rename — file + component + props interface)
-affects: [08-04 phase-cleanup terminology sweep, future SECT-* section types that may surface section count elsewhere]
+    - Shared WebsiteCard component (src/components/dashboard/website-card.tsx) consumed by both /dashboard and /dashboard/servers
+    - Section count on Website cards via Prisma _count.sections (server-aggregated)
+    - Live URL visit affordance on Website cards with reverse-tab-nabbing mitigation (target=_blank + rel=noreferrer noopener + stopPropagation)
+    - Renamed dialog: CreateWebsiteDialog at create-website-dialog.tsx (D-13 full rename — file + component + props interface)
+affects:
+    [
+        08-04 phase-cleanup terminology sweep,
+        future SECT-* section types that may surface section count elsewhere,
+    ]
 
 tech-stack:
-  added: []
-  patterns:
-    - "Shared dashboard component pattern: src/components/dashboard/<name>.tsx + barrel re-export from index.ts"
-    - "Card-link with nested action anchor: outer Link wraps motion.div; inner <a target=_blank> uses stopPropagation (NOT preventDefault) to let new-tab fire while blocking parent navigation"
-    - "Prisma _count.sections inside Website.findMany select block — server-aggregated count avoids N+1 client fetches"
+    added: []
+    patterns:
+        - 'Shared dashboard component pattern: src/components/dashboard/<name>.tsx + barrel re-export from index.ts'
+        - 'Card-link with nested action anchor: outer Link wraps motion.div; inner <a target=_blank> uses stopPropagation (NOT preventDefault) to let new-tab fire while blocking parent navigation'
+        - 'Prisma _count.sections inside Website.findMany select block — server-aggregated count avoids N+1 client fetches'
 
 key-files:
-  created:
-    - src/components/dashboard/website-card.tsx
-    - src/components/dashboard/index.ts
-  modified:
-    - src/app/api/websites/route.ts
-    - src/app/(dashboard)/dashboard/page.tsx
-    - src/app/(dashboard)/dashboard/servers/page.tsx
-  renamed:
-    - src/app/(dashboard)/dashboard/create-server-dialog.tsx -> src/app/(dashboard)/dashboard/create-website-dialog.tsx
+    created:
+        - src/components/dashboard/website-card.tsx
+        - src/components/dashboard/index.ts
+    modified:
+        - src/app/api/websites/route.ts
+        - src/app/(dashboard)/dashboard/page.tsx
+        - src/app/(dashboard)/dashboard/servers/page.tsx
+    renamed:
+        - src/app/(dashboard)/dashboard/create-server-dialog.tsx -> src/app/(dashboard)/dashboard/create-website-dialog.tsx
 
 key-decisions:
-  - "_count.sections lives only on the LIST route GET /api/websites; the per-record route already returns full sections arrays so _count there would be redundant (anti-pattern per RESEARCH)"
-  - "WebsiteCard uses p-6 outer padding (UI-SPEC 24px) instead of inherited p-5 from the analog"
-  - "Status pill uses font-normal (400) in this card per UI-SPEC §Typography (only 400/600); the analog used font-medium (500). Badge component still carries font-medium internally — UI-SPEC weight rule is enforced at the card-component level."
-  - "Visit anchor uses stopPropagation, NOT preventDefault — preventDefault would block the new-tab open (Pitfall 3)"
-  - "D-13 applied fully: both file and component renamed. D-16 (which covers server-actions/server-settings) was correctly NOT extended to this dashboard dialog."
-  - "Grid-card stagger timing unified at 0.2 + index * 0.1 (the /dashboard timing). /dashboard/servers previously used i * 0.05; the shared component absorbs both into one consistent cadence — a positive D-08 outcome."
+    - '_count.sections lives only on the LIST route GET /api/websites; the per-record route already returns full sections arrays so _count there would be redundant (anti-pattern per RESEARCH)'
+    - 'WebsiteCard uses p-6 outer padding (UI-SPEC 24px) instead of inherited p-5 from the analog'
+    - 'Status pill uses font-normal (400) in this card per UI-SPEC §Typography (only 400/600); the analog used font-medium (500). Badge component still carries font-medium internally — UI-SPEC weight rule is enforced at the card-component level.'
+    - 'Visit anchor uses stopPropagation, NOT preventDefault — preventDefault would block the new-tab open (Pitfall 3)'
+    - 'D-13 applied fully: both file and component renamed. D-16 (which covers server-actions/server-settings) was correctly NOT extended to this dashboard dialog.'
+    - 'Grid-card stagger timing unified at 0.2 + index * 0.1 (the /dashboard timing). /dashboard/servers previously used i * 0.05; the shared component absorbs both into one consistent cadence — a positive D-08 outcome.'
 
 patterns-established:
-  - "Pattern: src/components/dashboard/<name>.tsx + index.ts barrel for shared dashboard components consumed across multiple pages"
-  - "Pattern: visit-anchor inside card-link uses stopPropagation; menu-button inside card-link uses preventDefault — the two have different semantics (anchor has its own destination, button does not)"
-  - "Pattern: Prisma server-side aggregation via _count.<relation> in findMany select — applied to Website.sections, reusable for future MinecraftServer counts"
+    - 'Pattern: src/components/dashboard/<name>.tsx + index.ts barrel for shared dashboard components consumed across multiple pages'
+    - 'Pattern: visit-anchor inside card-link uses stopPropagation; menu-button inside card-link uses preventDefault — the two have different semantics (anchor has its own destination, button does not)'
+    - 'Pattern: Prisma server-side aggregation via _count.<relation> in findMany select — applied to Website.sections, reusable for future MinecraftServer counts'
 
 requirements-completed: [DASH-01, DASH-02, DASH-04]
 
@@ -55,7 +59,7 @@ completed: 2026-05-12
 
 # Phase 08 Plan 03: Website Cards + Section Count + Dialog Rename Summary
 
-**Shared WebsiteCard component (Layers badge for `_count.sections`, target=_blank visit anchor with stopPropagation), Prisma `_count.sections` on `GET /api/websites`, and full D-13 dialog rename (file + component + props interface) — both list pages now consume the same card and the same renamed dialog.**
+**Shared WebsiteCard component (Layers badge for `_count.sections`, target=\_blank visit anchor with stopPropagation), Prisma `_count.sections` on `GET /api/websites`, and full D-13 dialog rename (file + component + props interface) — both list pages now consume the same card and the same renamed dialog.**
 
 ## Performance
 
@@ -77,7 +81,7 @@ completed: 2026-05-12
 
 ## Task Commits
 
-1. **Task 1: Extend GET /api/websites with _count.sections** — `ea9c79a` (feat)
+1. **Task 1: Extend GET /api/websites with \_count.sections** — `ea9c79a` (feat)
 2. **Task 2: Create shared WebsiteCard component** — `75fa009` (feat)
 3. **Task 3: Rename create-server-dialog -> create-website-dialog + wire WebsiteCard into both list pages** — `01c2752` (refactor)
 
@@ -117,12 +121,14 @@ The first attempt to commit Task 1 landed on `master` in the main repo, not on t
 ## Verification Evidence
 
 ### Task 1 — API
+
 - `grep -c "_count: { select: { sections: true } }" src/app/api/websites/route.ts` → **1**
 - `grep -c "_count" src/app/api/websites/[websiteId]/route.ts` → **0** (anti-pattern avoided)
 - Phase 7 carry-forwards: `Subdomain is already taken` (1), `Session expired` (1), `createWebsiteSchema.safeParse` (1), `apiErrorResponse` (3), `PrismaClientKnownRequestError` (1) — all present.
 - `npx tsc --noEmit` → exit 0.
 
 ### Task 2 — WebsiteCard
+
 - `wc -l src/components/dashboard/website-card.tsx` → **115** (≥ 60 required).
 - `grep -c 'rel="noreferrer noopener"'` → **1**; `target="_blank"` → **1**; `e.stopPropagation()` → **1**; `_count.sections` → **2** (render + aria-label); `Visit live site for` → **1**.
 - `grep -c "onClick.*preventDefault"` → **1** (the MoreHorizontal options button — visit anchor uses `stopPropagation` exclusively).
@@ -130,6 +136,7 @@ The first attempt to commit Task 1 landed on `master` in the main repo, not on t
 - `npx tsc --noEmit` → exit 0.
 
 ### Task 3 — Rename + wire
+
 - Old file `create-server-dialog.tsx` removed (`test ! -e` passes). New file `create-website-dialog.tsx` exists.
 - `grep -rc "CreateServerDialog" src/` → **0** (purged everywhere).
 - Both list pages: `<WebsiteCard ` present (1 each), `<CreateWebsiteDialog ` present (1 each), `_count: { sections: number }` present (1 each), `from "@/components/dashboard"` present (1 each).
@@ -177,8 +184,9 @@ Commits verified present on `worktree-agent-aa8acb9d42ad6f226`:
 ## Next Phase Readiness
 
 - Wave 1 of Phase 8 is on track. This plan (08-03) lands DASH-01, DASH-02, DASH-04. Plan 08-01 (`ConnectionsModal` + Manage Servers button) and 08-02 (`[serverId]` -> `[websiteId]` directory rename + local-type sweep + legacy `serverIp`/`serverPort` removal) are the other Wave-1 plans; both are independent of this one's file surface.
-- The shared `WebsiteCard` component will be the natural reuse target if/when 08-04 (cleanup) or a future SECT-* phase needs to surface a Website summary outside the two list pages.
+- The shared `WebsiteCard` component will be the natural reuse target if/when 08-04 (cleanup) or a future SECT-\* phase needs to surface a Website summary outside the two list pages.
 
 ---
-*Phase: 08-dashboard-public-site*
-*Completed: 2026-05-12*
+
+_Phase: 08-dashboard-public-site_
+_Completed: 2026-05-12_

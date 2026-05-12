@@ -1,34 +1,38 @@
-import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
-import "./globals.css";
-import { ToastProvider } from "@/components/ui";
+import type { Metadata } from 'next';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+
+import './globals.css';
+
+import { ToastProvider } from '@/components/ui';
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+	variable: '--font-inter',
+	subsets: ['latin'],
 });
 
 const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
+	variable: '--font-jakarta',
+	subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "MineSites - Create a website for your Minecraft server",
-  description:
-    "A professional site for your Minecraft server in minutes. Showcase your community and builds with a modern, customizable portfolio.",
+	title: 'MineSites - Create a website for your Minecraft server',
+	description:
+		'A professional site for your Minecraft server in minutes. Showcase your community and builds with a modern, customizable portfolio.',
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-zinc-50 text-zinc-900`}>
-        <ToastProvider>{children}</ToastProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body
+				className={`${inter.variable} ${jakarta.variable} bg-zinc-50 font-sans text-zinc-900 antialiased`}
+			>
+				<ToastProvider>{children}</ToastProvider>
+			</body>
+		</html>
+	);
 }

@@ -6,38 +6,38 @@ tags: [next.js-app-router, prisma, zod, nextauth, minecraft-server, crud]
 
 # Dependency graph
 requires:
-  - phase: 07-api-layer
-    provides: "Plan 07-01 — createMcserverSchema, updateMcserverSchema in src/lib/validations/mcserver.ts"
-  - phase: 06-schema-reset
-    provides: "MinecraftServer Prisma model + Website FK with onDelete: Cascade"
+    - phase: 07-api-layer
+      provides: 'Plan 07-01 — createMcserverSchema, updateMcserverSchema in src/lib/validations/mcserver.ts'
+    - phase: 06-schema-reset
+      provides: 'MinecraftServer Prisma model + Website FK with onDelete: Cascade'
 provides:
-  - "POST /api/websites/[websiteId]/servers — create MinecraftServer (201)"
-  - "PUT /api/websites/[websiteId]/servers/[serverId] — update MinecraftServer"
-  - "DELETE /api/websites/[websiteId]/servers/[serverId] — remove MinecraftServer (204)"
-  - "Double ownership chain: parent Website ownership + websiteId match"
+    - 'POST /api/websites/[websiteId]/servers — create MinecraftServer (201)'
+    - 'PUT /api/websites/[websiteId]/servers/[serverId] — update MinecraftServer'
+    - 'DELETE /api/websites/[websiteId]/servers/[serverId] — remove MinecraftServer (204)'
+    - 'Double ownership chain: parent Website ownership + websiteId match'
 affects: [08-dashboard, connections-manager, live-player-count-section, server-info-section]
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns:
-    - "Double ownership chain for nested resources (parent ownership + scope match)"
-    - "Conditional Prisma payload field to preserve schema @default values"
+    added: []
+    patterns:
+        - 'Double ownership chain for nested resources (parent ownership + scope match)'
+        - 'Conditional Prisma payload field to preserve schema @default values'
 
 key-files:
-  created:
-    - "src/app/api/websites/[websiteId]/servers/route.ts"
-    - "src/app/api/websites/[websiteId]/servers/[serverId]/route.ts"
-  modified: []
+    created:
+        - 'src/app/api/websites/[websiteId]/servers/route.ts'
+        - 'src/app/api/websites/[websiteId]/servers/[serverId]/route.ts'
+    modified: []
 
 key-decisions:
-  - "Omit port from db.minecraftServer.create payload when undefined (lets Prisma @default(25565) apply rather than overriding with undefined)"
-  - "PUT/DELETE both verify existing.websiteId === url websiteId — guards against cross-website edits even when a user owns multiple websites"
-  - "DELETE returns 204 with empty body via `new NextResponse(null, { status: 204 })` (no JSON envelope on success)"
+    - 'Omit port from db.minecraftServer.create payload when undefined (lets Prisma @default(25565) apply rather than overriding with undefined)'
+    - 'PUT/DELETE both verify existing.websiteId === url websiteId — guards against cross-website edits even when a user owns multiple websites'
+    - 'DELETE returns 204 with empty body via `new NextResponse(null, { status: 204 })` (no JSON envelope on success)'
 
 patterns-established:
-  - "Nested resource ownership chain: 401 (auth) -> 404 (parent missing) -> 403 (parent owned by other) -> 404 (child not in parent scope) -> 400 (validation) -> action"
-  - "Soft references convention (D-12): MinecraftServer deletion leaves dangling section.settings.minecraftServerId refs — renderer handles placeholder"
+    - 'Nested resource ownership chain: 401 (auth) -> 404 (parent missing) -> 403 (parent owned by other) -> 404 (child not in parent scope) -> 400 (validation) -> action'
+    - 'Soft references convention (D-12): MinecraftServer deletion leaves dangling section.settings.minecraftServerId refs — renderer handles placeholder'
 
 requirements-completed: [CONN-01, CONN-02, CONN-03]
 
@@ -59,6 +59,7 @@ completed: 2026-05-12
 - **Files modified:** 2 (both created)
 
 ## Accomplishments
+
 - POST handler creates a MinecraftServer linked to the parent Website; returns 201 with full record so callers can update local state without re-fetch (D-04).
 - PUT handler updates partial fields via `updateMcserverSchema`; returns the updated record.
 - DELETE handler removes a record; returns 204 (empty body).
@@ -79,11 +80,11 @@ Each task was committed atomically:
 
 ## Endpoint Status Code Matrix
 
-| Endpoint                                                 | 401 | 404 (website) | 403 | 404 (server) | 400 | Success |
-| -------------------------------------------------------- | --- | ------------- | --- | ------------ | --- | ------- |
-| POST /api/websites/[websiteId]/servers                   | yes | yes           | yes | n/a          | yes | 201     |
-| PUT /api/websites/[websiteId]/servers/[serverId]         | yes | yes           | yes | yes          | yes | 200     |
-| DELETE /api/websites/[websiteId]/servers/[serverId]      | yes | yes           | yes | yes          | n/a | 204     |
+| Endpoint                                            | 401 | 404 (website) | 403 | 404 (server) | 400 | Success |
+| --------------------------------------------------- | --- | ------------- | --- | ------------ | --- | ------- |
+| POST /api/websites/[websiteId]/servers              | yes | yes           | yes | n/a          | yes | 201     |
+| PUT /api/websites/[websiteId]/servers/[serverId]    | yes | yes           | yes | yes          | yes | 200     |
+| DELETE /api/websites/[websiteId]/servers/[serverId] | yes | yes           | yes | yes          | n/a | 204     |
 
 ## Decisions Made
 
@@ -110,6 +111,7 @@ No client code wires up these endpoints in this plan. The connections-manager UI
 ## Threat Surface Review
 
 Both routes are new authenticated mutation endpoints. Threat model coverage:
+
 - **Unauthenticated access** — mitigated (401).
 - **Authenticated cross-user mutation** — mitigated by `website.userId !== session.user.id` check returning 403.
 - **Authenticated cross-website mutation by same owner** — mitigated by `existing.websiteId !== websiteId` returning 404 (PUT/DELETE).
@@ -127,15 +129,18 @@ No new threat flags surfaced beyond what the phase context already documented.
 ## Self-Check: PASSED
 
 Files verified to exist:
+
 - FOUND: src/app/api/websites/[websiteId]/servers/route.ts
 - FOUND: src/app/api/websites/[websiteId]/servers/[serverId]/route.ts
 
 Commits verified in git log:
+
 - FOUND: 4cf93fa (feat(07-03): add POST /api/websites/[websiteId]/servers handler)
 - FOUND: b601798 (feat(07-03): add PUT/DELETE handlers for nested MinecraftServer route)
 
 tsc check: `npx tsc --noEmit` exits 0.
 
 ---
-*Phase: 07-api-layer*
-*Completed: 2026-05-12*
+
+_Phase: 07-api-layer_
+_Completed: 2026-05-12_

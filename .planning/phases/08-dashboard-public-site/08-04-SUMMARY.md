@@ -103,18 +103,20 @@ completed: 2026-05-12
 Named export: `export function ConnectionsModal({ websiteId, isOpen, onClose }: ConnectionsModalProps)`.
 
 Internal structure (top → bottom of the file):
+
 - Imports: React (`useState`, `useEffect`), `react-hook-form`, `zodResolver`, UI primitives (`Button`, `Input`, `Textarea`, `Modal`, `ModalHeader`, `ModalTitle`, `ModalContent`), `useToast`, `createMcserverSchema` + `CreateMcserverInput` type, lucide icons (`Server`, `Loader2`, `Pencil`, `Trash2`, `Plus`, `X`).
 - Types: `McServer` (mirrors Phase 7 endpoint response — `id`, `name`, `ip`, `port`, `description: string | null`); `RowMode = "read" | "edit" | "confirm-delete"`; `ConnectionsModalProps`.
 - Component `ConnectionsModal`:
-  - State: `servers[]`, `isLoading`, `rowMode: Record<string, RowMode>`, `showAddForm`, `toast` from `useToast()`.
-  - Helpers: `modeOf(id)`, `setOnlyRowMode(id, mode)` (single-row policy from UI-SPEC), `exitRowMode(id)`.
-  - `useEffect` on `[isOpen, websiteId, toast]`: `if (!isOpen) return;` (with cleanup that clears `servers`/`rowMode`/`showAddForm` for clean reopen); `let cancelled = false` flag; in-flight `await fetch('/api/websites/{websiteId}/servers')` with WR-04 unwrap; `return () => { cancelled = true; }` cleanup.
-  - CRUD handlers: `addServer`, `updateServer`, `deleteServer` — each hits the correct endpoint, unwraps `body.error`, updates local state, fires the corresponding success toast (`"Server added" | "Server updated" | "Server removed"`).
-  - Render tree: `<Modal className="max-w-lg">` → `<ModalHeader>` with "Connected Minecraft Servers" title + close X button → `<ModalContent className="max-h-[60vh] overflow-y-auto scrollbar-thin">` → loading/empty/list-and-form branches.
+    - State: `servers[]`, `isLoading`, `rowMode: Record<string, RowMode>`, `showAddForm`, `toast` from `useToast()`.
+    - Helpers: `modeOf(id)`, `setOnlyRowMode(id, mode)` (single-row policy from UI-SPEC), `exitRowMode(id)`.
+    - `useEffect` on `[isOpen, websiteId, toast]`: `if (!isOpen) return;` (with cleanup that clears `servers`/`rowMode`/`showAddForm` for clean reopen); `let cancelled = false` flag; in-flight `await fetch('/api/websites/{websiteId}/servers')` with WR-04 unwrap; `return () => { cancelled = true; }` cleanup.
+    - CRUD handlers: `addServer`, `updateServer`, `deleteServer` — each hits the correct endpoint, unwraps `body.error`, updates local state, fires the corresponding success toast (`"Server added" | "Server updated" | "Server removed"`).
+    - Render tree: `<Modal className="max-w-lg">` → `<ModalHeader>` with "Connected Minecraft Servers" title + close X button → `<ModalContent className="max-h-[60vh] overflow-y-auto scrollbar-thin">` → loading/empty/list-and-form branches.
 - Sub-component `ServerRow` — read mode (two-line: name + IP:port on line 1, description on line 2 if present, edit+delete icon buttons right-aligned); edit mode (renders `<ServerForm mode="edit" initial={server}>` in a `bg-zinc-50 border` card); confirm-delete mode (red bg, `Delete '{name}'?` text, `[Cancel] [Delete]` with `autoFocus` on Delete per UI-SPEC §Accessibility).
 - Sub-component `ServerForm` — single form for add + edit, parameterized on `mode` and optional `initial`. Uses `useForm<CreateMcserverInput>({ resolver: zodResolver(createMcserverSchema) })`. Two-column grid layout (Name | IP, Port | empty, Description full-width). Labels use `font-normal` (400). Port input uses `register('port', { valueAsNumber: true, setValueAs: ... })`. Submit button label: `mode === 'edit' ? 'Update Server' : 'Save Server'`. `autoFocus` on the first field per UI-SPEC §Accessibility.
 
 Acceptance criteria coverage (all 16+ grep gates pass):
+
 - `^export function ConnectionsModal`: 1
 - `isRedirectError`: 0 (REST-not-Server-Action discipline)
 - `next/dist/client/components/redirect-error`: 0
@@ -129,7 +131,7 @@ Acceptance criteria coverage (all 16+ grep gates pass):
 - `font-medium`: 0 (UI-SPEC weight rule)
 - `placeholder="25565"`: 1
 - `valueAsNumber`: 1
-- `aria-label={\`Edit ${server.name}\`}`: 1 (plus `Delete \${server.name}` and `Confirm delete \${server.name}` variants)
+- `aria-label={\`Edit ${server.name}\`}`: 1 (plus `Delete \${server.name}`and`Confirm delete \${server.name}` variants)
 - `"Connected Minecraft Servers"` title: 1
 - Lines: 431 (≥ 200 required)
 
@@ -144,33 +146,38 @@ Baseline `wc -l`: **3187**. After Task 2: **3199**. **Net delta: +12 lines** (CL
 Three additions, in order:
 
 1. **Import** (one line, immediately after the existing `AppearanceTab` import):
-   ```typescript
-   import { ConnectionsModal } from "@/components/dashboard";
-   ```
-   No new lucide imports needed — `Server` (used by the button) was already imported by the god-component (line 48).
+    ```typescript
+    import { ConnectionsModal } from '@/components/dashboard';
+    ```
+    No new lucide imports needed — `Server` (used by the button) was already imported by the god-component (line 48).
 2. **State** (one line, immediately after `hasUnsavedChanges`):
-   ```typescript
-   const [connectionsOpen, setConnectionsOpen] = useState(false);
-   ```
+    ```typescript
+    const [connectionsOpen, setConnectionsOpen] = useState(false);
+    ```
 3. **Button** (8 lines, inserted between the `hasUnsavedChanges` pill and the Preview button — i.e., at the head of the top-bar action cluster):
-   ```tsx
-   <motion.button
-     whileHover={{ scale: 1.02 }}
-     whileTap={{ scale: 0.98 }}
-     onClick={() => setConnectionsOpen(true)}
-     className="flex items-center gap-2 px-3 py-2 text-zinc-600 hover:bg-zinc-100 rounded-xl text-sm font-normal transition-colors"
-   >
-     <Server className="w-4 h-4" />
-     Manage Servers
-   </motion.button>
-   ```
-   UI-SPEC §Typography compliance verified: `font-normal` (400) on the new button. The surrounding cluster buttons (Preview = `font-medium`, Publish = `font-medium`) are pre-Phase-8 carry-forward and were NOT modified.
+    ```tsx
+    <motion.button
+    	whileHover={{ scale: 1.02 }}
+    	whileTap={{ scale: 0.98 }}
+    	onClick={() => setConnectionsOpen(true)}
+    	className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-normal text-zinc-600 transition-colors hover:bg-zinc-100"
+    >
+    	<Server className="h-4 w-4" />
+    	Manage Servers
+    </motion.button>
+    ```
+    UI-SPEC §Typography compliance verified: `font-normal` (400) on the new button. The surrounding cluster buttons (Preview = `font-medium`, Publish = `font-medium`) are pre-Phase-8 carry-forward and were NOT modified.
 4. **Modal mount** (one line, immediately before the outermost wrapper `</div>`):
-   ```tsx
-   <ConnectionsModal websiteId={websiteId} isOpen={connectionsOpen} onClose={() => setConnectionsOpen(false)} />
-   ```
+    ```tsx
+    <ConnectionsModal
+    	websiteId={websiteId}
+    	isOpen={connectionsOpen}
+    	onClose={() => setConnectionsOpen(false)}
+    />
+    ```
 
 What was NOT changed in the god-component:
+
 - The sidebar (`Sections | Appearance` toggle, section list, hero settings panel).
 - The canvas + `PreviewClient` mount.
 - The Preview and Publish (bulk-save) buttons.
@@ -197,7 +204,7 @@ See `key-decisions` in the frontmatter. Highlights:
 
 None — code surface matches the plan exactly.
 
-The verification grep `grep -c 'fetch(\`/api/websites/\${websiteId}/servers\`)'` in the plan's automated block returns 0 (rather than 1) when executed naively because GNU grep treats `${...}` as regex metacharacters. The file content is correct — verified with `grep -cF '...'` (fixed-string flag) which returns 1. This is a verification-script portability issue, not a code deviation. A loose match `grep -c 'fetch(\`/api/websites'` returns 4 (one per CRUD path).
+The verification grep `grep -c 'fetch(\`/api/websites/\${websiteId}/servers\`)'`in the plan's automated block returns 0 (rather than 1) when executed naively because GNU grep treats`${...}`as regex metacharacters. The file content is correct — verified with`grep -cF '...'`(fixed-string flag) which returns 1. This is a verification-script portability issue, not a code deviation. A loose match`grep -c 'fetch(\`/api/websites'` returns 4 (one per CRUD path).
 
 ## Auth Gates
 
@@ -212,47 +219,47 @@ None encountered. The Phase 7 endpoints enforce ownership (D-05 double-chain) se
 
 ### Task 1 — ConnectionsModal
 
-| Check | Expected | Actual |
-|---|---|---|
-| `test -f src/components/dashboard/connections-modal.tsx` | exists | exists |
-| `^export function ConnectionsModal` count | 1 | 1 |
-| `export { ConnectionsModal` in barrel | 1 | 1 |
-| `isRedirectError` | 0 | 0 |
-| `next/dist/client/components/redirect-error` | 0 | 0 |
-| `if (!isOpen)` (effect gate) | 1 | 1 |
-| `let cancelled = false` | 1 | 1 |
-| `method: "POST"` | 1 | 1 |
-| `method: "PUT"` | 1 | 1 |
-| `method: "DELETE"` | 1 | 1 |
-| `body.error ??` count | ≥ 4 | 4 |
-| `"Server added"` / `"Server updated"` / `"Server removed"` | 1 each | 1 each |
-| `className="max-w-lg"` | 1 | 1 |
-| `"No servers connected yet"` | 1 | 1 |
-| Empty-state body copy verbatim | 1 | 1 |
-| `zodResolver(createMcserverSchema)` | 1 | 1 |
-| `font-medium` | 0 | 0 |
-| `placeholder="25565"` | 1 | 1 |
-| `valueAsNumber` | 1 | 1 |
-| `aria-label={\`Edit \${...}\`}` | 1 | 1 |
-| Modal title `"Connected Minecraft Servers"` | 1 | 1 |
-| Line count | ≥ 200 | 431 |
-| `tsc --noEmit` | exit 0 | exit 0 |
+| Check                                                      | Expected | Actual |
+| ---------------------------------------------------------- | -------- | ------ |
+| `test -f src/components/dashboard/connections-modal.tsx`   | exists   | exists |
+| `^export function ConnectionsModal` count                  | 1        | 1      |
+| `export { ConnectionsModal` in barrel                      | 1        | 1      |
+| `isRedirectError`                                          | 0        | 0      |
+| `next/dist/client/components/redirect-error`               | 0        | 0      |
+| `if (!isOpen)` (effect gate)                               | 1        | 1      |
+| `let cancelled = false`                                    | 1        | 1      |
+| `method: "POST"`                                           | 1        | 1      |
+| `method: "PUT"`                                            | 1        | 1      |
+| `method: "DELETE"`                                         | 1        | 1      |
+| `body.error ??` count                                      | ≥ 4      | 4      |
+| `"Server added"` / `"Server updated"` / `"Server removed"` | 1 each   | 1 each |
+| `className="max-w-lg"`                                     | 1        | 1      |
+| `"No servers connected yet"`                               | 1        | 1      |
+| Empty-state body copy verbatim                             | 1        | 1      |
+| `zodResolver(createMcserverSchema)`                        | 1        | 1      |
+| `font-medium`                                              | 0        | 0      |
+| `placeholder="25565"`                                      | 1        | 1      |
+| `valueAsNumber`                                            | 1        | 1      |
+| `aria-label={\`Edit \${...}\`}`                            | 1        | 1      |
+| Modal title `"Connected Minecraft Servers"`                | 1        | 1      |
+| Line count                                                 | ≥ 200    | 431    |
+| `tsc --noEmit`                                             | exit 0   | exit 0 |
 
 ### Task 2 — God-component mount
 
-| Check | Expected | Actual |
-|---|---|---|
-| `import { ConnectionsModal }` | present | present |
-| `const [connectionsOpen, setConnectionsOpen] = useState(false);` | 1 | 1 |
-| `Manage Servers` literal | 1 | 1 |
-| `<ConnectionsModal` | 1 | 1 |
-| `websiteId={websiteId}` | 1 | 1 |
-| `isOpen={connectionsOpen}` | 1 | 1 |
-| `onClose={() => setConnectionsOpen(false)}` | 1 | 1 |
-| `params.websiteId as string` (Plan 01 preserved) | 1 | 1 |
-| `serverId` outside comments | 0 | 0 |
-| Net line delta | ≤ 15 | **12** |
-| `tsc --noEmit` | exit 0 | exit 0 |
+| Check                                                            | Expected | Actual  |
+| ---------------------------------------------------------------- | -------- | ------- |
+| `import { ConnectionsModal }`                                    | present  | present |
+| `const [connectionsOpen, setConnectionsOpen] = useState(false);` | 1        | 1       |
+| `Manage Servers` literal                                         | 1        | 1       |
+| `<ConnectionsModal`                                              | 1        | 1       |
+| `websiteId={websiteId}`                                          | 1        | 1       |
+| `isOpen={connectionsOpen}`                                       | 1        | 1       |
+| `onClose={() => setConnectionsOpen(false)}`                      | 1        | 1       |
+| `params.websiteId as string` (Plan 01 preserved)                 | 1        | 1       |
+| `serverId` outside comments                                      | 0        | 0       |
+| Net line delta                                                   | ≤ 15     | **12**  |
+| `tsc --noEmit`                                                   | exit 0   | exit 0  |
 
 ### Manual smoke trace (static, against verified file contents)
 
@@ -266,14 +273,14 @@ The dev server is not running in the worktree; the plan's manual smoke is record
 
 ### Carry-forward sanity (Phase 7)
 
-| Check | Expected | Actual |
-|---|---|---|
-| `params.websiteId as string` (Plan 01) | preserved | 1 grep hit |
-| `_count: { select: { sections: true } }` in `/api/websites/route.ts` (Plan 03) | preserved | 1 grep hit (file untouched) |
-| Subdomain 409 P2002 path in `actions.ts` + `[websiteId]/route.ts` | unchanged | files untouched in this plan |
-| Freemium gate in `[websiteId]/route.ts` PUT | unchanged | file untouched |
-| BL-06 description round-trip in `server-settings.tsx` | unchanged | file untouched |
-| `serverIp` references anywhere | 0 (Plan 02) | preserved (no edits in this plan) |
+| Check                                                                          | Expected    | Actual                            |
+| ------------------------------------------------------------------------------ | ----------- | --------------------------------- |
+| `params.websiteId as string` (Plan 01)                                         | preserved   | 1 grep hit                        |
+| `_count: { select: { sections: true } }` in `/api/websites/route.ts` (Plan 03) | preserved   | 1 grep hit (file untouched)       |
+| Subdomain 409 P2002 path in `actions.ts` + `[websiteId]/route.ts`              | unchanged   | files untouched in this plan      |
+| Freemium gate in `[websiteId]/route.ts` PUT                                    | unchanged   | file untouched                    |
+| BL-06 description round-trip in `server-settings.tsx`                          | unchanged   | file untouched                    |
+| `serverIp` references anywhere                                                 | 0 (Plan 02) | preserved (no edits in this plan) |
 
 ## Threat Surface Scan
 
@@ -326,6 +333,7 @@ TS compile gate exit code: **0** (recorded twice — after Task 1 and after Task
 - The shared `src/components/dashboard/` directory now houses two co-tenants (WebsiteCard, ConnectionsModal). Future shared dashboard components follow the same `<name>.tsx` + `index.ts` barrel pattern (precedent from Plan 03 SUMMARY, reused here).
 
 ---
-*Phase: 08-dashboard-public-site*
-*Plan: 04*
-*Completed: 2026-05-12*
+
+_Phase: 08-dashboard-public-site_
+_Plan: 04_
+_Completed: 2026-05-12_

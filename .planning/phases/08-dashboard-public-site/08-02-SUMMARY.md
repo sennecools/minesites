@@ -5,48 +5,49 @@ subsystem: ui
 tags: [refactor, typescript, public-site, prop-drop, terminology-cleanup]
 
 requires:
-  - phase: 06-schema-reset
-    provides: Website model (no `serverIp`/`serverPort` on the model itself; the legacy fields lived only in client-side types and a placeholder var)
-  - phase: 07-api-layer
-    provides: /api/websites surface; Phase 7 D-17 verification target ([subdomain]/page.tsx already website-aware)
-  - plan: 08-01
-    provides: editor route directory renamed to [websiteId]/; WebsiteData consumed by SectionPreview via @/components/preview/types
+    - phase: 06-schema-reset
+      provides: Website model (no `serverIp`/`serverPort` on the model itself; the legacy fields lived only in client-side types and a placeholder var)
+    - phase: 07-api-layer
+      provides: /api/websites surface; Phase 7 D-17 verification target ([subdomain]/page.tsx already website-aware)
+    - plan: 08-01
+      provides: editor route directory renamed to [websiteId]/; WebsiteData consumed by SectionPreview via @/components/preview/types
 provides:
-  - WebsiteData interface without `serverIp` (src/components/preview/types.ts)
-  - Public [subdomain] RSC passes `{ name, subdomain }` only to PreviewClient
-  - Public [subdomain] layout drops the `serverIp = ""` placeholder var
-  - SiteNav simplified to a single-prop branded header (Copy IP button + clipboard state removed)
-  - Orphaned `serverIp` consumer in sections/hero-section.tsx cleared (prop + display block dropped, unused Button import removed)
-  - Editor god-component SectionPreview call site cleared of `serverIp: null` literal (TS2353 fix)
-  - TypeScript compile gate (tsc --noEmit) exits 0
-affects: [08-04, future SECT-02 / SECT-03 section types that may re-introduce IP display via a section]
+    - WebsiteData interface without `serverIp` (src/components/preview/types.ts)
+    - Public [subdomain] RSC passes `{ name, subdomain }` only to PreviewClient
+    - Public [subdomain] layout drops the `serverIp = ""` placeholder var
+    - SiteNav simplified to a single-prop branded header (Copy IP button + clipboard state removed)
+    - Orphaned `serverIp` consumer in sections/hero-section.tsx cleared (prop + display block dropped, unused Button import removed)
+    - Editor god-component SectionPreview call site cleared of `serverIp: null` literal (TS2353 fix)
+    - TypeScript compile gate (tsc --noEmit) exits 0
+affects:
+    [08-04, future SECT-02 / SECT-03 section types that may re-introduce IP display via a section]
 
 tech-stack:
-  added: []
-  patterns:
-    - "Lockstep drop pattern: when a field is removed from a shared interface, all stale literals at call sites that consume that interface must drop the field in the same plan (otherwise TS2353 fires the moment the type narrows)"
-    - "Orphaned consumer sweep: when a public-API type field is dropped, scan all importers of files that re-export the consumer; a clean knock-on cleanup keeps the compile gate green"
+    added: []
+    patterns:
+        - 'Lockstep drop pattern: when a field is removed from a shared interface, all stale literals at call sites that consume that interface must drop the field in the same plan (otherwise TS2353 fires the moment the type narrows)'
+        - 'Orphaned consumer sweep: when a public-API type field is dropped, scan all importers of files that re-export the consumer; a clean knock-on cleanup keeps the compile gate green'
 
 key-files:
-  created: []
-  modified:
-    - "src/components/preview/types.ts (-1 line — `serverIp: string | null` field dropped from WebsiteData)"
-    - "src/app/[subdomain]/page.tsx (-1 line — `serverIp: null as string | null,` dropped from serverData literal)"
-    - "src/app/[subdomain]/layout.tsx (-1, edited 1 — `serverIp = \"\"` placeholder var dropped; `<SiteNav>` call narrowed from `serverName + serverIp` to `serverName` only)"
-    - "src/components/site/nav.tsx (-30, +2 — useState/Copy/Check imports dropped; `serverIp` prop dropped; clipboard state + handleCopy + Copy IP button removed; CSS-var styling preserved verbatim)"
-    - "src/components/sections/hero-section.tsx (-30, +1 — `serverIp` prop dropped from interface + destructure; conditional IP+Copy display block deleted; unused Button import dropped)"
-    - "src/app/(dashboard)/dashboard/[websiteId]/page.tsx (-1, +1 — `serverIp: null,` field dropped from the inline serverData literal at line 2920 of the SectionPreview call)"
-    - "src/app/[subdomain]/preview-client.tsx (UNTOUCHED — verified clean: zero serverIp references existed before the plan started)"
+    created: []
+    modified:
+        - 'src/components/preview/types.ts (-1 line — `serverIp: string | null` field dropped from WebsiteData)'
+        - 'src/app/[subdomain]/page.tsx (-1 line — `serverIp: null as string | null,` dropped from serverData literal)'
+        - 'src/app/[subdomain]/layout.tsx (-1, edited 1 — `serverIp = ""` placeholder var dropped; `<SiteNav>` call narrowed from `serverName + serverIp` to `serverName` only)'
+        - 'src/components/site/nav.tsx (-30, +2 — useState/Copy/Check imports dropped; `serverIp` prop dropped; clipboard state + handleCopy + Copy IP button removed; CSS-var styling preserved verbatim)'
+        - 'src/components/sections/hero-section.tsx (-30, +1 — `serverIp` prop dropped from interface + destructure; conditional IP+Copy display block deleted; unused Button import dropped)'
+        - 'src/app/(dashboard)/dashboard/[websiteId]/page.tsx (-1, +1 — `serverIp: null,` field dropped from the inline serverData literal at line 2920 of the SectionPreview call)'
+        - 'src/app/[subdomain]/preview-client.tsx (UNTOUCHED — verified clean: zero serverIp references existed before the plan started)'
 
 key-decisions:
-  - "D-14 option (a) applied verbatim: SiteNav loses the `serverIp` prop entirely rather than keeping it as a `''` pass-through. The Copy IP affordance will be re-introduced via a SECT-02/SECT-03 section type when a 'default server' concept lands in the schema."
-  - "Hero-section.tsx prop drop kept in scope despite the file being functionally orphaned (exported from sections/index.ts but no caller renders <HeroSection /> directly — `HeroSection` only appears as an `as` alias for HeroSettings in the god-component import block, which is unrelated). Cleaning the orphaned consumer keeps the compile gate clean and the file's public API truthful."
-  - "TS compile gate deferred to end of Task 3, not after each task. Tasks 1+2 leave the codebase in a TS2353-inconsistent state (WebsiteData has no `serverIp` but page.tsx line 2920 still passes it as a literal) — running tsc earlier would falsely fail. The plan explicitly defers the gate to Task 3's verify block; this matches the lockstep-drop pattern noted in patterns-established."
-  - "Compile gate run from worktree via temporary `ln -s /home/senne/git/minesites/node_modules` symlink. The symlink was removed before any commit; node_modules is gitignored so even an accidental commit would have been suppressed."
+    - "D-14 option (a) applied verbatim: SiteNav loses the `serverIp` prop entirely rather than keeping it as a `''` pass-through. The Copy IP affordance will be re-introduced via a SECT-02/SECT-03 section type when a 'default server' concept lands in the schema."
+    - "Hero-section.tsx prop drop kept in scope despite the file being functionally orphaned (exported from sections/index.ts but no caller renders <HeroSection /> directly — `HeroSection` only appears as an `as` alias for HeroSettings in the god-component import block, which is unrelated). Cleaning the orphaned consumer keeps the compile gate clean and the file's public API truthful."
+    - "TS compile gate deferred to end of Task 3, not after each task. Tasks 1+2 leave the codebase in a TS2353-inconsistent state (WebsiteData has no `serverIp` but page.tsx line 2920 still passes it as a literal) — running tsc earlier would falsely fail. The plan explicitly defers the gate to Task 3's verify block; this matches the lockstep-drop pattern noted in patterns-established."
+    - 'Compile gate run from worktree via temporary `ln -s /home/senne/git/minesites/node_modules` symlink. The symlink was removed before any commit; node_modules is gitignored so even an accidental commit would have been suppressed.'
 
 patterns-established:
-  - "Lockstep drop: type-field removal + all stale-literal removals must land in the same plan; intermediate task commits leave the codebase TS-inconsistent on purpose — defer the compile gate to the last task."
-  - "Orphaned consumer cleanup: when a public-API prop is dropped, sweep barrel re-exports for orphans (hero-section.tsx was the only knock-on after WebsiteData.serverIp dropped); leaving the prop on the orphan would corrupt the file's documented contract even if no caller currently uses it."
+    - 'Lockstep drop: type-field removal + all stale-literal removals must land in the same plan; intermediate task commits leave the codebase TS-inconsistent on purpose — defer the compile gate to the last task.'
+    - "Orphaned consumer cleanup: when a public-API prop is dropped, sweep barrel re-exports for orphans (hero-section.tsx was the only knock-on after WebsiteData.serverIp dropped); leaving the prop on the orphan would corrupt the file's documented contract even if no caller currently uses it."
 
 requirements-completed: [DASH-04]
 
@@ -85,34 +86,41 @@ completed: 2026-05-12
 ## Files Modified
 
 ### `src/components/preview/types.ts`
+
 - Dropped `serverIp: string | null` from the `WebsiteData` interface. The remaining fields are `name`, `subdomain`, optional `players` / `maxPlayers` / `version`.
 - Other interfaces in the file (`Section`, `StatsServer`, `FeatureItem`, `GalleryImage`) and helper functions (`isColorDark`, `isLightColor`) untouched.
 
 ### `src/app/[subdomain]/page.tsx`
+
 - Dropped `serverIp: null as string | null,` from the `serverData` object literal (line 35). The literal is now `{ name: server.name, subdomain: server.subdomain }`.
 - **D-17 carry-forwards verified intact**: `db.website.findUnique({ where: { subdomain }, include: { sections: ... } })` at line 15-24 is untouched, the `notFound()` gate at line 27 is untouched, and the published-or-preview-mode logic is untouched.
 
 ### `src/app/[subdomain]/preview-client.tsx`
+
 - **No edit required.** Verified clean at plan start: `grep -c serverIp` returned 0. The prop type `server: WebsiteData` flows from the now-narrowed interface; TypeScript narrows automatically and no internal destructure references `serverData.serverIp`.
 
 ### `src/app/[subdomain]/layout.tsx`
+
 - Dropped the line `const serverIp = "";   // Phase 6 placeholder; Phase 7 adds MinecraftServer lookup` (was line 77).
 - Narrowed `<SiteNav serverName={serverName} serverIp={serverIp} />` → `<SiteNav serverName={serverName} />` (was line 106).
 - **CSS isolation preserved**: the `.site-root` wrapper class, the data-theme attribute, the `--site-accent` / `--site-bg` / `--site-card` / `--site-text` / `--site-text-muted` / `--site-font-display` CSS vars, and all 5 font-variable classNames (Rajdhani / Orbitron / Cinzel / Exo_2 / Bebas_Neue) are untouched. CLAUDE.md rule 2 (CSS isolation under `.site-root`) is honored.
 
 ### `src/components/site/nav.tsx`
+
 - Dropped the `useState` / `Copy` / `Check` imports (now unused).
 - Dropped `serverIp: string` from `SiteNavProps`.
 - Dropped the `copied` clipboard state, the `handleCopy` async handler, and the `<button aria-label="Copy server IP">` block.
 - The remaining nav is a `<nav>` with a single branded `<span>{serverName}</span>` — CSS-var styling (`var(--site-card)` background, `var(--site-font-display)` font, `var(--site-text)` color) preserved verbatim.
 
 ### `src/components/sections/hero-section.tsx`
+
 - Dropped the `Button` import (now unused).
 - Dropped `serverIp?: string | null` from `HeroSectionProps`.
 - Dropped the `serverIp` destructure from the function signature.
 - Deleted the entire `{serverIp && (...)}` conditional IP+Copy display block (was lines 58-82). The remaining render is title + subtitle + background image gradient.
 
 ### `src/app/(dashboard)/dashboard/[websiteId]/page.tsx`
+
 - Dropped the `serverIp: null,` token from the inline `serverData` object literal at line 2920 of the `<SectionPreview>` call. The literal is now `{ name: serverData.name, subdomain: serverData.subdomain, players: serverData.players, maxPlayers: serverData.maxPlayers, version: serverData.version }`.
 - **Plan 01 carry-forwards verified intact**: `params.websiteId as string` destructure at line 2243 is unchanged (1 grep hit); `function SectionPreview({ section, serverData }: { section: Section; serverData: WebsiteData })` at line 2174 is unchanged (1 grep hit). No other line in this 3000+ line god-component was modified.
 
@@ -155,28 +163,28 @@ None encountered.
 
 ### Plan-wide serverIp purge (7 files)
 
-| File | `grep -c "serverIp"` | Expected |
-|---|---|---|
-| `src/components/preview/types.ts` | 0 | 0 |
-| `src/app/[subdomain]/page.tsx` | 0 | 0 |
-| `src/app/[subdomain]/layout.tsx` | 0 | 0 |
-| `src/app/[subdomain]/preview-client.tsx` | 0 | 0 |
-| `src/components/site/nav.tsx` | 0 | 0 |
-| `src/components/sections/hero-section.tsx` | 0 | 0 |
-| `src/app/(dashboard)/dashboard/[websiteId]/page.tsx` | 0 | 0 |
+| File                                                 | `grep -c "serverIp"` | Expected |
+| ---------------------------------------------------- | -------------------- | -------- |
+| `src/components/preview/types.ts`                    | 0                    | 0        |
+| `src/app/[subdomain]/page.tsx`                       | 0                    | 0        |
+| `src/app/[subdomain]/layout.tsx`                     | 0                    | 0        |
+| `src/app/[subdomain]/preview-client.tsx`             | 0                    | 0        |
+| `src/components/site/nav.tsx`                        | 0                    | 0        |
+| `src/components/sections/hero-section.tsx`           | 0                    | 0        |
+| `src/app/(dashboard)/dashboard/[websiteId]/page.tsx` | 0                    | 0        |
 
 ### Carry-forward preservation
 
-| Check | Expected | Actual |
-|---|---|---|
-| `notFound()` in `[subdomain]/page.tsx` | >= 1 | 1 |
-| `db.website.findUnique` in `[subdomain]/page.tsx` | >= 1 | 1 |
-| `interface SiteNavProps` in `nav.tsx` | 1 | 1 |
-| `site-root` in `[subdomain]/layout.tsx` | >= 1 | 3 |
-| `<SiteNav serverName=` in `layout.tsx` with no `serverIp=` | 1 (and 0 stale) | 1 (0 stale) |
-| `<SectionPreview section={section} serverData={{` in `[websiteId]/page.tsx` | 1 | 1 |
-| `function SectionPreview({ section, serverData }` in `[websiteId]/page.tsx` | 1 | 1 |
-| `params.websiteId as string` (Plan 01 sweep) in `[websiteId]/page.tsx` | 1 | 1 |
+| Check                                                                       | Expected        | Actual      |
+| --------------------------------------------------------------------------- | --------------- | ----------- |
+| `notFound()` in `[subdomain]/page.tsx`                                      | >= 1            | 1           |
+| `db.website.findUnique` in `[subdomain]/page.tsx`                           | >= 1            | 1           |
+| `interface SiteNavProps` in `nav.tsx`                                       | 1               | 1           |
+| `site-root` in `[subdomain]/layout.tsx`                                     | >= 1            | 3           |
+| `<SiteNav serverName=` in `layout.tsx` with no `serverIp=`                  | 1 (and 0 stale) | 1 (0 stale) |
+| `<SectionPreview section={section} serverData={{` in `[websiteId]/page.tsx` | 1               | 1           |
+| `function SectionPreview({ section, serverData }` in `[websiteId]/page.tsx` | 1               | 1           |
+| `params.websiteId as string` (Plan 01 sweep) in `[websiteId]/page.tsx`      | 1               | 1           |
 
 ### TypeScript compile gate
 
@@ -249,6 +257,7 @@ Main-repo cross-contamination check: `git -C /home/senne/git/minesites status --
 - Future SECT-02 / SECT-03 section types (deferred from v1.0) will re-introduce the Copy IP / Server IP display by rendering a section that reads from a selected `MinecraftServer` connection — not by re-adding `serverIp` to `WebsiteData`. The current shape is the right v1.1 contract.
 
 ---
-*Phase: 08-dashboard-public-site*
-*Plan: 02*
-*Completed: 2026-05-12*
+
+_Phase: 08-dashboard-public-site_
+_Plan: 02_
+_Completed: 2026-05-12_

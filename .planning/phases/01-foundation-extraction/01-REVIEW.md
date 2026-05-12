@@ -4,20 +4,20 @@ reviewed: 2026-05-07T00:00:00Z
 depth: standard
 files_reviewed: 9
 files_reviewed_list:
-  - src/app/(dashboard)/dashboard/[serverId]/page.tsx
-  - src/app/[subdomain]/preview-client.tsx
-  - src/components/sections/index.ts
-  - src/components/sections/render/hero-render.tsx
-  - src/components/sections/settings/hero-settings.tsx
-  - src/lib/plan.ts
-  - src/lib/section-registry.tsx
-  - src/types/sections.ts
-  - src/types/site-theme.ts
+    - src/app/(dashboard)/dashboard/[serverId]/page.tsx
+    - src/app/[subdomain]/preview-client.tsx
+    - src/components/sections/index.ts
+    - src/components/sections/render/hero-render.tsx
+    - src/components/sections/settings/hero-settings.tsx
+    - src/lib/plan.ts
+    - src/lib/section-registry.tsx
+    - src/types/sections.ts
+    - src/types/site-theme.ts
 findings:
-  critical: 4
-  warning: 5
-  info: 3
-  total: 12
+    critical: 4
+    warning: 5
+    info: 3
+    total: 12
 status: issues_found
 ---
 
@@ -42,14 +42,15 @@ Phase 1 extracted the Hero section into the new registry pattern and introduced 
 **Issue:** `backgroundImage` is taken directly from user-editable settings and interpolated verbatim into a CSS `url(...)` expression without any sanitization. A value such as `"); background-image: url(javascript:alert(1)` or a path-traversal string can break the CSS rule entirely, and in browsers that still evaluate `url()` with non-http schemes it can escalate. The same pattern is repeated throughout `page.tsx` (lines 290, 621, 685, 864, 984, 1391, 1432, 1496, 1639, 1891) and `preview-client.tsx` (line 712).
 
 **Fix:** Validate that `backgroundImage` is an absolute `http://` or `https://` URL before using it; if invalid, fall back to no background. A minimal guard:
+
 ```typescript
 const safeImageUrl =
-  backgroundImage?.startsWith("http://") ||
-  backgroundImage?.startsWith("https://")
-    ? backgroundImage
-    : "";
-const hasImage = backgroundType === "image" && !!safeImageUrl;
+	backgroundImage?.startsWith('http://') || backgroundImage?.startsWith('https://')
+		? backgroundImage
+		: '';
+const hasImage = backgroundType === 'image' && !!safeImageUrl;
 ```
+
 Apply the same guard in every `url(${...})` interpolation in `page.tsx` and `preview-client.tsx`.
 
 ---
@@ -60,10 +61,12 @@ Apply the same guard in every `url(${...})` interpolation in `page.tsx` and `pre
 **Issue:** `guildIcon` and `guildBanner` are stored values from the Discord invite API response and are rendered directly as `<img src={guildIcon}>`. If an attacker can manipulate the stored settings JSON (e.g., via a compromised API response or direct database manipulation), this becomes an open redirect / SSRF vector on the client and can load arbitrary third-party content with no referrer restriction. More critically, `preview-client.tsx` line 388 passes `guildIcon as string` — if the stored value is not a string, this silently renders `src="[object Object]"` rather than failing safely.
 
 **Fix:** Validate that these URLs begin with `https://` before rendering; otherwise render the fallback initial avatar:
+
 ```typescript
-const safeIcon = typeof guildIcon === "string" && guildIcon.startsWith("https://")
-  ? guildIcon : null;
+const safeIcon =
+	typeof guildIcon === 'string' && guildIcon.startsWith('https://') ? guildIcon : null;
 ```
+
 Replace all three `{guildIcon ? <img src={guildIcon}> : ...}` branches with the safe variant.
 
 ---
@@ -74,12 +77,14 @@ Replace all three `{guildIcon ? <img src={guildIcon}> : ...}` branches with the 
 **Issue:** `page.tsx` declares its own local `Section` type (line 245) where `settings` is typed as `SectionSettings` (a specific interface). `SECTION_REGISTRY["hero"].render` is typed as `ComponentType<SectionRenderProps>` where `SectionRenderProps.section` is the `Section` from `@/components/preview/types`, which has `settings: Record<string, unknown>`. These two `Section` types are structurally incompatible: `SectionSettings` is not assignable to `Record<string, unknown>` in strict TypeScript because interface index signatures are not implicit. The call at line 2326 (`<Entry.render section={section} serverData={serverData} />`) will produce a TypeScript type error at compile time. `preview-client.tsx` (line 751) is correct because it uses the proper `Section` from `preview/types.ts`.
 
 **Fix:** In `page.tsx`, import and use the `Section` from `@/components/preview/types` instead of the locally-declared duplicate, or cast at the call-site:
+
 ```typescript
 // Option A: use the shared type
 import type { Section } from '@/components/preview/types';
 // Option B: minimal cast at call-site
 <Entry.render section={section as unknown as PreviewSection} serverData={serverData} />
 ```
+
 Option A is preferred — it eliminates the divergence between local and canonical `Section`.
 
 ---
@@ -90,22 +95,23 @@ Option A is preferred — it eliminates the divergence between local and canonic
 **Issue:** `addSection` appends a new section unconditionally, with no check against `getPlanLimits().maxSections`. CLAUDE.md explicitly states "Freemium enforcement is server-side — the PUT /api/servers/[serverId] handler must validate section count against user.plan. Client-only gating is not sufficient." However, there is also no client-side guard at all, meaning a free-tier user can add more than 5 sections in the UI, see them in the preview, and the only backstop is the server-side PUT handler (which is not in scope of this review). The `maxCount` field on `RegistryEntry` (e.g., `stats.maxCount = 1`) is also completely unused in `addSection`. This creates a broken UX where users can exceed limits and not discover it until a confusing save failure.
 
 **Fix:** Import `getPlanLimits` and apply the free-tier client-side guard:
+
 ```typescript
 import { getPlanLimits } from '@/lib/plan';
 
 const addSection = (type: string) => {
-  const limits = getPlanLimits('free'); // replace with actual plan once User.plan lands in Phase 4
-  if (sections.length >= limits.maxSections) {
-    // Show upgrade prompt
-    return;
-  }
-  // Also enforce maxCount per type
-  const entry = SECTION_REGISTRY[type as SectionType];
-  if (entry?.maxCount) {
-    const existing = sections.filter((s) => s.type === type).length;
-    if (existing >= entry.maxCount) return;
-  }
-  // ... rest of addSection
+	const limits = getPlanLimits('free'); // replace with actual plan once User.plan lands in Phase 4
+	if (sections.length >= limits.maxSections) {
+		// Show upgrade prompt
+		return;
+	}
+	// Also enforce maxCount per type
+	const entry = SECTION_REGISTRY[type as SectionType];
+	if (entry?.maxCount) {
+		const existing = sections.filter((s) => s.type === type).length;
+		if (existing >= entry.maxCount) return;
+	}
+	// ... rest of addSection
 };
 ```
 
@@ -119,9 +125,11 @@ const addSection = (type: string) => {
 **Issue:** `page.tsx` defines its own private `isColorDark` (threshold: `luminance < 0.5`, using the BT.601 formula scaled to 0–1). `src/components/preview/types.ts` exports `isColorDark` with a different formula and threshold (`brightness < 128`, using integer math). These will produce different results for mid-range colors, meaning the same section can appear with dark styling in the public preview but light styling in the dashboard editor. `hero-render.tsx` uses `isLightColor` from `preview/types.ts` (line 4) while `page.tsx` uses its own private version — the dashboard preview for non-hero sections uses the private variant.
 
 **Fix:** Delete the private `isColorDark` in `page.tsx` (lines 303–311) and import the shared one:
+
 ```typescript
 import { isColorDark } from '@/components/preview/types';
 ```
+
 Also remove the local `SectionBackground` component's `isDark` calculation at line 281 and replace with the imported helper.
 
 ---
@@ -132,18 +140,19 @@ Also remove the local `SectionBackground` component's `isDark` calculation at li
 **Issue:** `addSection` always creates a section with `settings: {}`. The registry entry for `hero` defines `defaultSettings()` returning a fully-populated hero settings object. A newly added hero section will render with no `hero` key in `settings`, so `HeroRender` falls back to all defaults via destructuring — functionally correct but means the settings panel starts empty. More seriously, for placeholder section types whose `defaultSettings` is also `() => ({})`, there is no mechanism to seed type-specific defaults when they are extracted in future phases. This also means `SECTION_REGISTRY.defaultSettings` is dead code currently.
 
 **Fix:**
+
 ```typescript
 const addSection = (type: string) => {
-  const entry = SECTION_REGISTRY[type as SectionType];
-  const newSection: Section = {
-    id: crypto.randomUUID(),
-    type,
-    title: entry?.displayName ?? sectionTypeConfig[type]?.label ?? `New ${type} section`,
-    subtitle: null,
-    visible: true,
-    settings: entry?.defaultSettings() ?? {},
-  };
-  // ...
+	const entry = SECTION_REGISTRY[type as SectionType];
+	const newSection: Section = {
+		id: crypto.randomUUID(),
+		type,
+		title: entry?.displayName ?? sectionTypeConfig[type]?.label ?? `New ${type} section`,
+		subtitle: null,
+		visible: true,
+		settings: entry?.defaultSettings() ?? {},
+	};
+	// ...
 };
 ```
 
@@ -155,6 +164,7 @@ const addSection = (type: string) => {
 **Issue:** The masonry layout uses a dynamically constructed Tailwind class: `` `@md:columns-${columns}` `` where `columns` is a runtime value (2, 3, or 4). Tailwind's JIT/purge pass scans for complete static class strings. The class `@md:columns-3` will not appear in the source and will be purged, resulting in the masonry column count having no effect in production. The same issue exists in `preview-client.tsx` line 526, which constructs `colsClass` conditionally (safe because the ternary generates full strings), but the masonry div itself (`line 552`) uses `${colsClass} gap-3 space-y-3` where `colsClass` was computed as a full string — that is safe. Only the interpolated `@md:columns-${columns}` is broken.
 
 **Fix:** Use a lookup object instead:
+
 ```typescript
 const masonryColsClass: Record<number, string> = {
   2: "@md:columns-2",
@@ -182,6 +192,7 @@ const masonryColsClass: Record<number, string> = {
 **Issue:** The file is marked `"use client"` solely because it contains JSX (`<Layout className="w-4 h-4" />` etc.) in the `icon` fields of registry entries. This forces the entire registry — including all imported component types for render and settings — to cross into the client bundle. If `SECTION_REGISTRY` is ever imported in a Server Component context (e.g., a future RSC page listing sections), Next.js will error because the registry imports `"use client"` components. The icon field is a `ReactNode` used only in dashboard UI; it should not force the registry itself to be a client module.
 
 **Fix:** Remove JSX from `SECTION_REGISTRY` icon fields. Replace with a string identifier or component reference that can be resolved at the usage site:
+
 ```typescript
 // In registry:
 icon: "Layout", // string key
@@ -189,6 +200,7 @@ icon: "Layout", // string key
 import { Layout } from "lucide-react";
 const IconComponent = iconMap[entry.icon];
 ```
+
 Alternatively, split the registry into a data file (no JSX) and a separate `SECTION_REGISTRY_UI` that augments with icons, used only in client components.
 
 ---
@@ -201,6 +213,7 @@ Alternatively, split the registry into a data file (no JSX) and a separate `SECT
 **Issue:** Line 57 imports `HeroSettings` directly from `@/components/sections/settings/hero-settings`. The component is also reachable via `SECTION_REGISTRY["hero"].settings`. The direct import is used at line 2379 in `SettingsPanel`. This redundant import partially defeats the purpose of the registry abstraction (future section types added to the registry would still require direct imports in `SettingsPanel`).
 
 **Fix:** Use the registry entry instead:
+
 ```typescript
 // In SettingsPanel, replace:
 {section.type === "hero" && <HeroSettings section={section} onUpdate={onUpdate} />}
@@ -212,6 +225,7 @@ Alternatively, split the registry into a data file (no JSX) and a separate `SECT
   return <SettingsComponent section={section} onUpdate={onUpdate} />;
 })()}
 ```
+
 This makes the settings dispatch registry-driven for all future section types automatically.
 
 ---

@@ -6,30 +6,30 @@ tags: [typescript, theme, sections, hero, background-override, THEME-03]
 
 # Dependency graph
 requires:
-  - plan: 02-01
-    provides: SiteTheme type contracts (PaletteKey, FontKey, SiteTheme)
+    - plan: 02-01
+      provides: SiteTheme type contracts (PaletteKey, FontKey, SiteTheme)
 provides:
-  - SectionBgOverride control in hero-settings.tsx (Section Background label, hex input, Reset Background button)
-  - Hero render applies section.settings.backgroundColor as inline style override with fallback to getBackgroundStyle()
+    - SectionBgOverride control in hero-settings.tsx (Section Background label, hex input, Reset Background button)
+    - Hero render applies section.settings.backgroundColor as inline style override with fallback to getBackgroundStyle()
 affects: [hero-settings.tsx, hero-render.tsx]
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns:
-    - "section.settings.backgroundColor (top-level) is the THEME-03 section-level override; section.settings.hero.backgroundColor is the hero internal bg — these are separate fields"
-    - "sectionBgOverride ? { backgroundColor: sectionBgOverride } : getBackgroundStyle() — conditional override pattern for section-level bg"
+    added: []
+    patterns:
+        - 'section.settings.backgroundColor (top-level) is the THEME-03 section-level override; section.settings.hero.backgroundColor is the hero internal bg — these are separate fields'
+        - 'sectionBgOverride ? { backgroundColor: sectionBgOverride } : getBackgroundStyle() — conditional override pattern for section-level bg'
 
 key-files:
-  created: []
-  modified:
-    - src/components/sections/settings/hero-settings.tsx
-    - src/components/sections/render/hero-render.tsx
+    created: []
+    modified:
+        - src/components/sections/settings/hero-settings.tsx
+        - src/components/sections/render/hero-render.tsx
 
 key-decisions:
-  - "sectionBg is read from section.settings.backgroundColor (top-level), not from section.settings.hero.backgroundColor (hero-internal) — no naming collision"
-  - "handleSectionBgChange calls onUpdate({ settings: { ...section.settings, backgroundColor: value } }) — spreads full settings to preserve all other keys"
-  - "When sectionBgOverride is falsy (undefined or empty), getBackgroundStyle() is used unchanged — non-breaking fallback"
+    - 'sectionBg is read from section.settings.backgroundColor (top-level), not from section.settings.hero.backgroundColor (hero-internal) — no naming collision'
+    - 'handleSectionBgChange calls onUpdate({ settings: { ...section.settings, backgroundColor: value } }) — spreads full settings to preserve all other keys'
+    - 'When sectionBgOverride is falsy (undefined or empty), getBackgroundStyle() is used unchanged — non-breaking fallback'
 
 requirements-completed: [THEME-03]
 
@@ -96,5 +96,6 @@ No new security surface introduced beyond what is documented in the plan's threa
 - TypeScript: only pre-existing TS2322 in preview-client.tsx (unchanged, out of scope)
 
 ---
-*Phase: 02-theme-system*
-*Completed: 2026-05-07*
+
+_Phase: 02-theme-system_
+_Completed: 2026-05-07_

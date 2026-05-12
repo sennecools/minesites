@@ -5,6 +5,7 @@
 ## Naming Patterns
 
 **Files:**
+
 - React component files: PascalCase for standalone components (`ImageUpload.tsx`), kebab-case for grouped UI components (`hero-section.tsx`, `server-settings.tsx`)
 - Page files: always `page.tsx` following Next.js App Router convention
 - Server action files: `actions.ts` at the route level
@@ -13,6 +14,7 @@
 - Validation files: kebab-case under `src/lib/validations/` (`auth.ts`, `server.ts`)
 
 **Components and Functions:**
+
 - React components: PascalCase (`Button`, `ServerSettings`, `CreateServerDialog`, `HeroSection`)
 - Named exports for all reusable components — default exports only for Next.js route pages (`page.tsx`, `layout.tsx`)
 - Event handler functions: `handle` prefix (`handleSubmit`, `handleDelete`, `handleTogglePublished`, `handleUpload`, `handleDrop`)
@@ -21,11 +23,13 @@
 - Hook stores: `use` prefix + `Store` suffix (`useSidebarStore`)
 
 **Variables:**
+
 - camelCase throughout (`serverId`, `formData`, `hashedPassword`, `sessionToken`)
 - Type-inferred schema types use `type` keyword: `type LoginInput = z.infer<typeof loginSchema>`
 - Constants defined with `const`, no `let` observed for module-level values
 
 **Types:**
+
 - `interface` preferred for component props and data shapes (`interface ButtonProps`, `interface ServerSettingsProps`, `interface ModalProps`)
 - `type` used for Zod-inferred types (`type CreateServerInput = z.infer<...>`) and for complex union/intersection types within large page components
 - Local-scope shape types within page components use `type` (e.g., `type HeroSettings = { ... }`)
@@ -34,26 +38,25 @@
 ## Code Style
 
 **Formatting:**
+
 - No Prettier config detected — formatting is enforced via ESLint (eslint-config-next + core-web-vitals + typescript rules)
 - ESLint configured at `eslint.config.mjs` using the flat config format
 
 **TypeScript:**
+
 - `strict: true` enabled in `tsconfig.json`
 - `noEmit: true` — TypeScript used for type checking only, not compilation
 - Path alias `@/*` maps to `src/*` — used consistently throughout the codebase
 - Non-null assertion (`!`) used in auth config for env vars: `process.env.DISCORD_CLIENT_ID!`
 
 **Tailwind CSS:**
+
 - Tailwind v4 with PostCSS
 - `cn()` utility (`clsx` + `tailwind-merge`) used in all components that accept `className` props — defined at `src/lib/utils.ts`
 - Conditional class application uses object syntax inside `cn()` for variants:
-  ```tsx
-  cn(
-    "base-classes",
-    { "variant-class": condition === "value" },
-    className
-  )
-  ```
+    ```tsx
+    cn('base-classes', { 'variant-class': condition === 'value' }, className);
+    ```
 - Design tokens: `zinc-*` for neutral grays, `cyan-*`/`emerald-*` for brand accent, `red-*` for destructive actions
 
 ## React Directive Pattern
@@ -66,47 +69,55 @@
 ## Component Patterns
 
 **UI primitives** (`src/components/ui/`):
+
 - Form controls (`Button`, `Input`, `Textarea`, `Select`, `Label`) use `forwardRef` with explicit generic types and set `.displayName`:
-  ```tsx
-  const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, ...props }, ref) => {
-    // ...
-  });
-  Button.displayName = "Button";
-  ```
+    ```tsx
+    const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+    	({ className, variant, ...props }, ref) => {
+    		// ...
+    	},
+    );
+    Button.displayName = 'Button';
+    ```
 - Compound components (`Modal`, `Card`, `Dropdown`) are implemented as separate named functions in the same file and exported together at the bottom
 
 **Feature components** (`src/components/sections/`, `src/components/layout/`):
+
 - Props destructured inline in function signature
 - Named exports (not default)
 - `interface ComponentNameProps { }` defined immediately before the component function
 
 **Page-level components** (`src/app/**/page.tsx`):
+
 - Default exports
 - Data fetching done inline via `useEffect` + `fetch` for client pages, or directly via `db` calls for server pages
 - Local loading and error state managed with `useState`:
-  ```tsx
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  ```
+    ```tsx
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    ```
 
 **Form pattern:**
+
 - `react-hook-form` + `@hookform/resolvers/zod` + Zod schema in all forms
 - Zod schemas defined in `src/lib/validations/` and imported into both client forms and server actions
 - Form data converted to `FormData` before calling server actions:
-  ```tsx
-  const formData = new FormData();
-  Object.entries(data).forEach(([key, value]) => {
-    if (value !== undefined) formData.append(key, String(value));
-  });
-  await createServer(formData);
-  ```
+    ```tsx
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+    	if (value !== undefined) formData.append(key, String(value));
+    });
+    await createServer(formData);
+    ```
 
 **Animation:**
+
 - Framer Motion used throughout for all interactive micro-animations (`motion.div`, `motion.button`, `AnimatePresence`)
 - Standard enter/exit pattern: `initial={{ opacity: 0, y: 20 }}` → `animate={{ opacity: 1, y: 0 }}` → `exit={{ opacity: 0, y: 20 }}`
 - `whileHover` and `whileTap` used on buttons and cards for tactile feedback
 
 **State management:**
+
 - `useState` for local component state
 - Zustand for cross-component persistent state (`useSidebarStore` in `src/components/layout/sidebar.tsx`)
 - Context + `useContext` for toast notifications (`ToastContext` in `src/components/ui/toast.tsx`)
@@ -124,6 +135,7 @@ Imports are ordered in this pattern (no enforced grouping separator, but consist
 Type-only imports use the `type` keyword inline: `import { forwardRef, type ButtonHTMLAttributes } from "react"`.
 
 Barrel files exist at:
+
 - `src/components/ui/index.ts` — re-exports all UI primitives
 - `src/components/layout/index.ts` — re-exports layout components
 - `src/components/sections/index.ts` — re-exports section components
@@ -131,11 +143,13 @@ Barrel files exist at:
 ## Error Handling
 
 **Server actions** (`src/app/(dashboard)/dashboard/actions.ts`):
+
 - Throw `Error` with descriptive messages on auth/validation failure
 - Let database errors propagate (no try/catch in actions) — handled at call site
 - Auth check is always the first line: `if (!session?.user?.id) throw new Error("Unauthorized")`
 
 **API routes** (`src/app/api/**/route.ts`):
+
 - Wrap entire handler body in `try/catch`
 - Return `{ error: "..." }` JSON with appropriate status code on error
 - `console.error("context:", error)` in every catch block
@@ -143,6 +157,7 @@ Barrel files exist at:
 - Ownership check returns `403` after confirming resource exists
 
 **Client components:**
+
 - Catch errors from server action calls with `try/catch` in `onSubmit`
 - Narrow error type with `err instanceof Error ? err.message : "Something went wrong"` pattern — used in 7+ places
 - Display errors inline in red-styled `div` or `p` elements, never as alerts
@@ -162,15 +177,18 @@ Barrel files exist at:
 ## Function Design
 
 **Size:**
+
 - Utility functions are small and focused (`cn`, `hashPassword`, `verifyPassword`, `isColorDark`)
 - Server actions are moderately sized (15–40 lines each)
 - Page components are sometimes very large — `src/app/(dashboard)/dashboard/[serverId]/page.tsx` is 5,171 lines with all editor logic inlined
 
 **Parameters:**
+
 - Props objects always destructured inline in function signature
 - Optional parameters typed with `?` and given default values in destructuring
 
 **Return Values:**
+
 - Server actions use `redirect()` or `revalidatePath()` — no explicit return
 - API routes always return `NextResponse.json(...)`
 - Utility functions return typed values
@@ -178,6 +196,7 @@ Barrel files exist at:
 ## Module Design
 
 **Exports:**
+
 - Named exports for all reusable components and functions
 - Default exports only for Next.js route files (`page.tsx`, `layout.tsx`, `route.ts` handlers via re-export)
 - Barrel `index.ts` files consolidate exports for component directories
@@ -201,4 +220,4 @@ Barrel files exist at:
 
 ---
 
-*Convention analysis: 2026-05-07*
+_Convention analysis: 2026-05-07_

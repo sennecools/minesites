@@ -13,9 +13,10 @@
 
 **Why it happens:** The player count feels like "core" data so it gets awaited before rendering. It isn't — it is supplementary data that can fail gracefully.
 
-**Consequences:** Published server pages that intermittently return blank screens or long spinner states. The server's website is broken whenever their Minecraft server goes offline, which is the exact moment visitors most need to see *something*.
+**Consequences:** Published server pages that intermittently return blank screens or long spinner states. The server's website is broken whenever their Minecraft server goes offline, which is the exact moment visitors most need to see _something_.
 
 **Prevention:**
+
 - Implement the status poll as a Next.js Route Handler (`/api/server-status?ip=...`) with a hard `AbortController` timeout of 3–4 seconds.
 - Cache the result in Redis or Next.js `unstable_cache` / `revalidate` for at least 60 seconds (mcsrvstat.us already caches for 5 minutes on their end, so hitting them faster than that is pointless and wasteful).
 - On the public page, render the live player count section as a client component that fetches via SWR with a stale fallback — the rest of the page renders immediately from SSR.
@@ -36,6 +37,7 @@
 **Consequences:** Free users accumulate unlimited sections. Revenue is undermined. Existing tenant data violates the invariant you thought you were enforcing, making plan upgrades (and downgrades) unreliable.
 
 **Prevention:**
+
 - The section count limit MUST be re-checked in the `PUT /api/servers/[serverId]` route handler, server-side, before persisting sections.
 - Store the user's plan tier on the `User` model in Prisma (a simple `plan: "free" | "pro"` enum is sufficient for v1).
 - The check is: if `user.plan === "free" && sections.length > 5`, return `400` with a descriptive error message.
@@ -57,6 +59,7 @@
 **Consequences:** Any future developer (or future self) cannot locate code quickly, TypeScript compile times increase, the file exceeds editor rendering limits on some machines, and targeted fixes become high-risk changes. The existing `Date.now()` IDs, mock data, and legacy `colorScheme` field already show how undetected bugs accumulate in files of this size.
 
 **Prevention:**
+
 - Before adding the first new section, extract the existing settings panels into `src/components/sections/settings/[SectionType]Settings.tsx` — one file per section type. The editor page imports them.
 - Extract preview renderers into `src/components/sections/preview/[SectionType]Preview.tsx`.
 - Define section type interfaces in `src/types/sections.ts` (or `src/components/preview/types.ts`, which already partially exists) rather than locally in the page component.
@@ -80,6 +83,7 @@
 **Consequences:** All server websites look identical regardless of the owner's chosen palette. The theme settings panel appears to work in the editor (where a class toggle updates CSS variables correctly via React state), but the published subdomain page renders with wrong colors.
 
 **Prevention:**
+
 - Use `@theme inline` for any token that needs to be overridden at runtime by a server-specific class or data attribute.
 - Structure themes as: a `[data-theme="..."]` or `.theme-[slug]` selector on the page root sets primitive CSS variables (e.g. `--accent`, `--bg`), and `@theme inline` maps those to Tailwind utility classes.
 - Test the theme system on the subdomain rendering path (`src/app/[subdomain]/page.tsx`), not only in the dashboard editor, since they render differently.
@@ -99,6 +103,7 @@
 **Consequences:** The core stated problem of MineSites — "websites feel like dashboards" — is never resolved even after building a theme system.
 
 **Prevention:**
+
 - Isolate dashboard styles strictly to `src/app/(dashboard)/layout.tsx` and its CSS scope.
 - The public subdomain layout (`src/app/[subdomain]/layout.tsx`) should have its own minimal base CSS reset — no shared component styles from the dashboard.
 - Consider wrapping the subdomain page root element with a reset class (e.g. `not-dashboard`) and writing explicit resets for any global styles that would otherwise inherit.
@@ -119,6 +124,7 @@
 **Consequences:** The visual effect section either fails silently (blank area where particles should be) or triggers a full component tree remount, causing a flash of content. On lower-end devices, the layout shift from a remount is jarring.
 
 **Prevention:**
+
 - Always load particle/canvas components via `dynamic(() => import(...), { ssr: false })`. This is the correct pattern for browser-API-dependent components in Next.js App Router.
 - Do not use `Math.random()` or `Date.now()` in render paths of components that are SSR'd — defer these to `useEffect` or to components wrapped in `dynamic(..., { ssr: false })`.
 - Wrap particle components in a client boundary (`"use client"`) AND use `dynamic` import — the two are complementary, not interchangeable.
@@ -139,6 +145,7 @@
 **Consequences:** Published server pages with active particle effects drop frames on mid-range mobile, drain battery, and feel laggy. The very thing meant to make the site look premium makes it feel broken.
 
 **Prevention:**
+
 - Cap particle count by viewport size: detect `window.innerWidth < 768` and halve the particle count or disable effects entirely.
 - Use `requestAnimationFrame` budgeting or tsparticles' built-in FPS limiter (`fpsLimit: 60`) to prevent runaway renders.
 - Provide an effect intensity setting in the section panel (Low / Medium / High) rather than a single "on/off" toggle.
@@ -159,6 +166,7 @@
 **Consequences:** `session.user.id` is undefined in server components and route handlers that call `auth()`. Ownership checks that depend on session user ID silently pass (or fail) incorrectly. Freemium plan gating that reads `session.user.plan` always reads `undefined`.
 
 **Prevention:**
+
 - Extend user data through the `jwt()` callback, not `session()`, when using v5.
 - Add TypeScript module augmentation for `Session` and `JWT` types to get compile-time errors when expected fields are missing.
 - After any `next-auth` version bump, immediately verify that `session.user.id` is present in a server component by logging it and asserting it is non-null.
@@ -181,6 +189,7 @@
 **Consequences:** MineSites' IP gets rate-limited or banned by mcsrvstat.us. All users lose player count functionality. mcsrvstat.us has a documented rate limit.
 
 **Prevention:**
+
 - Require that the IP provided matches a `Server` record owned by a real user — only poll IPs that are registered in the database.
 - Rate-limit the endpoint itself (e.g., 1 request per server per 60 seconds, using the server's database ID as the key, not the IP).
 - Always set a `User-Agent` header identifying MineSites when calling mcsrvstat.us (required by their API; missing it returns 403).
@@ -200,6 +209,7 @@
 **Consequences:** The editor always shows "247 players" regardless of what the server actually reports. Server owners see demo data in their own editor and report it as a bug. This is already documented as a HIGH severity concern.
 
 **Prevention:**
+
 - Remove `mockServer` before building any new section that displays live data. Initialize `serverData` from the API response only, using `null` until loaded.
 - For the editor preview of live-data sections, show a skeleton / placeholder widget ("-- / -- players") rather than a static number. The live data is only available on the published page.
 
@@ -218,6 +228,7 @@
 **Consequences:** Data corruption in section settings is invisible until the page is reloaded. Debugging requires inspecting raw database JSON. Without test coverage, regressions go undetected across deploys.
 
 **Prevention:**
+
 - Define a Zod schema for each section type's settings in `src/lib/validations/sections/`. Export the inferred type from the same file.
 - Validate incoming section settings in the `PUT /api/servers/[serverId]` route handler before calling `db.section.createMany`. Return a 400 with the Zod error if validation fails.
 - Parse settings on the read path too: when transforming DB data for the client, parse through the schema and log (or throw) on unexpected shapes.
@@ -230,22 +241,22 @@
 
 ## Phase-Specific Warnings
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Live player count section | API blocks page render; offline servers cause blank page | Server-side Route Handler with timeout + client-side SWR with stale fallback |
-| Live player count section | Endpoint used as arbitrary IP scanner | Validate IP against DB; per-server rate limit |
-| Live player count section | mockServer.players used in editor preview | Remove mockServer first; show skeleton in editor |
-| Freemium section limit | Client-only gate trivially bypassed | Re-check section count server-side in PUT handler |
-| Freemium effects gate | Effects flag bypassed via direct API call | Strip effectEnabled on server-side if user.plan === "free" |
-| Theme system | Tailwind v4 @theme without inline breaks runtime overrides | Use @theme inline for all per-server overrideable tokens |
-| Theme system | Dashboard styles leak into server pages | Isolate dashboard CSS to (dashboard) route group layout |
-| Theme system | FOUC on first load when theme is user-specific | Inject theme CSS variables server-side from DB; do not rely on JS to set them |
-| Visual effects | Hydration mismatch on canvas/particle components | dynamic(..., { ssr: false }) for all canvas components |
-| Visual effects | Frame drops on mobile devices | Cap particle count by viewport; FPS limiter; test on real Android device |
-| God-component growth | Every new section type added inline to 5,171-line file | Extract settings panels before adding new section types |
-| God-component growth | Local type definitions drift from preview types | Consolidate types into src/types/sections.ts before adding types |
-| next-auth beta | session() callback silently ignored; user.id undefined | Extend session via jwt() callback; assert user.id non-null on startup |
-| Section settings | New fields written as malformed JSON | Zod schema per section type; validate at API layer on write and read |
+| Phase Topic               | Likely Pitfall                                             | Mitigation                                                                    |
+| ------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Live player count section | API blocks page render; offline servers cause blank page   | Server-side Route Handler with timeout + client-side SWR with stale fallback  |
+| Live player count section | Endpoint used as arbitrary IP scanner                      | Validate IP against DB; per-server rate limit                                 |
+| Live player count section | mockServer.players used in editor preview                  | Remove mockServer first; show skeleton in editor                              |
+| Freemium section limit    | Client-only gate trivially bypassed                        | Re-check section count server-side in PUT handler                             |
+| Freemium effects gate     | Effects flag bypassed via direct API call                  | Strip effectEnabled on server-side if user.plan === "free"                    |
+| Theme system              | Tailwind v4 @theme without inline breaks runtime overrides | Use @theme inline for all per-server overrideable tokens                      |
+| Theme system              | Dashboard styles leak into server pages                    | Isolate dashboard CSS to (dashboard) route group layout                       |
+| Theme system              | FOUC on first load when theme is user-specific             | Inject theme CSS variables server-side from DB; do not rely on JS to set them |
+| Visual effects            | Hydration mismatch on canvas/particle components           | dynamic(..., { ssr: false }) for all canvas components                        |
+| Visual effects            | Frame drops on mobile devices                              | Cap particle count by viewport; FPS limiter; test on real Android device      |
+| God-component growth      | Every new section type added inline to 5,171-line file     | Extract settings panels before adding new section types                       |
+| God-component growth      | Local type definitions drift from preview types            | Consolidate types into src/types/sections.ts before adding types              |
+| next-auth beta            | session() callback silently ignored; user.id undefined     | Extend session via jwt() callback; assert user.id non-null on startup         |
+| Section settings          | New fields written as malformed JSON                       | Zod schema per section type; validate at API layer on write and read          |
 
 ---
 

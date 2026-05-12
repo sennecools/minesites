@@ -6,42 +6,42 @@ subsystem: api
 tags: [cleanup, deletion, tsc-gate, route-rename, zod, next-app-router]
 
 requires:
-  - phase: 07-api-layer (Plan 07-02)
-    provides: New /api/websites surface that replaces /api/servers
-  - phase: 07-api-layer (Plan 07-03)
-    provides: Nested MinecraftServer CRUD at /api/websites/[id]/servers/*
-  - phase: 07-api-layer (Plan 07-04)
-    provides: Renamed server actions (createWebsite/updateWebsite/deleteWebsite) and updated dashboard list-page fetch call
-  - phase: 07-api-layer (Plan 07-05)
-    provides: Migration of remaining /api/servers fetch calls in the dashboard editor god-component (runs in parallel; cross-worktree integration is post-merge)
+    - phase: 07-api-layer (Plan 07-02)
+      provides: New /api/websites surface that replaces /api/servers
+    - phase: 07-api-layer (Plan 07-03)
+      provides: Nested MinecraftServer CRUD at /api/websites/[id]/servers/*
+    - phase: 07-api-layer (Plan 07-04)
+      provides: Renamed server actions (createWebsite/updateWebsite/deleteWebsite) and updated dashboard list-page fetch call
+    - phase: 07-api-layer (Plan 07-05)
+      provides: Migration of remaining /api/servers fetch calls in the dashboard editor god-component (runs in parallel; cross-worktree integration is post-merge)
 provides:
-  - Removal of the legacy /api/servers route directory tree
-  - Removal of the legacy zod schema src/lib/validations/server.ts (createServerSchema, updateServerSchema, CreateServerInput, UpdateServerInput)
-  - Final whole-project tsc --noEmit gate confirmed clean (0 errors) for this worktree
+    - Removal of the legacy /api/servers route directory tree
+    - Removal of the legacy zod schema src/lib/validations/server.ts (createServerSchema, updateServerSchema, CreateServerInput, UpdateServerInput)
+    - Final whole-project tsc --noEmit gate confirmed clean (0 errors) for this worktree
 affects: [phase-08-dashboard-and-public-site]
 
 tech-stack:
-  added: []
-  patterns:
-    - "Hard-rename completion gate: grep for the renamed-away string across src/ must produce zero matches outside files being deleted"
-    - "Worktree-scoped verification: parallel wave members verify only their own slice; cross-worktree references are resolved at post-merge time"
+    added: []
+    patterns:
+        - 'Hard-rename completion gate: grep for the renamed-away string across src/ must produce zero matches outside files being deleted'
+        - 'Worktree-scoped verification: parallel wave members verify only their own slice; cross-worktree references are resolved at post-merge time'
 
 key-files:
-  created:
-    - .planning/phases/07-api-layer/07-06-SUMMARY.md
-  modified: []
-  deleted:
-    - src/app/api/servers/route.ts
-    - src/app/api/servers/[serverId]/route.ts
-    - src/lib/validations/server.ts
+    created:
+        - .planning/phases/07-api-layer/07-06-SUMMARY.md
+    modified: []
+    deleted:
+        - src/app/api/servers/route.ts
+        - src/app/api/servers/[serverId]/route.ts
+        - src/lib/validations/server.ts
 
 key-decisions:
-  - "Proceed with deletion despite two surviving /api/servers literals in src/app/(dashboard)/dashboard/[serverId]/page.tsx — those are owned by Plan 07-05 in a parallel worktree, per the orchestrator note in the executor prompt."
-  - "Do not run tsc-as-noEmit-bootstrapping the worktree's node_modules: symlink from main repo's node_modules instead, then remove the symlink after the gate runs."
+    - 'Proceed with deletion despite two surviving /api/servers literals in src/app/(dashboard)/dashboard/[serverId]/page.tsx — those are owned by Plan 07-05 in a parallel worktree, per the orchestrator note in the executor prompt.'
+    - "Do not run tsc-as-noEmit-bootstrapping the worktree's node_modules: symlink from main repo's node_modules instead, then remove the symlink after the gate runs."
 
 patterns-established:
-  - "Deletion-only cleanup commit type: chore({phase}-{plan}): delete legacy ... — pure removal with no replacement code in the same commit"
-  - "Final tsc-gate documentation: paste tsc exit code + grep 'error TS' count in SUMMARY for downstream verifier"
+    - 'Deletion-only cleanup commit type: chore({phase}-{plan}): delete legacy ... — pure removal with no replacement code in the same commit'
+    - "Final tsc-gate documentation: paste tsc exit code + grep 'error TS' count in SUMMARY for downstream verifier"
 
 requirements-completed: [WEB-01, WEB-02, WEB-03, CONN-01]
 
@@ -110,13 +110,13 @@ $ grep -rnE "\b(createServer|updateServer|deleteServer)\(" src/
 
 **Interpretation:**
 
-| Check | Result | Safe to delete? |
-|-------|--------|------------------|
-| Imports of `@/lib/validations/server` | 0 matches | YES |
-| `/api/servers` references inside `src/app/api/servers/*` | 3 matches (self) | YES — these files are being deleted |
-| `/api/servers` references in `src/app/(dashboard)/dashboard/[serverId]/page.tsx` lines 2282, 2375 | 2 matches (out-of-worktree-scope) | YES per orchestrator note — Plan 07-05 owns these in its parallel worktree |
-| `createServerSchema`/`updateServerSchema`/`CreateServerInput`/`UpdateServerInput` references outside `server.ts` | 0 matches | YES |
-| Legacy action call sites `createServer(`/`updateServer(`/`deleteServer(` | 0 matches | YES |
+| Check                                                                                                            | Result                            | Safe to delete?                                                            |
+| ---------------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| Imports of `@/lib/validations/server`                                                                            | 0 matches                         | YES                                                                        |
+| `/api/servers` references inside `src/app/api/servers/*`                                                         | 3 matches (self)                  | YES — these files are being deleted                                        |
+| `/api/servers` references in `src/app/(dashboard)/dashboard/[serverId]/page.tsx` lines 2282, 2375                | 2 matches (out-of-worktree-scope) | YES per orchestrator note — Plan 07-05 owns these in its parallel worktree |
+| `createServerSchema`/`updateServerSchema`/`CreateServerInput`/`UpdateServerInput` references outside `server.ts` | 0 matches                         | YES                                                                        |
+| Legacy action call sites `createServer(`/`updateServer(`/`deleteServer(`                                         | 0 matches                         | YES                                                                        |
 
 The two `/api/servers` literals in `dashboard/[serverId]/page.tsx` are inside `fetch()` URL template strings — they are NOT type-resolved by tsc, so removing the route handlers does not break the TypeScript build. They will fail at runtime when that god-component executes that fetch path, which is why Plan 07-05 (running in parallel) is the owner of that file's migration.
 
@@ -205,11 +205,13 @@ Skipped per the plan's "Optional but recommended" guidance — the must_haves ex
 ## Files Created/Modified
 
 **Deleted:**
+
 - `src/app/api/servers/route.ts` — legacy GET list endpoint (replaced by `/api/websites/route.ts`)
 - `src/app/api/servers/[serverId]/route.ts` — legacy GET/PUT website-by-id endpoint (replaced by `/api/websites/[websiteId]/route.ts`, which additionally has the DELETE handler that Plan 07-04 introduced)
 - `src/lib/validations/server.ts` — legacy zod schema with obsolete `serverIp`/`serverPort` fields
 
 **Created (this summary only):**
+
 - `.planning/phases/07-api-layer/07-06-SUMMARY.md` — this file
 
 ## Decisions Made
@@ -224,6 +226,7 @@ Skipped per the plan's "Optional but recommended" guidance — the must_haves ex
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Restored accidental file deletions in the main repo**
+
 - **Found during:** Task 2 (Delete legacy files)
 - **Issue:** First deletion attempt was executed with `cd /home/senne/git/minesites` (the main repo) instead of in the worktree at `/home/senne/git/minesites/.claude/worktrees/agent-aa552c264d9e23ca8`. Three files were deleted from the wrong working tree.
 - **Fix:** Verified the deletions were unstaged in main-repo `git status` (no commit was made), then ran `git checkout -- <each-file>` in the main repo to restore each of the three files individually (per the destructive_git_prohibition policy: single-file restores are allowed; blanket `git checkout .` is not). Switched to absolute-path-only commands (`rm "$WT/..."` and `git -C "$WT" ...`) so the working directory could not drift again. Re-ran the deletion correctly in the worktree.
@@ -256,20 +259,21 @@ None — no external service configuration required.
 ## Self-Check: PASSED
 
 - Files deleted as planned:
-  - `src/app/api/servers/route.ts`: MISSING (as intended)
-  - `src/app/api/servers/[serverId]/route.ts`: MISSING (as intended)
-  - `src/lib/validations/server.ts`: MISSING (as intended)
+    - `src/app/api/servers/route.ts`: MISSING (as intended)
+    - `src/app/api/servers/[serverId]/route.ts`: MISSING (as intended)
+    - `src/lib/validations/server.ts`: MISSING (as intended)
 - New surface intact:
-  - `src/app/api/websites/route.ts`: FOUND
-  - `src/app/api/websites/[websiteId]/route.ts`: FOUND
-  - `src/app/api/websites/[websiteId]/servers/route.ts`: FOUND
-  - `src/app/api/websites/[websiteId]/servers/[serverId]/route.ts`: FOUND
-  - `src/lib/validations/mcserver.ts`: FOUND
-  - `src/lib/validations/website.ts`: FOUND
+    - `src/app/api/websites/route.ts`: FOUND
+    - `src/app/api/websites/[websiteId]/route.ts`: FOUND
+    - `src/app/api/websites/[websiteId]/servers/route.ts`: FOUND
+    - `src/app/api/websites/[websiteId]/servers/[serverId]/route.ts`: FOUND
+    - `src/lib/validations/mcserver.ts`: FOUND
+    - `src/lib/validations/website.ts`: FOUND
 - Commit found in worktree: `bfe19ef` — FOUND on branch `worktree-agent-aa552c264d9e23ca8`.
 - Final tsc result: `0 errors`.
 
 ---
-*Phase: 07-api-layer*
-*Plan: 06*
-*Completed: 2026-05-12*
+
+_Phase: 07-api-layer_
+_Plan: 06_
+_Completed: 2026-05-12_

@@ -1,25 +1,21 @@
-"use client";
+'use client';
 
-import { forwardRef, type LabelHTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
+import { forwardRef, type LabelHTMLAttributes } from 'react';
+
+import { cn } from '@/lib/utils';
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {}
 
-const Label = forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <label
-        ref={ref}
-        className={cn(
-          "text-sm font-medium text-zinc-700",
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
+const Label = forwardRef<HTMLLabelElement, LabelProps>(({ className, ...props }, ref) => {
+	return (
+		<label
+			ref={ref}
+			className={cn('text-sm font-medium text-zinc-700', className)}
+			{...props}
+		/>
+	);
+});
 
-Label.displayName = "Label";
+Label.displayName = 'Label';
 
 export { Label };

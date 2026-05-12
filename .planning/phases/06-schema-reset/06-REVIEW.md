@@ -4,27 +4,27 @@ reviewed: 2026-05-08T00:00:00Z
 depth: standard
 files_reviewed: 16
 files_reviewed_list:
-  - prisma/schema.prisma
-  - prisma/seed.ts
-  - src/app/(dashboard)/dashboard/actions.ts
-  - src/app/(dashboard)/dashboard/create-server-dialog.tsx
-  - src/app/(dashboard)/dashboard/page.tsx
-  - src/app/(dashboard)/dashboard/servers/page.tsx
-  - src/app/(dashboard)/dashboard/[serverId]/page.tsx
-  - src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx
-  - src/app/[subdomain]/layout.tsx
-  - src/app/[subdomain]/page.tsx
-  - src/app/[subdomain]/preview-client.tsx
-  - src/app/api/servers/route.ts
-  - src/app/api/servers/[serverId]/route.ts
-  - src/components/preview/types.ts
-  - src/lib/validations/website.ts
-  - src/types/sections.ts
+    - prisma/schema.prisma
+    - prisma/seed.ts
+    - src/app/(dashboard)/dashboard/actions.ts
+    - src/app/(dashboard)/dashboard/create-server-dialog.tsx
+    - src/app/(dashboard)/dashboard/page.tsx
+    - src/app/(dashboard)/dashboard/servers/page.tsx
+    - src/app/(dashboard)/dashboard/[serverId]/page.tsx
+    - src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx
+    - src/app/[subdomain]/layout.tsx
+    - src/app/[subdomain]/page.tsx
+    - src/app/[subdomain]/preview-client.tsx
+    - src/app/api/servers/route.ts
+    - src/app/api/servers/[serverId]/route.ts
+    - src/components/preview/types.ts
+    - src/lib/validations/website.ts
+    - src/types/sections.ts
 findings:
-  critical: 4
-  warning: 6
-  info: 4
-  total: 14
+    critical: 4
+    warning: 6
+    info: 4
+    total: 14
 status: issues_found
 ---
 
@@ -52,30 +52,31 @@ The schema-reset phase introduces a `Website`/`Section`/`MinecraftServer` model 
 The `updateWebsiteSchema` already exists in `src/lib/validations/website.ts` and is used by the `updateServer` server action. The PUT route does not use it.
 
 **Fix:**
+
 ```typescript
 // src/app/api/servers/[serverId]/route.ts — inside PUT handler, before the transaction
-import { updateWebsiteSchema } from "@/lib/validations/website";
+import { updateWebsiteSchema } from '@/lib/validations/website';
 
 const body = await request.json();
 const parseResult = updateWebsiteSchema.safeParse({
-  name: body.name,
-  subdomain: body.subdomain,
-  description: body.description,
+	name: body.name,
+	subdomain: body.subdomain,
+	description: body.description,
 });
 if (!parseResult.success) {
-  return NextResponse.json(
-    { error: "Invalid input", details: parseResult.error.flatten() },
-    { status: 400 }
-  );
+	return NextResponse.json(
+		{ error: 'Invalid input', details: parseResult.error.flatten() },
+		{ status: 400 },
+	);
 }
 const { name, subdomain, description } = parseResult.data;
 
 // If subdomain is changing, verify it is not taken
 if (subdomain && subdomain !== existingWebsite.subdomain) {
-  const conflict = await db.website.findUnique({ where: { subdomain } });
-  if (conflict) {
-    return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
-  }
+	const conflict = await db.website.findUnique({ where: { subdomain } });
+	if (conflict) {
+		return NextResponse.json({ error: 'Subdomain is already taken' }, { status: 409 });
+	}
 }
 ```
 
@@ -89,30 +90,31 @@ if (subdomain && subdomain !== existingWebsite.subdomain) {
 
 ```typescript
 try {
-  await createServer(formData);
+	await createServer(formData);
 } catch (err) {
-  setError(err instanceof Error ? err.message : "Something went wrong");
+	setError(err instanceof Error ? err.message : 'Something went wrong');
 }
 ```
 
 When `createServer` succeeds and calls `redirect(...)`, the `NEXT_REDIRECT` throw is caught here, `err instanceof Error` is `false`, and the dialog displays "Something went wrong" while the user stays on the dialog — even though the server was created successfully. The user will see an error message and an unclosed modal; they can confirm the creation only by closing the dialog and refreshing.
 
 **Fix:**
+
 ```typescript
-import { isRedirectError } from "next/dist/client/components/redirect";
+import { isRedirectError } from 'next/dist/client/components/redirect';
 
 const onSubmit = async (data: CreateWebsiteInput) => {
-  setError(null);
-  try {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined) formData.append(key, String(value));
-    });
-    await createServer(formData);
-  } catch (err) {
-    if (isRedirectError(err)) throw err; // let Next.js handle the redirect
-    setError(err instanceof Error ? err.message : "Something went wrong");
-  }
+	setError(null);
+	try {
+		const formData = new FormData();
+		Object.entries(data).forEach(([key, value]) => {
+			if (value !== undefined) formData.append(key, String(value));
+		});
+		await createServer(formData);
+	} catch (err) {
+		if (isRedirectError(err)) throw err; // let Next.js handle the redirect
+		setError(err instanceof Error ? err.message : 'Something went wrong');
+	}
 };
 ```
 
@@ -125,23 +127,24 @@ const onSubmit = async (data: CreateWebsiteInput) => {
 **Issue:** `CLAUDE.md` architecture rule #3 states: "Freemium enforcement is server-side — the `PUT /api/servers/[serverId]` handler must validate section count against `user.plan`. Client-only gating is not sufficient." The current PUT handler accepts and persists any number of sections sent by the client. There is no section-count check at all, and the `User` model in `prisma/schema.prisma` has no `plan` field. Any user can send 100 sections in a PUT body and they will all be saved. The schema gap means this cannot be enforced until the field is added, but the handler also makes no attempt to cap count.
 
 **Fix:** This requires two coordinated changes:
+
 1. Add a `plan String @default("free")` field to the `User` model in `prisma/schema.prisma`.
 2. In the PUT handler, after the ownership check, fetch `user.plan` and enforce the limit:
 
 ```typescript
 // After ownership check — inside PUT handler
 const user = await db.user.findUnique({
-  where: { id: session.user.id },
-  select: { plan: true },
+	where: { id: session.user.id },
+	select: { plan: true },
 });
 const FREE_SECTION_LIMIT = 5;
-if (sections && Array.isArray(sections) && user?.plan !== "pro") {
-  if (sections.length > FREE_SECTION_LIMIT) {
-    return NextResponse.json(
-      { error: `Free plan is limited to ${FREE_SECTION_LIMIT} sections` },
-      { status: 403 }
-    );
-  }
+if (sections && Array.isArray(sections) && user?.plan !== 'pro') {
+	if (sections.length > FREE_SECTION_LIMIT) {
+		return NextResponse.json(
+			{ error: `Free plan is limited to ${FREE_SECTION_LIMIT} sections` },
+			{ status: 403 },
+		);
+	}
 }
 ```
 
@@ -154,16 +157,17 @@ if (sections && Array.isArray(sections) && user?.plan !== "pro") {
 **Issue:** The section query always applies `where: { visible: true }`, even when `isPreviewMode` is `true`. In the editor, users can toggle section visibility to hide sections from the live site, but when they click "Preview" (which opens `/{subdomain}?preview=true`) they expect to see the full layout — including hidden sections — as it exists in the editor. Instead they see only published-visible sections, which makes the "Preview" button misleading and useless for checking hidden sections before deciding to show them.
 
 **Fix:**
+
 ```typescript
 const server = await db.website.findUnique({
-  where: { subdomain },
-  include: {
-    sections: {
-      // Show all sections in preview mode; only visible ones on the live site
-      where: isPreviewMode ? undefined : { visible: true },
-      orderBy: { order: "asc" },
-    },
-  },
+	where: { subdomain },
+	include: {
+		sections: {
+			// Show all sections in preview mode; only visible ones on the live site
+			where: isPreviewMode ? undefined : { visible: true },
+			orderBy: { order: 'asc' },
+		},
+	},
 });
 ```
 
@@ -188,25 +192,28 @@ const server = await db.website.findUnique({
 **Issue:** The editor header always renders a green "Live" badge next to the server name:
 
 ```tsx
-<span className="inline-flex items-center gap-1.5 ... bg-emerald-50 text-emerald-600">
-  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-  Live
+<span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 ...">
+	<span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+	Live
 </span>
 ```
 
 `serverData.published` is loaded but never used to conditionally render this badge. A server that is in "Draft" state (unpublished) incorrectly appears as "Live" to its owner.
 
 **Fix:**
+
 ```tsx
-<span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
-  serverData.published
-    ? "bg-emerald-50 text-emerald-600"
-    : "bg-zinc-100 text-zinc-500"
-}`}>
-  <span className={`w-1.5 h-1.5 rounded-full ${
-    serverData.published ? "bg-emerald-500" : "bg-zinc-400"
-  }`} />
-  {serverData.published ? "Live" : "Draft"}
+<span
+	className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${
+		serverData.published ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-500'
+	}`}
+>
+	<span
+		className={`h-1.5 w-1.5 rounded-full ${
+			serverData.published ? 'bg-emerald-500' : 'bg-zinc-400'
+		}`}
+	/>
+	{serverData.published ? 'Live' : 'Draft'}
 </span>
 ```
 
@@ -248,14 +255,14 @@ const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
 ```typescript
 import type {
-  GamemodesSettings,
-  FeaturesSettings,
-  DiscordSettings,
-  GallerySettings,
-  StatsSettings,
-  StaffSettings,
-  TextSettings,
-  SectionSettings,
+	DiscordSettings,
+	FeaturesSettings,
+	GallerySettings,
+	GamemodesSettings,
+	SectionSettings,
+	StaffSettings,
+	StatsSettings,
+	TextSettings,
 } from '@/types/sections';
 ```
 
@@ -295,9 +302,9 @@ try {
 ```typescript
 const seedEmail = process.env.SEED_USER_EMAIL;
 if (!seedEmail) {
-  console.error("SEED_USER_EMAIL env var is required");
-  await pool.end();
-  process.exit(1);
+	console.error('SEED_USER_EMAIL env var is required');
+	await pool.end();
+	process.exit(1);
 }
 const user = await db.user.findUnique({ where: { email: seedEmail } });
 ```

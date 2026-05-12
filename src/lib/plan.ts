@@ -3,15 +3,15 @@
 // The User.plan field is added in Phase 4; in Phase 1 callers pass the literal.
 
 export interface PlanLimits {
-  maxSections: number;
+	maxSections: number;
 }
 
 export function getPlanLimits(plan: 'free' | 'paid'): PlanLimits {
-  switch (plan) {
-    case 'paid':
-      return { maxSections: 15 };
-    case 'free':
-    default:
-      return { maxSections: 5 };
-  }
+	switch (plan) {
+		case 'paid':
+			return { maxSections: 15 };
+		case 'free':
+		default:
+			return { maxSections: 5 };
+	}
 }

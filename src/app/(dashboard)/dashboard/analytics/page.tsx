@@ -1,7 +1,7 @@
 export default function AnalyticsPage() {
-  return (
-    <div className="flex items-center justify-center h-full text-muted-foreground">
-      Analytics — coming soon
-    </div>
-  );
+	return (
+		<div className="text-muted-foreground flex h-full items-center justify-center">
+			Analytics — coming soon
+		</div>
+	);
 }

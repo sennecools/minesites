@@ -17,13 +17,13 @@ reviewed_at: 2026-05-12
 
 ## Design System
 
-| Property | Value |
-|----------|-------|
-| Tool | none (custom component library) |
-| Preset | not applicable |
+| Property          | Value                                                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Tool              | none (custom component library)                                                                                     |
+| Preset            | not applicable                                                                                                      |
 | Component library | custom — `src/components/ui/` (Button, Card, Modal, Input, Textarea, Badge, Toast, Label, Select, Avatar, Dropdown) |
-| Icon library | lucide-react |
-| Font | Inter (sans body), Plus Jakarta Sans (display headings) via `next/font/google` |
+| Icon library      | lucide-react                                                                                                        |
+| Font              | Inter (sans body), Plus Jakarta Sans (display headings) via `next/font/google`                                      |
 
 Source: codebase scan — `src/app/globals.css`, `src/components/ui/`
 
@@ -33,17 +33,18 @@ Source: codebase scan — `src/app/globals.css`, `src/components/ui/`
 
 Declared values (must be multiples of 4):
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| xs | 4px | Icon gaps, dot indicators, inline badge padding |
-| sm | 8px | Button icon-to-label gap, row action button padding |
-| md | 16px | Modal content padding, form field stacking, card body padding |
-| lg | 24px | Modal header/footer padding, card header/footer padding, WebsiteCard outer padding (`p-6`) |
-| xl | 32px | Section heading-to-content gap |
-| 2xl | 48px | Dashboard section breaks |
-| 3xl | 64px | Empty state vertical centering (min-height context) |
+| Token | Value | Usage                                                                                      |
+| ----- | ----- | ------------------------------------------------------------------------------------------ |
+| xs    | 4px   | Icon gaps, dot indicators, inline badge padding                                            |
+| sm    | 8px   | Button icon-to-label gap, row action button padding                                        |
+| md    | 16px  | Modal content padding, form field stacking, card body padding                              |
+| lg    | 24px  | Modal header/footer padding, card header/footer padding, WebsiteCard outer padding (`p-6`) |
+| xl    | 32px  | Section heading-to-content gap                                                             |
+| 2xl   | 48px  | Dashboard section breaks                                                                   |
+| 3xl   | 64px  | Empty state vertical centering (min-height context)                                        |
 
 Exceptions:
+
 - Modal max-width: 448px (`max-w-md`) for create-website dialog; 560px (`max-w-lg`) for connections modal (wider to accommodate two-column form layout)
 - Connections modal internal list rows: 16px top/bottom padding per row (`py-4`) — matches `CardContent` rhythm
 - Touch/click target floor: 32px minimum height for all interactive row controls (`edit`, `delete`, `cancel`, `confirm`)
@@ -54,14 +55,15 @@ Source: `src/components/ui/modal.tsx` (max-w-md), `src/components/ui/card.tsx` (
 
 ## Typography
 
-| Role | Size | Weight | Line Height | Usage |
-|------|------|--------|-------------|-------|
-| Body | 14px | 400 (regular) | 1.5 | Card description, form helper text, modal body copy, row secondary line |
-| Label | 13px | 400 (regular) | 1.4 | Form field labels, settings labels, badge text, metadata row, connections row muted IP:port — differentiated from Body by size (13px vs 14px) only |
-| Heading | 18px | 600 (semibold) | 1.2 | Modal titles (`ModalTitle`), card section headings (`h2`), connections list heading |
-| Display | 24px | 600 (semibold) | 1.2 | Dashboard page heading ("Welcome back", "Your Websites") |
+| Role    | Size | Weight         | Line Height | Usage                                                                                                                                              |
+| ------- | ---- | -------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Body    | 14px | 400 (regular)  | 1.5         | Card description, form helper text, modal body copy, row secondary line                                                                            |
+| Label   | 13px | 400 (regular)  | 1.4         | Form field labels, settings labels, badge text, metadata row, connections row muted IP:port — differentiated from Body by size (13px vs 14px) only |
+| Heading | 18px | 600 (semibold) | 1.2         | Modal titles (`ModalTitle`), card section headings (`h2`), connections list heading                                                                |
+| Display | 24px | 600 (semibold) | 1.2         | Dashboard page heading ("Welcome back", "Your Websites")                                                                                           |
 
 Font family rules:
+
 - `font-display` (Plus Jakarta Sans): page-level h1/h2 headings only
 - `font-sans` (Inter): all other text, labels, inputs, modal content
 
@@ -75,14 +77,15 @@ Source: `src/app/globals.css` (`--font-sans`, `--font-display`), `src/components
 
 ## Color
 
-| Role | Value | Usage |
-|------|-------|-------|
-| Dominant (60%) | `#fafafa` (`--background`) | Page background, input backgrounds, modal chrome |
-| Secondary (30%) | `#ffffff` (`--card`) | Card surfaces, modal body, row hover surfaces |
-| Accent (10%) | `#06b6d4` (`--accent`, cyan-500) | See reserved-for list below |
-| Destructive | `#ef4444` (red-500) | Delete confirm button in connections modal inline confirm row only |
+| Role            | Value                            | Usage                                                              |
+| --------------- | -------------------------------- | ------------------------------------------------------------------ |
+| Dominant (60%)  | `#fafafa` (`--background`)       | Page background, input backgrounds, modal chrome                   |
+| Secondary (30%) | `#ffffff` (`--card`)             | Card surfaces, modal body, row hover surfaces                      |
+| Accent (10%)    | `#06b6d4` (`--accent`, cyan-500) | See reserved-for list below                                        |
+| Destructive     | `#ef4444` (red-500)              | Delete confirm button in connections modal inline confirm row only |
 
 Accent (`#06b6d4`) reserved for:
+
 1. Primary action buttons (gradient `from-cyan-500 to-blue-500` — the `gradient-accent` utility)
 2. "Manage Servers" top-bar button — variant `secondary` with cyan hover ring
 3. Focus rings on all inputs (`focus:ring-cyan-500`)
@@ -92,6 +95,7 @@ Accent (`#06b6d4`) reserved for:
 7. New-website dashed card hover border (`hover:border-cyan-300`)
 
 NOT accent:
+
 - Status pill for "Live" websites: emerald palette (`bg-emerald-50 text-emerald-600`) — carry-forward from existing card
 - Section count badge: `bg-zinc-100 text-zinc-700` (default `Badge` variant) — neutral, not accent
 - Connections modal "Add server" row toggle: `variant="ghost"` Button (zinc hover) until add form is open; once open, submit uses `variant="primary"` (accent gradient)
@@ -115,6 +119,7 @@ Primary focal point: the `WebsiteCard` grid (or the empty-state CTA gradient but
 New components to create in this phase:
 
 ### `src/components/dashboard/website-card.tsx`
+
 - Outer shell: `Card` from `src/components/ui/card.tsx` (white, rounded-2xl, border-zinc-200, shadow-sm)
 - Outer padding: `p-6` (24px) — Phase 8 introduces this component fresh; use the standard 24px token
 - Hover: `y: -4` framer-motion translate + `hover:shadow-lg hover:border-cyan-200/50` — carry-forward from existing card
@@ -125,6 +130,7 @@ New components to create in this phase:
 - Card click routes to `/dashboard/{websiteId}` via `<Link>` wrapper (carry-forward)
 
 ### `src/components/dashboard/connections-modal.tsx`
+
 - Modal chrome: `<Modal isOpen onClose>` from `src/components/ui/modal.tsx`; override default `max-w-md` with `max-w-lg` via `className` prop
 - Modal title: "Connected Minecraft Servers"
 - Header: `ModalHeader` + `ModalTitle` + close `X` button (ghost, right-aligned)
@@ -132,24 +138,24 @@ New components to create in this phase:
 - Loading state: centered `<Loader2 className="w-5 h-5 animate-spin text-zinc-400" />` with `<p className="text-sm text-zinc-500 mt-2">Loading servers...</p>`
 - Empty state: centered `<Server className="w-8 h-8 text-zinc-300" />` icon + heading "No servers connected yet" + body "Add a Minecraft server to enable Live Player Count and Server Info sections." + `<Button variant="primary" size="sm">Add Server</Button>` CTA
 - Server rows (read mode): two-line layout
-  - Line 1: `font-semibold text-zinc-900` name + `font-mono text-xs text-zinc-500` IP:port (right side of flex row) + edit icon button + delete icon button (far right)
-  - Line 2: `text-sm text-zinc-500 line-clamp-1` description (if present; omit line if null)
-  - Row background: white; `hover:bg-zinc-50` on hover; `rounded-xl` border-radius; `px-4 py-3` padding
-  - Divider between rows: `border-b border-zinc-100` (omit on last row)
+    - Line 1: `font-semibold text-zinc-900` name + `font-mono text-xs text-zinc-500` IP:port (right side of flex row) + edit icon button + delete icon button (far right)
+    - Line 2: `text-sm text-zinc-500 line-clamp-1` description (if present; omit line if null)
+    - Row background: white; `hover:bg-zinc-50` on hover; `rounded-xl` border-radius; `px-4 py-3` padding
+    - Divider between rows: `border-b border-zinc-100` (omit on last row)
 - Server rows (delete confirm mode): row swaps to `bg-red-50 rounded-xl px-4 py-3`; text `"Delete '{name}'?"` in `text-sm font-semibold text-zinc-900`; right-aligned `[Cancel]` (ghost Button, size sm) + `[Delete]` (red-filled: `bg-red-500 text-white hover:bg-red-600`, size sm, rounded-xl)
 - Inline add/edit form (expanded state):
-  - Activation: "Add server" ghost button at bottom of list expands into inline form card (`bg-zinc-50 rounded-xl border border-zinc-200 p-4`)
-  - Two-column layout at modal width (≥ 480px): col-1 Name field, col-2 IP/hostname field; row 2: col-1 Port field, col-2 empty; row 3: Description textarea full-width
-  - All fields use `<Input>` and `<Textarea>` from `src/components/ui/`; port placeholder `25565`
-  - Field labels: `text-sm font-normal text-zinc-700 mb-1.5` — weight 400 (regular); Label size (13px via `text-xs`) is used where the label sits above an input; differentiated from body copy by size alone
-  - Inline field errors: `text-sm text-red-500 mt-1` below each field
-  - Form footer (inside the inline form card): right-aligned `[Cancel]` (ghost) + `[Save Server]` / `[Update Server]` (primary gradient)
-  - Single-column collapse: below 480px, all fields stack full-width
+    - Activation: "Add server" ghost button at bottom of list expands into inline form card (`bg-zinc-50 rounded-xl border border-zinc-200 p-4`)
+    - Two-column layout at modal width (≥ 480px): col-1 Name field, col-2 IP/hostname field; row 2: col-1 Port field, col-2 empty; row 3: Description textarea full-width
+    - All fields use `<Input>` and `<Textarea>` from `src/components/ui/`; port placeholder `25565`
+    - Field labels: `text-sm font-normal text-zinc-700 mb-1.5` — weight 400 (regular); Label size (13px via `text-xs`) is used where the label sits above an input; differentiated from body copy by size alone
+    - Inline field errors: `text-sm text-red-500 mt-1` below each field
+    - Form footer (inside the inline form card): right-aligned `[Cancel]` (ghost) + `[Save Server]` / `[Update Server]` (primary gradient)
+    - Single-column collapse: below 480px, all fields stack full-width
 - Toast feedback (via `useToast()`):
-  - Success add: "Server added"
-  - Success update: "Server updated"
-  - Success delete: "Server removed"
-  - Server error: display the error message string from API response body
+    - Success add: "Server added"
+    - Success update: "Server updated"
+    - Success delete: "Server removed"
+    - Server error: display the error message string from API response body
 
 Source: `src/components/ui/modal.tsx`, `src/app/(dashboard)/dashboard/create-server-dialog.tsx` (form pattern), `08-CONTEXT.md` D-04 through D-07
 
@@ -158,6 +164,7 @@ Source: `src/components/ui/modal.tsx`, `src/app/(dashboard)/dashboard/create-ser
 ## Interaction Contracts
 
 ### Connections Modal Open/Close
+
 - Trigger: "Manage Servers" button in editor top-bar action cluster, before the "Preview" button
 - Button variant: `secondary` (white bg, zinc border) with `Server` icon (16px) left of label
 - On open: set `isOpen = true`, call `GET /api/websites/[websiteId]/servers`, show loading spinner
@@ -165,16 +172,19 @@ Source: `src/components/ui/modal.tsx`, `src/app/(dashboard)/dashboard/create-ser
 - CRUD operations commit immediately and refresh the list inline (no full-page reload)
 
 ### Website Card Visit Link
+
 - The `<a>` tag receives `onClick={(e) => e.stopPropagation()}` so the card-body `<Link>` does not also fire
 - `ArrowUpRight` (14px) sits adjacent to the status pill in the card footer
 - `aria-label="Visit live site for {name}"` on the `<a>` tag
 
 ### Connections Modal Edit Mode
+
 - Clicking the edit icon on a read row renders the add/edit form inline, pre-populated with that server's values
 - Clicking edit on a different row while one is in edit mode: close the current edit form first (no validation prompt — user loses unsaved changes), open the new one
 - Clicking delete while a row is in edit mode: cancel edit mode first, then enter delete-confirm mode for that row
 
 ### Route Rename
+
 - All existing `Link` hrefs using `/dashboard/${id}` continue to work because only the route param name changes (`[serverId]` → `[websiteId]`), not the URL pattern
 - No client-side redirect needed
 
@@ -182,26 +192,26 @@ Source: `src/components/ui/modal.tsx`, `src/app/(dashboard)/dashboard/create-ser
 
 ## Copywriting Contract
 
-| Element | Copy |
-|---------|------|
-| Primary CTA (create) | "New Website" (top-bar button on `/dashboard/servers`); "Create Website" (inside the dialog submit button and the empty-state inline button) |
-| Connections modal title | "Connected Minecraft Servers" |
-| Connections modal empty heading | "No servers connected yet" |
-| Connections modal empty body | "Add a Minecraft server to enable Live Player Count and Server Info sections." |
-| Connections modal loading | "Loading servers..." |
-| Add server button (list footer) | "Add Server" |
-| Edit server form submit | "Update Server" |
-| Add server form submit | "Save Server" |
-| Delete confirm copy | "Delete '{name}'?" with `[Cancel]` and `[Delete]` inline |
-| Dashboard empty heading | "No websites yet" |
-| Dashboard empty body | "Create your first website to get started" |
-| Card section count | "{n} sections" (e.g., "3 sections", "0 sections") |
-| Card visit affordance aria-label | "Visit live site for {name}" |
-| Dashboard load error | "Failed to load your websites. Check your connection and try again." with "Retry" button |
-| Connections modal server error (toast) | Show verbatim API error message (already validated server-side) |
-| Connections modal success — add | "Server added" |
-| Connections modal success — update | "Server updated" |
-| Connections modal success — delete | "Server removed" |
+| Element                                | Copy                                                                                                                                         |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primary CTA (create)                   | "New Website" (top-bar button on `/dashboard/servers`); "Create Website" (inside the dialog submit button and the empty-state inline button) |
+| Connections modal title                | "Connected Minecraft Servers"                                                                                                                |
+| Connections modal empty heading        | "No servers connected yet"                                                                                                                   |
+| Connections modal empty body           | "Add a Minecraft server to enable Live Player Count and Server Info sections."                                                               |
+| Connections modal loading              | "Loading servers..."                                                                                                                         |
+| Add server button (list footer)        | "Add Server"                                                                                                                                 |
+| Edit server form submit                | "Update Server"                                                                                                                              |
+| Add server form submit                 | "Save Server"                                                                                                                                |
+| Delete confirm copy                    | "Delete '{name}'?" with `[Cancel]` and `[Delete]` inline                                                                                     |
+| Dashboard empty heading                | "No websites yet"                                                                                                                            |
+| Dashboard empty body                   | "Create your first website to get started"                                                                                                   |
+| Card section count                     | "{n} sections" (e.g., "3 sections", "0 sections")                                                                                            |
+| Card visit affordance aria-label       | "Visit live site for {name}"                                                                                                                 |
+| Dashboard load error                   | "Failed to load your websites. Check your connection and try again." with "Retry" button                                                     |
+| Connections modal server error (toast) | Show verbatim API error message (already validated server-side)                                                                              |
+| Connections modal success — add        | "Server added"                                                                                                                               |
+| Connections modal success — update     | "Server updated"                                                                                                                             |
+| Connections modal success — delete     | "Server removed"                                                                                                                             |
 
 Note on deferred terminology: The connections modal body copy references "Live Player Count and Server Info sections" which are deferred SECT-02/SECT-03 features. The wording is forward-looking but accurate; do not remove.
 
@@ -237,10 +247,10 @@ All new components in this phase render inside the dashboard layout, NOT inside 
 
 ## Registry Safety
 
-| Registry | Blocks Used | Safety Gate |
-|----------|-------------|-------------|
+| Registry        | Blocks Used                | Safety Gate    |
+| --------------- | -------------------------- | -------------- |
 | shadcn official | not applicable (no shadcn) | not applicable |
-| Third-party | none | not applicable |
+| Third-party     | none                       | not applicable |
 
 No third-party registries declared. All UI primitives are project-local (`src/components/ui/`).
 

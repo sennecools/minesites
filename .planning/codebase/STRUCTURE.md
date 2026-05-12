@@ -104,83 +104,99 @@ minesites/
 ## Directory Purposes
 
 **`src/app/`:**
+
 - Purpose: All Next.js pages, layouts, and API routes
 - Contains: Route group folders with layouts, page components, Server Actions, API route handlers
 - Key files: `layout.tsx` (root), `middleware.ts` (routing logic)
 
 **`src/app/(auth)/`:**
+
 - Purpose: Unauthenticated login and signup flows
 - Contains: `login/page.tsx`, `signup/page.tsx`, shared animated layout
 - Key files: `src/app/(auth)/layout.tsx`
 
 **`src/app/(dashboard)/`:**
+
 - Purpose: Authenticated area for managing Minecraft server websites
 - Contains: Server list, server editor, Server Actions
 - Key files: `src/app/(dashboard)/dashboard/actions.ts`, `src/app/(dashboard)/dashboard/[serverId]/page.tsx`
 
 **`src/app/(marketing)/`:**
+
 - Purpose: Public landing pages
 - Contains: Multiple homepage iterations (only `page.tsx` is active), pricing page
 - Key files: `src/app/(marketing)/page.tsx`
 
 **`src/app/[subdomain]/`:**
+
 - Purpose: Renders the public-facing Minecraft server website for each registered subdomain
 - Contains: `page.tsx` (Server Component), `preview-client.tsx` (all section renderers)
 - Key files: `src/app/[subdomain]/preview-client.tsx`
 
 **`src/app/api/`:**
+
 - Purpose: REST API endpoints consumed by client components
 - Contains: Auth, servers CRUD, file upload, Discord proxy
 - Key files: `src/app/api/servers/[serverId]/route.ts`
 
 **`src/components/ui/`:**
+
 - Purpose: Reusable primitive UI components consumed across the app
 - Contains: Button, Input, Textarea, Select, Card, Badge, Avatar, Modal, Dropdown, Toast
 - Key files: `src/components/ui/index.ts` (barrel export)
 
 **`src/components/layout/`:**
+
 - Purpose: Top-level page chrome
 - Contains: Sidebar (with Zustand store), Header, Footer
 - Key files: `src/components/layout/sidebar.tsx`
 
 **`src/components/preview/`:**
+
 - Purpose: Shared TypeScript types for the section data model used by both the editor and the public renderer
 - Contains: `types.ts`
 
 **`src/lib/`:**
+
 - Purpose: Shared utilities and infrastructure
 - Contains: Auth setup (split into config + full), DB client, password utils, `cn()`, Zod validation schemas
 - Key files: `src/lib/db.ts`, `src/lib/auth.ts`, `src/lib/auth.config.ts`
 
 **`prisma/`:**
+
 - Purpose: Database schema and seed data
 - Contains: `schema.prisma` (models: User, Account, Session, VerificationToken, Server, Section)
 
 ## Key File Locations
 
 **Entry Points:**
+
 - `src/app/layout.tsx`: Root HTML shell, font injection, ToastProvider
 - `src/middleware.ts`: Subdomain rewrite + auth guard (runs on every non-static request)
 - `src/app/[subdomain]/page.tsx`: Public server site entry point
 
 **Configuration:**
+
 - `prisma/schema.prisma`: Database schema
 - `src/lib/auth.config.ts`: NextAuth config (edge-safe)
 - `src/lib/auth.ts`: NextAuth full config with Prisma adapter
 - `tsconfig.json`: `@/` alias resolves to `src/`
 
 **Core Logic:**
+
 - `src/app/(dashboard)/dashboard/actions.ts`: All server mutation Server Actions
 - `src/app/api/servers/[serverId]/route.ts`: GET + PUT with full section upsert in DB transaction
 - `src/app/[subdomain]/preview-client.tsx`: All public section rendering logic (~950 lines)
 
 **Validation:**
+
 - `src/lib/validations/server.ts`: `createServerSchema`, `updateServerSchema` (Zod)
 - `src/lib/validations/auth.ts`: Auth form schemas (Zod)
 
 ## Naming Conventions
 
 **Files:**
+
 - Page files: `page.tsx` (required by Next.js)
 - Layout files: `layout.tsx` (required by Next.js)
 - API route files: `route.ts` (required by Next.js)
@@ -189,11 +205,13 @@ minesites/
 - Utility/lib files: `kebab-case.ts` (e.g., `auth.config.ts`, `db.ts`)
 
 **Directories:**
+
 - Route groups: `(group-name)/` — parenthetical, no URL path segment
 - Dynamic segments: `[paramName]/`
 - Feature directories: `kebab-case/`
 
 **Exports:**
+
 - Named exports from component files: `export function ComponentName`
 - Barrel `index.ts` files in `ui/` and `layout/` for clean imports
 - Default exports for Next.js page and layout files
@@ -201,52 +219,62 @@ minesites/
 ## Where to Add New Code
 
 **New dashboard page:**
+
 - Implementation: `src/app/(dashboard)/dashboard/[new-page]/page.tsx`
 - Uses the dashboard layout automatically (sidebar + header)
 
 **New public section type:**
+
 - Add a new `Preview*` function component in `src/app/[subdomain]/preview-client.tsx`
 - Add a case to the switch statement in the `PreviewClient` default export
 - Add corresponding settings type to `src/components/preview/types.ts`
 - Add section type option in the editor `src/app/(dashboard)/dashboard/[serverId]/page.tsx`
 
 **New API endpoint:**
+
 - Implementation: `src/app/api/[resource]/route.ts`
 - Always check session via `auth()` from `src/lib/auth.ts`
 - Use `db` from `src/lib/db.ts` for database access
 
 **New Server Action:**
+
 - Add to `src/app/(dashboard)/dashboard/actions.ts` (keeps all mutations co-located)
 - Mark file with `"use server"` directive
 - Validate with Zod before writing to DB
 
 **New UI primitive:**
+
 - Implementation: `src/components/ui/[component-name].tsx`
 - Export from `src/components/ui/index.ts`
 
 **New Zod validation schema:**
+
 - Add to the relevant file in `src/lib/validations/`
 
 **New shared utility:**
+
 - Add to `src/lib/utils.ts` (currently only `cn()`) or create a new `src/lib/[utility].ts` file
 
 ## Special Directories
 
 **`src/app/(marketing)/`:**
+
 - Purpose: Contains multiple unused homepage version files (`page-v2.tsx` through `page-v5.tsx`)
 - Generated: No
 - Committed: Yes — these are design iteration artifacts not yet cleaned up
 
 **`.planning/codebase/`:**
+
 - Purpose: Architecture reference documents for planning and execution agents
 - Generated: Yes (by codebase mapping)
 - Committed: Yes
 
 **`.next/`:**
+
 - Purpose: Next.js build output and cache
 - Generated: Yes
 - Committed: No (in `.gitignore`)
 
 ---
 
-*Structure analysis: 2026-05-07*
+_Structure analysis: 2026-05-07_

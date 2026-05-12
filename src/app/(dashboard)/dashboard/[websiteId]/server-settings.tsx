@@ -1,129 +1,155 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Textarea, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
-import { updateWebsiteSchema, type UpdateWebsiteInput } from "@/lib/validations/website";
-import { updateWebsite } from "../actions";
-import { useState } from "react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+
+import { useState } from 'react';
+
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Textarea } from '@/components/ui';
+import { updateWebsiteSchema, type UpdateWebsiteInput } from '@/lib/validations/website';
+
+import { updateWebsite } from '../actions';
 
 interface Website {
-  id: string;
-  name: string;
-  subdomain: string;
-  description: string | null;
+	id: string;
+	name: string;
+	subdomain: string;
+	description: string | null;
 }
 
 interface ServerSettingsProps {
-  server: Website;
+	server: Website;
 }
 
 export function ServerSettings({ server }: ServerSettingsProps) {
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<UpdateWebsiteInput>({
-    resolver: zodResolver(updateWebsiteSchema),
-    defaultValues: {
-      name: server.name,
-      subdomain: server.subdomain,
-      description: server.description || "",
-    },
-  });
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+	} = useForm<UpdateWebsiteInput>({
+		resolver: zodResolver(updateWebsiteSchema),
+		defaultValues: {
+			name: server.name,
+			subdomain: server.subdomain,
+			description: server.description || '',
+		},
+	});
 
-  const onSubmit = async (data: UpdateWebsiteInput) => {
-    setError(null);
-    setSuccess(false);
-    try {
-      const formData = new FormData();
-      // BL-06: always include `description` (even when empty) so the server can
-      // distinguish "user wants to clear" (empty string → null) from
-      // "field not submitted" (do not change). For other fields, empty strings
-      // are stripped so the partial update schema treats them as "do not change".
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "description") {
-          // Send "" so the server action sees `formData.has("description")` and
-          // maps the empty value to null (explicit clear).
-          formData.append(key, value === undefined || value === null ? "" : String(value));
-        } else if (value !== undefined && value !== null && value !== "") {
-          formData.append(key, String(value));
-        }
-      });
-      await updateWebsite(server.id, formData);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    }
-  };
+	const onSubmit = async (data: UpdateWebsiteInput) => {
+		setError(null);
+		setSuccess(false);
+		try {
+			const formData = new FormData();
+			// BL-06: always include `description` (even when empty) so the server can
+			// distinguish "user wants to clear" (empty string → null) from
+			// "field not submitted" (do not change). For other fields, empty strings
+			// are stripped so the partial update schema treats them as "do not change".
+			Object.entries(data).forEach(([key, value]) => {
+				if (key === 'description') {
+					// Send "" so the server action sees `formData.has("description")` and
+					// maps the empty value to null (explicit clear).
+					formData.append(
+						key,
+						value === undefined || value === null ? '' : String(value),
+					);
+				} else if (value !== undefined && value !== null && value !== '') {
+					formData.append(key, String(value));
+				}
+			});
+			await updateWebsite(server.id, formData);
+			setSuccess(true);
+			setTimeout(() => setSuccess(false), 3000);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Something went wrong');
+		}
+	};
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Settings</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-600">
-              Settings saved successfully!
-            </div>
-          )}
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Settings</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+					{error && (
+						<div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+							{error}
+						</div>
+					)}
+					{success && (
+						<div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-600">
+							Settings saved successfully!
+						</div>
+					)}
 
-          <div>
-            <label htmlFor="server-settings-name" className="block text-sm font-medium text-zinc-700 mb-1.5">
-              Server Name
-            </label>
-            <Input id="server-settings-name" {...register("name")} error={!!errors.name} />
-            {errors.name && (
-              <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
-            )}
-          </div>
+					<div>
+						<label
+							htmlFor="server-settings-name"
+							className="mb-1.5 block text-sm font-medium text-zinc-700"
+						>
+							Server Name
+						</label>
+						<Input
+							id="server-settings-name"
+							{...register('name')}
+							error={!!errors.name}
+						/>
+						{errors.name && (
+							<p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+						)}
+					</div>
 
-          <div>
-            <label htmlFor="server-settings-subdomain" className="block text-sm font-medium text-zinc-700 mb-1.5">
-              Subdomain
-            </label>
-            <div className="flex items-center">
-              <Input
-                id="server-settings-subdomain"
-                {...register("subdomain")}
-                error={!!errors.subdomain}
-                className="rounded-r-none"
-              />
-              <span className="px-3 py-2.5 text-sm text-zinc-500 bg-zinc-100 border border-l-0 border-zinc-200 rounded-r-xl">
-                .minesites.net
-              </span>
-            </div>
-            {errors.subdomain && (
-              <p className="text-sm text-red-500 mt-1">{errors.subdomain.message}</p>
-            )}
-          </div>
+					<div>
+						<label
+							htmlFor="server-settings-subdomain"
+							className="mb-1.5 block text-sm font-medium text-zinc-700"
+						>
+							Subdomain
+						</label>
+						<div className="flex items-center">
+							<Input
+								id="server-settings-subdomain"
+								{...register('subdomain')}
+								error={!!errors.subdomain}
+								className="rounded-r-none"
+							/>
+							<span className="rounded-r-xl border border-l-0 border-zinc-200 bg-zinc-100 px-3 py-2.5 text-sm text-zinc-500">
+								.minesites.net
+							</span>
+						</div>
+						{errors.subdomain && (
+							<p className="mt-1 text-sm text-red-500">{errors.subdomain.message}</p>
+						)}
+					</div>
 
-          <div>
-            <label htmlFor="server-settings-description" className="block text-sm font-medium text-zinc-700 mb-1.5">
-              Description
-            </label>
-            <Textarea id="server-settings-description" {...register("description")} rows={3} error={!!errors.description} />
-            {errors.description && (
-              <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>
-            )}
-          </div>
+					<div>
+						<label
+							htmlFor="server-settings-description"
+							className="mb-1.5 block text-sm font-medium text-zinc-700"
+						>
+							Description
+						</label>
+						<Textarea
+							id="server-settings-description"
+							{...register('description')}
+							rows={3}
+							error={!!errors.description}
+						/>
+						{errors.description && (
+							<p className="mt-1 text-sm text-red-500">
+								{errors.description.message}
+							</p>
+						)}
+					</div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
+					<Button type="submit" disabled={isSubmitting} className="w-full">
+						{isSubmitting ? 'Saving...' : 'Save Changes'}
+					</Button>
+				</form>
+			</CardContent>
+		</Card>
+	);
 }

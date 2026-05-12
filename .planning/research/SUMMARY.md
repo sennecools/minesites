@@ -33,13 +33,13 @@ saves.
 
 ## Recommended Stack Additions
 
-| Need | Solution | Notes |
-|------|----------|-------|
-| Minecraft status | mcstatus.io via Route Handler | Server-side only; `'use cache'` with 60s TTL |
-| Particles | `@tsparticles/react` + `@tsparticles/slim` | Only new production dep; `dynamic(..., {ssr:false})` required |
-| Parallax / animations | Framer Motion (already installed) | `useScroll` + `useTransform`; no new lib needed |
-| Theme system | Tailwind v4 `@theme inline` + `data-theme` attr | Server-rendered attribute; zero FOUC |
-| Freemium gating | `plan` field on `User` + `getPlanLimits()` helper | No external billing service for v1 |
+| Need                  | Solution                                          | Notes                                                         |
+| --------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
+| Minecraft status      | mcstatus.io via Route Handler                     | Server-side only; `'use cache'` with 60s TTL                  |
+| Particles             | `@tsparticles/react` + `@tsparticles/slim`        | Only new production dep; `dynamic(..., {ssr:false})` required |
+| Parallax / animations | Framer Motion (already installed)                 | `useScroll` + `useTransform`; no new lib needed               |
+| Theme system          | Tailwind v4 `@theme inline` + `data-theme` attr   | Server-rendered attribute; zero FOUC                          |
+| Freemium gating       | `plan` field on `User` + `getPlanLimits()` helper | No external billing service for v1                            |
 
 `next.config.ts` requires `cacheComponents: true` to enable the `'use cache'` directive.
 
@@ -94,6 +94,7 @@ type = one registry entry + two files.
 ### 2. Hard Dashboard / Site Boundary
 
 Enforced by import convention:
+
 - `src/components/site/` never imports from `src/components/ui/`
 - `src/components/sections/render/` never imports from `src/components/ui/`
 - `src/components/sections/settings/` never imports from `src/components/site/`
@@ -153,12 +154,12 @@ of `page.tsx`.
 
 ## Confidence Assessment
 
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | Verified against live docs; only 1 new dep identified |
-| Features | MEDIUM-HIGH | Based on competitor observation; not yet user-tested |
-| Architecture | HIGH | Based on direct codebase inspection; standard Next.js patterns |
-| Pitfalls | HIGH | All critical pitfalls are known-category issues with documented prevention |
+| Area         | Confidence  | Notes                                                                      |
+| ------------ | ----------- | -------------------------------------------------------------------------- |
+| Stack        | HIGH        | Verified against live docs; only 1 new dep identified                      |
+| Features     | MEDIUM-HIGH | Based on competitor observation; not yet user-tested                       |
+| Architecture | HIGH        | Based on direct codebase inspection; standard Next.js patterns             |
+| Pitfalls     | HIGH        | All critical pitfalls are known-category issues with documented prevention |
 
 ### Gaps to Validate During Planning
 

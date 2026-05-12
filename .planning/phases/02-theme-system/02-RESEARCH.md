@@ -7,31 +7,37 @@
 ---
 
 <user_constraints>
+
 ## User Constraints (from CONTEXT.md)
 
 ### Locked Decisions
 
 **Gaming Baseline Aesthetic (VISUAL-02)**
+
 - D-01: Dark & clean aesthetic — near-black background (`#0e0e10`), near-white text (`#f4f4f5`), slightly elevated card surfaces (`#1a1a1f`). Vivid accent color is the only per-server variable.
 - D-02: Sticky navigation bar at top: server logo/name on the left, server IP with one-click-copy button on the right. No anchor links to sections in Phase 2.
 - D-03: Nav is sticky — fixed at the top of the viewport as user scrolls.
 
 **Color Palette Presets (THEME-01)**
+
 - D-04: Single-accent-color model — each preset defines one accent color; background, text, and card are fixed across all presets.
 - D-05: 8 presets: Cyan `#06b6d4`, Emerald `#10b981`, Violet `#8b5cf6`, Orange `#f97316`, Red `#ef4444`, Gold `#eab308`, Pink `#ec4899`, White `#f4f4f5`.
 - D-06: Stored as `Server.theme = { palette: "cyan" | "emerald" | ..., font: "rajdhani" | ... }`. Server component looks up hex from static preset map at render time.
 
 **Font Options (THEME-02)**
+
 - D-07: All 5 fonts declared statically in subdomain layout with `next/font/google`. Active font toggled via CSS variable under `.site-root`.
 - D-08: 5 fonts: Rajdhani (default), Orbitron, Cinzel, Exo 2, Bebas Neue.
 - D-09: Font applies to `--site-font-display`. Body text uses system-ui or Inter regardless.
 
 **Theme Editor UX (THEME-01/THEME-02/THEME-03)**
+
 - D-10: Dedicated "Appearance" tab in the editor sidebar alongside "Sections".
 - D-11: Live preview — clicking a swatch or font updates preview via CSS vars (client-side). Save persists to DB.
 - D-12: Per-section background override in each section's settings panel. Stores as `section.settings.backgroundColor: string | undefined`.
 
 **CSS Isolation (VISUAL-01)**
+
 - D-13: All public site styles under `.site-root` CSS scope. Class added to `src/app/[subdomain]/layout.tsx`.
 - D-14: Theme CSS vars injected inline by Server Component on `.site-root` element. No FOUC.
 
@@ -44,19 +50,21 @@ None documented — all Phase 2 decisions are locked.
 - Custom hex color input (free-form beyond the 8 presets)
 - Light-background theme variant
 - Anchor links in nav (auto-generated section IDs for smooth scrolling)
-</user_constraints>
+  </user_constraints>
 
 <phase_requirements>
+
 ## Phase Requirements
 
-| ID | Description | Research Support |
-|----|-------------|------------------|
-| VISUAL-01 | Server website pages render inside a `.site-root` scope that overrides dashboard CSS variables | CSS var scoping pattern verified; `.site-root` class on layout wrapper is the isolation mechanism |
-| VISUAL-02 | Server website has its own gaming-styled base layout (dark nav, vivid accent, bold typography) | Dark palette values locked in D-01; SiteNav component pattern defined in UI-SPEC |
-| THEME-01 | User can choose a site-wide color palette from curated presets | 8 presets defined in D-05; `ThemePresetMap` lookup pattern identified |
-| THEME-02 | User can choose a site-wide display font from a curated set via next/font/google | Static font declaration pattern verified via Context7; all 5 fonts must be declared with `variable` option |
-| THEME-03 | User can override the background color of any individual section | Per-section `backgroundColor` in `section.settings` pattern; HTML `<input type="color">` in settings panel |
-| THEME-04 | Theme applied server-side via `data-theme` attribute — no FOUC | Inline `style` prop on Server Component wrapper; CSS vars in initial HTML |
+| ID        | Description                                                                                    | Research Support                                                                                           |
+| --------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| VISUAL-01 | Server website pages render inside a `.site-root` scope that overrides dashboard CSS variables | CSS var scoping pattern verified; `.site-root` class on layout wrapper is the isolation mechanism          |
+| VISUAL-02 | Server website has its own gaming-styled base layout (dark nav, vivid accent, bold typography) | Dark palette values locked in D-01; SiteNav component pattern defined in UI-SPEC                           |
+| THEME-01  | User can choose a site-wide color palette from curated presets                                 | 8 presets defined in D-05; `ThemePresetMap` lookup pattern identified                                      |
+| THEME-02  | User can choose a site-wide display font from a curated set via next/font/google               | Static font declaration pattern verified via Context7; all 5 fonts must be declared with `variable` option |
+| THEME-03  | User can override the background color of any individual section                               | Per-section `backgroundColor` in `section.settings` pattern; HTML `<input type="color">` in settings panel |
+| THEME-04  | Theme applied server-side via `data-theme` attribute — no FOUC                                 | Inline `style` prop on Server Component wrapper; CSS vars in initial HTML                                  |
+
 </phase_requirements>
 
 ---
@@ -75,30 +83,31 @@ The primary implementation challenge is the editor "Appearance" tab: it needs to
 
 ## Architectural Responsibility Map
 
-| Capability | Primary Tier | Secondary Tier | Rationale |
-|------------|-------------|----------------|-----------|
-| CSS isolation (`.site-root` scope) | Frontend Server (SSR) | — | Must be in the HTML response to prevent FOUC; layout.tsx Server Component owns the wrapper |
-| Theme CSS var injection | Frontend Server (SSR) | — | Inline `style` on Server Component ensures vars are in initial HTML, no hydration needed |
-| Google Font loading | Frontend Server (SSR) | — | `next/font/google` must be called at module level in a Server Component layout |
-| Live preview theme update | Browser / Client | — | CSS var mutation on `.site-root` in preview panel; no server round-trip |
-| Theme persistence (save) | API / Backend | — | `PUT /api/servers/[serverId]` already accepts and stores `theme` field |
-| SiteNav (public) | Frontend Server (SSR) | Browser (IP copy) | Nav renders server-side; copy button is the only interactive element |
-| AppearanceTab (editor) | Browser / Client | — | Editor is already `"use client"`; Appearance tab is a child component |
-| Per-section background override | Browser / Client (edit) | Frontend Server (SSR) (render) | Stored in section.settings; applied at render time on public site |
-| `ThemePresetMap` (lookup) | Shared (both tiers) | — | Pure static data; imported by Server Component and client editor |
+| Capability                         | Primary Tier            | Secondary Tier                 | Rationale                                                                                  |
+| ---------------------------------- | ----------------------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
+| CSS isolation (`.site-root` scope) | Frontend Server (SSR)   | —                              | Must be in the HTML response to prevent FOUC; layout.tsx Server Component owns the wrapper |
+| Theme CSS var injection            | Frontend Server (SSR)   | —                              | Inline `style` on Server Component ensures vars are in initial HTML, no hydration needed   |
+| Google Font loading                | Frontend Server (SSR)   | —                              | `next/font/google` must be called at module level in a Server Component layout             |
+| Live preview theme update          | Browser / Client        | —                              | CSS var mutation on `.site-root` in preview panel; no server round-trip                    |
+| Theme persistence (save)           | API / Backend           | —                              | `PUT /api/servers/[serverId]` already accepts and stores `theme` field                     |
+| SiteNav (public)                   | Frontend Server (SSR)   | Browser (IP copy)              | Nav renders server-side; copy button is the only interactive element                       |
+| AppearanceTab (editor)             | Browser / Client        | —                              | Editor is already `"use client"`; Appearance tab is a child component                      |
+| Per-section background override    | Browser / Client (edit) | Frontend Server (SSR) (render) | Stored in section.settings; applied at render time on public site                          |
+| `ThemePresetMap` (lookup)          | Shared (both tiers)     | —                              | Pure static data; imported by Server Component and client editor                           |
 
 ---
 
 ## Standard Stack
 
 ### Core
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| next/font/google | 16.1.6 (bundled) | Static Google Font loading with CSS variables | Eliminates FOUT, zero runtime network requests, required for static declarations | [VERIFIED: Context7 /vercel/next.js] |
-| Tailwind CSS v4 | 4.x (package.json) | Utility classes + `@theme inline` CSS var bridge | Already in stack; `.site-root` scoping via class prefix | [VERIFIED: package.json] |
-| framer-motion | 12.29.2 | Swatch animations, tab transitions | Already in stack; `whileHover`/`whileTap` used throughout editor | [VERIFIED: package.json] |
-| Zustand | 5.0.10 | Active tab state (Sections vs Appearance) | Already in stack; `useSidebarStore` pattern mentioned in CONTEXT.md | [VERIFIED: package.json] |
-| lucide-react | 0.563.0 | Copy/Check icons for IP copy button | Already in stack; Copy + Check already imported in editor | [VERIFIED: package.json] |
+
+| Library          | Version            | Purpose                                          | Why Standard                                                                     |
+| ---------------- | ------------------ | ------------------------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------ |
+| next/font/google | 16.1.6 (bundled)   | Static Google Font loading with CSS variables    | Eliminates FOUT, zero runtime network requests, required for static declarations | [VERIFIED: Context7 /vercel/next.js] |
+| Tailwind CSS v4  | 4.x (package.json) | Utility classes + `@theme inline` CSS var bridge | Already in stack; `.site-root` scoping via class prefix                          | [VERIFIED: package.json]             |
+| framer-motion    | 12.29.2            | Swatch animations, tab transitions               | Already in stack; `whileHover`/`whileTap` used throughout editor                 | [VERIFIED: package.json]             |
+| Zustand          | 5.0.10             | Active tab state (Sections vs Appearance)        | Already in stack; `useSidebarStore` pattern mentioned in CONTEXT.md              | [VERIFIED: package.json]             |
+| lucide-react     | 0.563.0            | Copy/Check icons for IP copy button              | Already in stack; Copy + Check already imported in editor                        | [VERIFIED: package.json]             |
 
 ### No New Dependencies Needed
 
@@ -173,38 +182,34 @@ Per-section background override is added inside each existing section's settings
 // Source: CONTEXT.md D-14; Next.js Server Component pattern
 // src/app/[subdomain]/layout.tsx
 
-import { THEME_PRESETS } from "@/lib/theme-presets";
-import type { SiteTheme } from "@/types/site-theme";
+import { THEME_PRESETS } from '@/lib/theme-presets';
+import type { SiteTheme } from '@/types/site-theme';
 
 export default function SubdomainLayout({
-  children,
-  theme,
+	children,
+	theme,
 }: {
-  children: React.ReactNode;
-  theme?: SiteTheme;
+	children: React.ReactNode;
+	theme?: SiteTheme;
 }) {
-  const palette = theme?.palette ?? "cyan";
-  const font = theme?.font ?? "rajdhani";
-  const accent = THEME_PRESETS[palette] ?? THEME_PRESETS.cyan;
+	const palette = theme?.palette ?? 'cyan';
+	const font = theme?.font ?? 'rajdhani';
+	const accent = THEME_PRESETS[palette] ?? THEME_PRESETS.cyan;
 
-  const cssVars: React.CSSProperties = {
-    "--site-accent": accent,
-    "--site-bg": "#0e0e10",
-    "--site-card": "#1a1a1f",
-    "--site-text": "#f4f4f5",
-    "--site-text-muted": "#a1a1aa",
-    "--site-font-display": FONT_FAMILY_MAP[font] ?? "Rajdhani, sans-serif",
-  } as React.CSSProperties;
+	const cssVars: React.CSSProperties = {
+		'--site-accent': accent,
+		'--site-bg': '#0e0e10',
+		'--site-card': '#1a1a1f',
+		'--site-text': '#f4f4f5',
+		'--site-text-muted': '#a1a1aa',
+		'--site-font-display': FONT_FAMILY_MAP[font] ?? 'Rajdhani, sans-serif',
+	} as React.CSSProperties;
 
-  return (
-    <div
-      className="site-root"
-      data-theme={palette}
-      style={cssVars}
-    >
-      {children}
-    </div>
-  );
+	return (
+		<div className="site-root" data-theme={palette} style={cssVars}>
+			{children}
+		</div>
+	);
 }
 ```
 
@@ -218,82 +223,77 @@ export default function SubdomainLayout({
 // Source: Context7 /vercel/next.js — multiple fonts with CSS variables
 // src/app/[subdomain]/layout.tsx
 
-import {
-  Rajdhani,
-  Orbitron,
-  Cinzel,
-  Exo_2,
-  Bebas_Neue,
-} from "next/font/google";
+import { Bebas_Neue, Cinzel, Exo_2, Orbitron, Rajdhani } from 'next/font/google';
 
 // Non-variable fonts require weight array. Exo_2 is variable (no weight needed).
 // Bebas Neue only ships weight 400 — declared as-is (no bold variant).
 const rajdhani = Rajdhani({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-rajdhani",
-  display: "swap",
+	weight: ['400', '700'],
+	subsets: ['latin'],
+	variable: '--font-rajdhani',
+	display: 'swap',
 });
 
 const orbitron = Orbitron({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-  display: "swap",
+	weight: ['400', '700'],
+	subsets: ['latin'],
+	variable: '--font-orbitron',
+	display: 'swap',
 });
 
 const cinzel = Cinzel({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-cinzel",
-  display: "swap",
+	weight: ['400', '700'],
+	subsets: ['latin'],
+	variable: '--font-cinzel',
+	display: 'swap',
 });
 
 const exo2 = Exo_2({
-  subsets: ["latin"],        // variable font — no weight param needed
-  variable: "--font-exo2",
-  display: "swap",
+	subsets: ['latin'], // variable font — no weight param needed
+	variable: '--font-exo2',
+	display: 'swap',
 });
 
 const bebasNeue = Bebas_Neue({
-  weight: "400",             // Only weight available for this font
-  subsets: ["latin"],
-  variable: "--font-bebas",
-  display: "swap",
+	weight: '400', // Only weight available for this font
+	subsets: ['latin'],
+	variable: '--font-bebas',
+	display: 'swap',
 });
 
 // Apply all font className variables so CSS vars are available on the element.
 // The active font is switched by --site-font-display, not by removing a class.
 export default function SubdomainLayout({ children, theme }) {
-  const fontClasses = [
-    rajdhani.variable,
-    orbitron.variable,
-    cinzel.variable,
-    exo2.variable,
-    bebasNeue.variable,
-  ].join(" ");
+	const fontClasses = [
+		rajdhani.variable,
+		orbitron.variable,
+		cinzel.variable,
+		exo2.variable,
+		bebasNeue.variable,
+	].join(' ');
 
-  return (
-    <div
-      className={`site-root ${fontClasses}`}
-      data-theme={theme?.palette ?? "cyan"}
-      style={cssVars}
-    >
-      {children}
-    </div>
-  );
+	return (
+		<div
+			className={`site-root ${fontClasses}`}
+			data-theme={theme?.palette ?? 'cyan'}
+			style={cssVars}
+		>
+			{children}
+		</div>
+	);
 }
 ```
 
 **Font family values for `--site-font-display`:**
+
 ```ts
 // src/lib/theme-presets.ts
 export const FONT_FAMILY_MAP: Record<string, string> = {
-  rajdhani:  "var(--font-rajdhani), sans-serif",
-  orbitron:  "var(--font-orbitron), sans-serif",
-  cinzel:    "var(--font-cinzel), serif",
-  exo2:      "var(--font-exo2), sans-serif",
-  bebas:     "var(--font-bebas), sans-serif",
+	rajdhani: 'var(--font-rajdhani), sans-serif',
+	orbitron: 'var(--font-orbitron), sans-serif',
+	cinzel: 'var(--font-cinzel), serif',
+	exo2: 'var(--font-exo2), sans-serif',
+	bebas: 'var(--font-bebas), sans-serif',
 };
 ```
 
@@ -307,17 +307,13 @@ export const FONT_FAMILY_MAP: Record<string, string> = {
 // Source: CONTEXT.md D-11; DOM CSS property mutation pattern [ASSUMED pattern name]
 // Called from AppearanceTab onClick handlers
 
-function applyThemePreview(
-  previewRoot: HTMLElement | null,
-  palette: string,
-  font: string
-) {
-  if (!previewRoot) return;
-  const accent = THEME_PRESETS[palette] ?? THEME_PRESETS.cyan;
-  const fontFamily = FONT_FAMILY_MAP[font] ?? FONT_FAMILY_MAP.rajdhani;
-  previewRoot.style.setProperty("--site-accent", accent);
-  previewRoot.style.setProperty("--site-font-display", fontFamily);
-  previewRoot.setAttribute("data-theme", palette);
+function applyThemePreview(previewRoot: HTMLElement | null, palette: string, font: string) {
+	if (!previewRoot) return;
+	const accent = THEME_PRESETS[palette] ?? THEME_PRESETS.cyan;
+	const fontFamily = FONT_FAMILY_MAP[font] ?? FONT_FAMILY_MAP.rajdhani;
+	previewRoot.style.setProperty('--site-accent', accent);
+	previewRoot.style.setProperty('--site-font-display', fontFamily);
+	previewRoot.setAttribute('data-theme', palette);
 }
 ```
 
@@ -330,18 +326,24 @@ The preview panel in the editor already renders section components via `SectionP
 // src/lib/theme-presets.ts
 
 export type PaletteKey =
-  | "cyan" | "emerald" | "violet" | "orange"
-  | "red"  | "gold"    | "pink"   | "white";
+	| 'cyan'
+	| 'emerald'
+	| 'violet'
+	| 'orange'
+	| 'red'
+	| 'gold'
+	| 'pink'
+	| 'white';
 
 export const THEME_PRESETS: Record<PaletteKey, string> = {
-  cyan:    "#06b6d4",
-  emerald: "#10b981",
-  violet:  "#8b5cf6",
-  orange:  "#f97316",
-  red:     "#ef4444",
-  gold:    "#eab308",
-  pink:    "#ec4899",
-  white:   "#f4f4f5",
+	cyan: '#06b6d4',
+	emerald: '#10b981',
+	violet: '#8b5cf6',
+	orange: '#f97316',
+	red: '#ef4444',
+	gold: '#eab308',
+	pink: '#ec4899',
+	white: '#f4f4f5',
 };
 ```
 
@@ -363,20 +365,25 @@ The current stub in `src/types/site-theme.ts` has 5 optional generic fields. Pha
 ```ts
 // src/types/site-theme.ts
 export type PaletteKey =
-  | "cyan" | "emerald" | "violet" | "orange"
-  | "red"  | "gold"    | "pink"   | "white";
+	| 'cyan'
+	| 'emerald'
+	| 'violet'
+	| 'orange'
+	| 'red'
+	| 'gold'
+	| 'pink'
+	| 'white';
 
-export type FontKey =
-  | "rajdhani" | "orbitron" | "cinzel" | "exo2" | "bebas";
+export type FontKey = 'rajdhani' | 'orbitron' | 'cinzel' | 'exo2' | 'bebas';
 
 export interface SiteTheme {
-  palette: PaletteKey;
-  font: FontKey;
+	palette: PaletteKey;
+	font: FontKey;
 }
 
 export const DEFAULT_THEME: SiteTheme = {
-  palette: "cyan",
-  font: "rajdhani",
+	palette: 'cyan',
+	font: 'rajdhani',
 };
 ```
 
@@ -392,12 +399,12 @@ export const DEFAULT_THEME: SiteTheme = {
 
 ## Don't Hand-Roll
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Font loading with FOUT prevention | Custom font preloading logic | `next/font/google` with `variable` + `display: 'swap'` | Next.js handles preload link injection, font size adjustment, zero runtime cost |
-| CSS variable theming | JS theme context / class toggling | Inline `style` prop + CSS vars cascade | CSS vars cascade through the DOM; Server Component injection means zero client JS for initial render |
-| Color swatch circles | Custom slider / color wheel | Plain `<button>` with Framer Motion `whileHover`/`whileTap` | CSS circle + motion library already in stack; no new dependency needed |
-| Per-section color picker | Full colorpicker widget | `<input type="color">` + hex text field (existing `.color-picker` pattern) | Already implemented in `BackgroundSettingsPanel` in the god-component — extract and reuse the same pattern |
+| Problem                           | Don't Build                       | Use Instead                                                                | Why                                                                                                        |
+| --------------------------------- | --------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Font loading with FOUT prevention | Custom font preloading logic      | `next/font/google` with `variable` + `display: 'swap'`                     | Next.js handles preload link injection, font size adjustment, zero runtime cost                            |
+| CSS variable theming              | JS theme context / class toggling | Inline `style` prop + CSS vars cascade                                     | CSS vars cascade through the DOM; Server Component injection means zero client JS for initial render       |
+| Color swatch circles              | Custom slider / color wheel       | Plain `<button>` with Framer Motion `whileHover`/`whileTap`                | CSS circle + motion library already in stack; no new dependency needed                                     |
+| Per-section color picker          | Full colorpicker widget           | `<input type="color">` + hex text field (existing `.color-picker` pattern) | Already implemented in `BackgroundSettingsPanel` in the god-component — extract and reuse the same pattern |
 
 **Key insight:** The BackgroundSettingsPanel component already implements the color picker + hex text field pattern used for section backgrounds. The per-section background override for Phase 2 (`section.settings.backgroundColor`) is a simpler single-field version of this existing pattern.
 
@@ -474,50 +481,51 @@ export const DEFAULT_THEME: SiteTheme = {
 ```tsx
 // Source: UI-SPEC.md component inventory; CONTEXT.md D-02, D-03
 // src/components/site/nav.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { Check, Copy } from 'lucide-react';
+
+import { useState } from 'react';
 
 interface SiteNavProps {
-  serverName: string;
-  serverIp: string;
+	serverName: string;
+	serverIp: string;
 }
 
 export function SiteNav({ serverName, serverIp }: SiteNavProps) {
-  const [copied, setCopied] = useState(false);
+	const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(serverIp);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+	const handleCopy = () => {
+		navigator.clipboard.writeText(serverIp);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
 
-  return (
-    <nav
-      className="sticky top-0 z-50 h-14 flex items-center justify-between px-6"
-      style={{ backgroundColor: "var(--site-card)" }}
-    >
-      <span
-        className="font-bold text-lg"
-        style={{ fontFamily: "var(--site-font-display)", color: "var(--site-text)" }}
-      >
-        {serverName}
-      </span>
-      <button
-        onClick={handleCopy}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-        style={{
-          backgroundColor: "var(--site-accent)",
-          color: "#ffffff",
-        }}
-        aria-label="Copy server IP"
-      >
-        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-        {copied ? "Copied!" : "Copy IP"}
-      </button>
-    </nav>
-  );
+	return (
+		<nav
+			className="sticky top-0 z-50 flex h-14 items-center justify-between px-6"
+			style={{ backgroundColor: 'var(--site-card)' }}
+		>
+			<span
+				className="text-lg font-bold"
+				style={{ fontFamily: 'var(--site-font-display)', color: 'var(--site-text)' }}
+			>
+				{serverName}
+			</span>
+			<button
+				onClick={handleCopy}
+				className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+				style={{
+					backgroundColor: 'var(--site-accent)',
+					color: '#ffffff',
+				}}
+				aria-label="Copy server IP"
+			>
+				{copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+				{copied ? 'Copied!' : 'Copy IP'}
+			</button>
+		</nav>
+	);
 }
 ```
 
@@ -526,54 +534,59 @@ export function SiteNav({ serverName, serverIp }: SiteNavProps) {
 ```tsx
 // Source: UI-SPEC.md — 44px tap zone (WCAG 2.5.5), 28px visual circle
 // src/components/editor/color-swatch-picker.tsx
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { THEME_PRESETS, type PaletteKey } from "@/lib/theme-presets";
+import { motion } from 'framer-motion';
+
+import { THEME_PRESETS, type PaletteKey } from '@/lib/theme-presets';
 
 const PALETTE_NAMES: Record<PaletteKey, string> = {
-  cyan: "Cyan", emerald: "Emerald", violet: "Violet", orange: "Orange",
-  red: "Red", gold: "Gold", pink: "Pink", white: "White",
+	cyan: 'Cyan',
+	emerald: 'Emerald',
+	violet: 'Violet',
+	orange: 'Orange',
+	red: 'Red',
+	gold: 'Gold',
+	pink: 'Pink',
+	white: 'White',
 };
 
 interface ColorSwatchPickerProps {
-  selected: PaletteKey;
-  onChange: (key: PaletteKey) => void;
+	selected: PaletteKey;
+	onChange: (key: PaletteKey) => void;
 }
 
 export function ColorSwatchPicker({ selected, onChange }: ColorSwatchPickerProps) {
-  const keys = Object.keys(THEME_PRESETS) as PaletteKey[];
+	const keys = Object.keys(THEME_PRESETS) as PaletteKey[];
 
-  return (
-    <div className="grid grid-cols-4 gap-1">
-      {keys.map((key) => (
-        // 44px interactive target; 28px visual circle centered inside
-        <button
-          key={key}
-          onClick={() => onChange(key)}
-          aria-label={PALETTE_NAMES[key]}
-          className="w-11 h-11 flex items-center justify-center"
-        >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            animate={selected === key ? { scale: 1.1 } : { scale: 1.0 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              backgroundColor: THEME_PRESETS[key],
-              outline: selected === key
-                ? `2px solid ${THEME_PRESETS[key]}`
-                : "none",
-              outlineOffset: "2px",
-            }}
-          />
-        </button>
-      ))}
-    </div>
-  );
+	return (
+		<div className="grid grid-cols-4 gap-1">
+			{keys.map((key) => (
+				// 44px interactive target; 28px visual circle centered inside
+				<button
+					key={key}
+					onClick={() => onChange(key)}
+					aria-label={PALETTE_NAMES[key]}
+					className="flex h-11 w-11 items-center justify-center"
+				>
+					<motion.div
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						animate={selected === key ? { scale: 1.1 } : { scale: 1.0 }}
+						transition={{ duration: 0.15, ease: 'easeOut' }}
+						style={{
+							width: 28,
+							height: 28,
+							borderRadius: '50%',
+							backgroundColor: THEME_PRESETS[key],
+							outline: selected === key ? `2px solid ${THEME_PRESETS[key]}` : 'none',
+							outlineOffset: '2px',
+						}}
+					/>
+				</button>
+			))}
+		</div>
+	);
 }
 ```
 
@@ -584,46 +597,43 @@ export function ColorSwatchPicker({ selected, onChange }: ColorSwatchPickerProps
 // Added to each section's settings panel file
 
 interface SectionBgOverrideProps {
-  value: string | undefined;
-  onChange: (value: string | undefined) => void;
+	value: string | undefined;
+	onChange: (value: string | undefined) => void;
 }
 
 export function SectionBgOverride({ value, onChange }: SectionBgOverrideProps) {
-  return (
-    <div className="rounded-lg bg-zinc-50/50 p-3 space-y-3">
-      <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">
-        Section Background
-      </h3>
-      <div className="flex gap-2 items-center">
-        <div
-          className="color-picker"
-          style={{ backgroundColor: value ?? "#0e0e10" }}
-        >
-          <input
-            type="color"
-            value={value ?? "#0e0e10"}
-            onChange={(e) => onChange(e.target.value)}
-            className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer opacity-0"
-          />
-        </div>
-        <input
-          type="text"
-          placeholder="#0e0e10"
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value || undefined)}
-          className="input-field flex-1 min-w-0 text-xs font-mono"
-        />
-        {value && (
-          <button
-            onClick={() => onChange(undefined)}
-            className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors whitespace-nowrap"
-          >
-            Reset
-          </button>
-        )}
-      </div>
-    </div>
-  );
+	return (
+		<div className="space-y-3 rounded-lg bg-zinc-50/50 p-3">
+			<h3 className="text-xs font-semibold tracking-wider text-zinc-700 uppercase">
+				Section Background
+			</h3>
+			<div className="flex items-center gap-2">
+				<div className="color-picker" style={{ backgroundColor: value ?? '#0e0e10' }}>
+					<input
+						type="color"
+						value={value ?? '#0e0e10'}
+						onChange={(e) => onChange(e.target.value)}
+						className="absolute inset-0 -top-1/2 -left-1/2 h-[200%] w-[200%] cursor-pointer opacity-0"
+					/>
+				</div>
+				<input
+					type="text"
+					placeholder="#0e0e10"
+					value={value ?? ''}
+					onChange={(e) => onChange(e.target.value || undefined)}
+					className="input-field min-w-0 flex-1 font-mono text-xs"
+				/>
+				{value && (
+					<button
+						onClick={() => onChange(undefined)}
+						className="text-xs whitespace-nowrap text-zinc-400 transition-colors hover:text-zinc-600"
+					>
+						Reset
+					</button>
+				)}
+			</div>
+		</div>
+	);
 }
 ```
 
@@ -631,13 +641,14 @@ export function SectionBgOverride({ value, onChange }: SectionBgOverrideProps) {
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| CSS class toggling for themes (e.g., `dark` class on `<html>`) | CSS custom properties injected inline by Server Component | Widespread since 2022 | Eliminates FOUC; theme is in initial HTML without client JS |
-| Loading all fonts globally in `_document.js` | `next/font/google` with `variable` option per font | Next.js 13+ | Automatic font preloading, zero layout shift, build-time optimization |
-| Runtime font injection (Google Fonts `<link>`) | Static build-time font loading | Next.js 13+ | No FOUT; fonts self-hosted by Next.js, no Google network dependency |
+| Old Approach                                                   | Current Approach                                          | When Changed          | Impact                                                                |
+| -------------------------------------------------------------- | --------------------------------------------------------- | --------------------- | --------------------------------------------------------------------- |
+| CSS class toggling for themes (e.g., `dark` class on `<html>`) | CSS custom properties injected inline by Server Component | Widespread since 2022 | Eliminates FOUC; theme is in initial HTML without client JS           |
+| Loading all fonts globally in `_document.js`                   | `next/font/google` with `variable` option per font        | Next.js 13+           | Automatic font preloading, zero layout shift, build-time optimization |
+| Runtime font injection (Google Fonts `<link>`)                 | Static build-time font loading                            | Next.js 13+           | No FOUT; fonts self-hosted by Next.js, no Google network dependency   |
 
 **Deprecated/outdated:**
+
 - Loading Google Fonts via `<link>` in `<head>`: replaced by `next/font/google` in Next.js 13+. The old approach has FOUT and external network dependency.
 - Using `document.body.classList.toggle()` for themes: replaced by CSS var injection. Class toggling creates flash.
 
@@ -645,27 +656,27 @@ export function SectionBgOverride({ value, onChange }: SectionBgOverrideProps) {
 
 ## Assumptions Log
 
-| # | Claim | Section | Risk if Wrong |
-|---|-------|---------|---------------|
-| A1 | Bebas Neue only ships weight 400 on Google Fonts | Pitfall 2, Font pattern | If it ships 700, declaring `weight: "400"` still works but misses bold variant |
-| A2 | Editor preview panel does not currently have `.site-root` wrapper | Pitfall 4, Architecture | If it does, no action needed; but code inspection confirms it does not |
-| A3 | `--font-rajdhani` CSS var from `[subdomain]/layout.tsx` is NOT available in the dashboard context | Pitfall 5 | If wrong, literal font-family fallback still works — just slightly redundant |
+| #   | Claim                                                                                             | Section                 | Risk if Wrong                                                                  |
+| --- | ------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------ |
+| A1  | Bebas Neue only ships weight 400 on Google Fonts                                                  | Pitfall 2, Font pattern | If it ships 700, declaring `weight: "400"` still works but misses bold variant |
+| A2  | Editor preview panel does not currently have `.site-root` wrapper                                 | Pitfall 4, Architecture | If it does, no action needed; but code inspection confirms it does not         |
+| A3  | `--font-rajdhani` CSS var from `[subdomain]/layout.tsx` is NOT available in the dashboard context | Pitfall 5               | If wrong, literal font-family fallback still works — just slightly redundant   |
 
 ---
 
 ## Open Questions (RESOLVED)
 
 1. **How should `theme` data flow from `page.tsx` to `layout.tsx` in the subdomain route?**
-   - What we know: Next.js App Router layouts receive children but not arbitrary props from child pages.
-   - What's unclear: The standard pattern for passing data from a page to its parent layout. Options: (a) fetch theme again in layout.tsx (extra DB call), (b) use a React context via a shared client Provider, (c) restructure so the layout itself fetches theme using the `params` it receives.
-   - Recommendation: **Option (c)** — the `[subdomain]/layout.tsx` already receives `{ params: { subdomain } }` which it can use to fetch the theme directly. This avoids double fetching and keeps layout fully server-side. The page still does its own full fetch for sections.
-   - RESOLVED: layout.tsx self-fetches via `db.server.findUnique({ where: { subdomain } })` wrapped in `React.cache()` to deduplicate with page.tsx's own server row fetch. No theme prop threading from page → layout.
+    - What we know: Next.js App Router layouts receive children but not arbitrary props from child pages.
+    - What's unclear: The standard pattern for passing data from a page to its parent layout. Options: (a) fetch theme again in layout.tsx (extra DB call), (b) use a React context via a shared client Provider, (c) restructure so the layout itself fetches theme using the `params` it receives.
+    - Recommendation: **Option (c)** — the `[subdomain]/layout.tsx` already receives `{ params: { subdomain } }` which it can use to fetch the theme directly. This avoids double fetching and keeps layout fully server-side. The page still does its own full fetch for sections.
+    - RESOLVED: layout.tsx self-fetches via `db.server.findUnique({ where: { subdomain } })` wrapped in `React.cache()` to deduplicate with page.tsx's own server row fetch. No theme prop threading from page → layout.
 
 2. **Should the editor preview panel's `.site-root` wrapper also apply the font CSS class variables?**
-   - What we know: The 5 font CSS vars (`--font-rajdhani`, etc.) are defined by `next/font/google` in the subdomain layout — not in the dashboard.
-   - What's unclear: Whether the font `className` from `next/font/google` can be applied outside its host layout.
-   - Recommendation: Use literal font-family strings in the editor preview (e.g., `'Rajdhani, sans-serif'`) rather than `var(--font-rajdhani)`. This avoids cross-layout font var dependencies and works the same visually in the preview panel.
-   - RESOLVED: Use literal font-family strings from `FONT_FAMILY_MAP` (e.g., `"'Rajdhani', sans-serif"`) in the editor preview's `--site-font-display` CSS var. The `--font-*` vars from `next/font/google` are not available in the dashboard context.
+    - What we know: The 5 font CSS vars (`--font-rajdhani`, etc.) are defined by `next/font/google` in the subdomain layout — not in the dashboard.
+    - What's unclear: Whether the font `className` from `next/font/google` can be applied outside its host layout.
+    - Recommendation: Use literal font-family strings in the editor preview (e.g., `'Rajdhani, sans-serif'`) rather than `var(--font-rajdhani)`. This avoids cross-layout font var dependencies and works the same visually in the preview panel.
+    - RESOLVED: Use literal font-family strings from `FONT_FAMILY_MAP` (e.g., `"'Rajdhani', sans-serif"`) in the editor preview's `--site-font-display` CSS var. The `--font-*` vars from `next/font/google` are not available in the dashboard context.
 
 ---
 
@@ -696,15 +707,18 @@ No new authentication, session, or access control concerns.
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - Context7 `/vercel/next.js` — `next/font/google` static declarations, CSS variable pattern, multiple fonts, non-variable weight requirements
 - Codebase direct inspection — `src/app/globals.css`, `src/app/(dashboard)/dashboard/[serverId]/page.tsx`, `src/app/[subdomain]/layout.tsx`, `src/app/api/servers/[serverId]/route.ts`, `prisma/schema.prisma`, `package.json`
 - `.planning/phases/02-theme-system/02-CONTEXT.md` — all locked decisions
 - `.planning/phases/02-theme-system/02-UI-SPEC.md` — component inventory, spacing, animation contracts
 
 ### Secondary (MEDIUM confidence)
+
 - Google Fonts general knowledge — font variability status for Rajdhani, Orbitron, Cinzel, Exo 2, Bebas Neue (weight requirements)
 
 ### Tertiary (LOW confidence)
+
 - None
 
 ---
@@ -712,6 +726,7 @@ No new authentication, session, or access control concerns.
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH — all libraries already in package.json; Next.js font API verified via Context7
 - Architecture: HIGH — all decisions locked in CONTEXT.md; code inspection confirms current state of modified files
 - Pitfalls: HIGH (identified from direct code reading) / MEDIUM for font-specific pitfalls (Bebas weight is ASSUMED)

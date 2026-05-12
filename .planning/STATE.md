@@ -4,14 +4,14 @@ milestone: v1.1
 milestone_name: Website-Centric Model
 status: executing
 stopped_at: Phase 8 UI-SPEC approved
-last_updated: "2026-05-12T15:14:29.665Z"
+last_updated: '2026-05-12T15:14:29.665Z'
 last_activity: 2026-05-12 -- Phase 08 execution started
 progress:
-  total_phases: 5
-  completed_phases: 4
-  total_plans: 24
-  completed_plans: 20
-  percent: 83
+    total_phases: 5
+    completed_phases: 4
+    total_plans: 24
+    completed_plans: 20
+    percent: 83
 ---
 
 # Project State
@@ -41,16 +41,16 @@ Last activity: 2026-05-12 -- Phase 08 execution started
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 06 | 4 | - | - |
-| 07 | 6 | - | - |
+| ----- | ----- | ----- | -------- |
+| 06    | 4     | -     | -        |
+| 07    | 6     | -     | -        |
 
 **Recent Trend:**
 
 - Last 5 plans: —
 - Trend: —
 
-*Updated after each plan completion*
+_Updated after each plan completion_
 
 ## Accumulated Context
 
@@ -77,8 +77,8 @@ None yet.
 ## Deferred Items
 
 | Category | Item | Status | Deferred At |
-|----------|------|--------|-------------|
-| *(none)* | | | |
+| -------- | ---- | ------ | ----------- |
+| _(none)_ |      |        |             |
 
 ## Session Continuity
 

@@ -6,44 +6,44 @@ tags: [typescript, framer-motion, appearance-tab, theme-editor, css-variables, l
 
 # Dependency graph
 requires:
-  - phase: 02-theme-system
-    plan: 01
-    provides: PaletteKey, FontKey, SiteTheme, DEFAULT_THEME, THEME_PRESETS, FONT_FAMILY_MAP
+    - phase: 02-theme-system
+      plan: 01
+      provides: PaletteKey, FontKey, SiteTheme, DEFAULT_THEME, THEME_PRESETS, FONT_FAMILY_MAP
 provides:
-  - ColorSwatchPicker component (8 swatches, 44px tap zones, Framer Motion animations)
-  - FontPicker component (5 font labels, accentColor-driven active underline)
-  - AppearanceTab component (combines ColorSwatchPicker + FontPicker + Save Appearance button)
-  - themeSettings state in page.tsx loaded from data.theme and persisted via PUT body
-  - .site-root wrapper on preview panel with live CSS var mutation via previewRootRef
-  - Sections | Appearance tab toggle in editor sidebar
+    - ColorSwatchPicker component (8 swatches, 44px tap zones, Framer Motion animations)
+    - FontPicker component (5 font labels, accentColor-driven active underline)
+    - AppearanceTab component (combines ColorSwatchPicker + FontPicker + Save Appearance button)
+    - themeSettings state in page.tsx loaded from data.theme and persisted via PUT body
+    - .site-root wrapper on preview panel with live CSS var mutation via previewRootRef
+    - Sections | Appearance tab toggle in editor sidebar
 affects: [02-04-PLAN, subdomain-layout, public-site-theme-rendering]
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns:
-    - Ref-based CSS var mutation (previewRootRef.current.style.setProperty) for zero-latency live preview
-    - Two-tab sidebar toggle (Sections | Appearance) with conditional content rendering
-    - AppearanceTab component pattern: receives themeSettings + setThemeSettings + previewRootRef + onSave props
+    added: []
+    patterns:
+        - Ref-based CSS var mutation (previewRootRef.current.style.setProperty) for zero-latency live preview
+        - Two-tab sidebar toggle (Sections | Appearance) with conditional content rendering
+        - AppearanceTab component pattern: receives themeSettings + setThemeSettings + previewRootRef + onSave props
 
 key-files:
-  created:
-    - src/components/editor/color-swatch-picker.tsx
-    - src/components/editor/font-picker.tsx
-    - src/components/editor/appearance-tab.tsx
-  modified:
-    - src/app/(dashboard)/dashboard/[serverId]/page.tsx
+    created:
+        - src/components/editor/color-swatch-picker.tsx
+        - src/components/editor/font-picker.tsx
+        - src/components/editor/appearance-tab.tsx
+    modified:
+        - src/app/(dashboard)/dashboard/[serverId]/page.tsx
 
 key-decisions:
-  - "Used variant='primary' for Save Appearance button (button.tsx only has primary/secondary/ghost — plan mentioned 'default' which does not exist in the component)"
-  - "Tab switcher is a simple pair of buttons in a bg-zinc-100 pill container — no AnimatePresence (added complexity for minimal gain in this context)"
-  - "previewRootRef attached to the motion.div preview wrapper (not a separate inner div) — the existing wrapper is the correct isolation boundary"
-  - "Line count delta +66 is documented: the tab switcher UI (~25 lines) + CSS var attributes (~10 lines) + new state/refs (~10 lines) + theme load/save wiring (~15 lines) + conditional rendering closure (~6 lines) are the minimum required wiring; all actual Appearance tab UI lives in appearance-tab.tsx"
+    - "Used variant='primary' for Save Appearance button (button.tsx only has primary/secondary/ghost — plan mentioned 'default' which does not exist in the component)"
+    - 'Tab switcher is a simple pair of buttons in a bg-zinc-100 pill container — no AnimatePresence (added complexity for minimal gain in this context)'
+    - 'previewRootRef attached to the motion.div preview wrapper (not a separate inner div) — the existing wrapper is the correct isolation boundary'
+    - 'Line count delta +66 is documented: the tab switcher UI (~25 lines) + CSS var attributes (~10 lines) + new state/refs (~10 lines) + theme load/save wiring (~15 lines) + conditional rendering closure (~6 lines) are the minimum required wiring; all actual Appearance tab UI lives in appearance-tab.tsx'
 
 patterns-established:
-  - "Pattern: previewRootRef.current.style.setProperty for instant live preview without a React re-render"
-  - "Pattern: themeSettings state follows navbarSettings exactly — loaded from data.theme, tracked in savedStateRef, included in saveServer PUT body"
-  - "Pattern: sidebarTab state gates between sections list and AppearanceTab — no router navigation"
+    - 'Pattern: previewRootRef.current.style.setProperty for instant live preview without a React re-render'
+    - 'Pattern: themeSettings state follows navbarSettings exactly — loaded from data.theme, tracked in savedStateRef, included in saveServer PUT body'
+    - 'Pattern: sidebarTab state gates between sections list and AppearanceTab — no router navigation'
 
 requirements-completed: [THEME-01, THEME-02]
 
@@ -107,6 +107,7 @@ None.
 - **Delta:** +66 lines
 
 **Breakdown of additions:**
+
 - Sidebar tab toggle UI: ~25 lines
 - CSS var attributes on preview wrapper: ~10 lines
 - New state/ref declarations (themeSettings, sidebarTab, previewRootRef): ~4 lines
@@ -136,5 +137,6 @@ None — all security surface is within the threat model (T-02-07, T-02-08, T-02
 - The `themeSettings.palette` and `themeSettings.font` are now persisted to `server.theme` via the PUT endpoint, ready for Plan 02's SSR rendering to consume
 
 ---
-*Phase: 02-theme-system*
-*Completed: 2026-05-07*
+
+_Phase: 02-theme-system_
+_Completed: 2026-05-07_

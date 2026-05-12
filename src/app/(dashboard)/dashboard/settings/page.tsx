@@ -1,7 +1,7 @@
 export default function SettingsPage() {
-  return (
-    <div className="flex items-center justify-center h-full text-muted-foreground">
-      Settings — coming soon
-    </div>
-  );
+	return (
+		<div className="text-muted-foreground flex h-full items-center justify-center">
+			Settings — coming soon
+		</div>
+	);
 }

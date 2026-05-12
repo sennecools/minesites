@@ -4,26 +4,26 @@ reviewed: 2026-05-12T00:00:00Z
 depth: standard
 files_reviewed: 15
 files_reviewed_list:
-  - src/app/(dashboard)/dashboard/[websiteId]/page.tsx
-  - src/app/(dashboard)/dashboard/[websiteId]/server-actions.tsx
-  - src/app/(dashboard)/dashboard/[websiteId]/server-settings.tsx
-  - src/app/(dashboard)/dashboard/create-website-dialog.tsx
-  - src/app/(dashboard)/dashboard/page.tsx
-  - src/app/(dashboard)/dashboard/servers/page.tsx
-  - src/app/[subdomain]/layout.tsx
-  - src/app/[subdomain]/page.tsx
-  - src/app/api/websites/route.ts
-  - src/components/dashboard/connections-modal.tsx
-  - src/components/dashboard/index.ts
-  - src/components/dashboard/website-card.tsx
-  - src/components/preview/types.ts
-  - src/components/sections/hero-section.tsx
-  - src/components/site/nav.tsx
+    - src/app/(dashboard)/dashboard/[websiteId]/page.tsx
+    - src/app/(dashboard)/dashboard/[websiteId]/server-actions.tsx
+    - src/app/(dashboard)/dashboard/[websiteId]/server-settings.tsx
+    - src/app/(dashboard)/dashboard/create-website-dialog.tsx
+    - src/app/(dashboard)/dashboard/page.tsx
+    - src/app/(dashboard)/dashboard/servers/page.tsx
+    - src/app/[subdomain]/layout.tsx
+    - src/app/[subdomain]/page.tsx
+    - src/app/api/websites/route.ts
+    - src/components/dashboard/connections-modal.tsx
+    - src/components/dashboard/index.ts
+    - src/components/dashboard/website-card.tsx
+    - src/components/preview/types.ts
+    - src/components/sections/hero-section.tsx
+    - src/components/site/nav.tsx
 findings:
-  critical: 1
-  warning: 7
-  info: 5
-  total: 13
+    critical: 1
+    warning: 7
+    info: 5
+    total: 13
 status: issues_found
 ---
 
@@ -45,11 +45,11 @@ preview types + orphan `hero-section.tsx`).
 Behaviour and security are mostly sound:
 
 - `serverIp` purge is **complete and consistent** across the diff (`grep
-  serverIp src/` returns zero hits; the editor `SectionPreview` call no longer
+serverIp src/` returns zero hits; the editor `SectionPreview` call no longer
   threads it; the public `[subdomain]/page.tsx` `serverData` literal no
   longer carries it).
 - `GET /api/websites` query shape is correct — `_count: { select: { sections:
-  true } }` only includes the relation count Prisma needs and stays scoped to
+true } }` only includes the relation count Prisma needs and stays scoped to
   `userId: session.user.id`, so the new field cannot leak cross-user data.
 - `ConnectionsModal`'s fetch lifecycle correctly cancels in-flight `load` calls
   on close/reopen and on `websiteId` change (the `cancelled` closure flag is
@@ -105,45 +105,46 @@ Replace the outer `<Link>` wrapping with programmatic navigation, so only the
 inner controls remain interactive:
 
 ```tsx
-"use client";
-import { useRouter } from "next/navigation";
+'use client';
+
+import { useRouter } from 'next/navigation';
 
 export function WebsiteCard({ website, index }: WebsiteCardProps) {
-  const router = useRouter();
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 + index * 0.1 }}
-    >
-      <motion.div
-        role="link"
-        tabIndex={0}
-        onClick={() => router.push(`/dashboard/${website.id}`)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            router.push(`/dashboard/${website.id}`);
-          }
-        }}
-        whileHover={{ y: -4, transition: { duration: 0.15 } }}
-        className="group p-6 rounded-2xl bg-white border ... cursor-pointer"
-      >
-        {/* header, More button, description, badge — now legally nestable */}
-        {/* Visit link — now legally an <a> at the leaf */}
-        <a
-          href={`https://${website.subdomain}.minesites.net`}
-          target="_blank"
-          rel="noreferrer noopener"
-          onClick={(e) => e.stopPropagation()}
-          aria-label={`Visit live site for ${website.name}`}
-          className="..."
-        >
-          Visit <ArrowUpRight className="w-3 h-3" />
-        </a>
-      </motion.div>
-    </motion.div>
-  );
+	const router = useRouter();
+	return (
+		<motion.div
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ delay: 0.2 + index * 0.1 }}
+		>
+			<motion.div
+				role="link"
+				tabIndex={0}
+				onClick={() => router.push(`/dashboard/${website.id}`)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						router.push(`/dashboard/${website.id}`);
+					}
+				}}
+				whileHover={{ y: -4, transition: { duration: 0.15 } }}
+				className="group cursor-pointer rounded-2xl border bg-white p-6 ..."
+			>
+				{/* header, More button, description, badge — now legally nestable */}
+				{/* Visit link — now legally an <a> at the leaf */}
+				<a
+					href={`https://${website.subdomain}.minesites.net`}
+					target="_blank"
+					rel="noreferrer noopener"
+					onClick={(e) => e.stopPropagation()}
+					aria-label={`Visit live site for ${website.name}`}
+					className="..."
+				>
+					Visit <ArrowUpRight className="h-3 w-3" />
+				</a>
+			</motion.div>
+		</motion.div>
+	);
 }
 ```
 
@@ -163,13 +164,14 @@ the role/tabIndex approach above is the most direct.
 **Issue:**
 Every `<label>` element in the new dialogs uses neither `htmlFor=...` nor
 implicit wrapping (the input is a sibling, not a child). The UI-SPEC
-explicitly requires the opposite: *"Form inputs have associated `<label>`
-elements (not `placeholder` as label substitute)"* (08-UI-SPEC.md
+explicitly requires the opposite: _"Form inputs have associated `<label>`
+elements (not `placeholder` as label substitute)"_ (08-UI-SPEC.md
 §Accessibility). Screen readers will announce these inputs as unlabeled
 ("edit text, blank"), and clicking the visual label text does not focus the
 input.
 
 Example offender (connections-modal.tsx:362-369):
+
 ```tsx
 <label className="block text-sm font-normal text-zinc-700 mb-1.5">Name</label>
 <Input {...register("name")} placeholder="My SMP Server" error={!!errors.name} autoFocus />
@@ -215,6 +217,7 @@ silently because nothing exercises them in CI.
 
 **Fix:**
 Either:
+
 1. **Delete both files.** The CLAUDE.md constraint says future section types
    live in `src/components/sections/render/` + `settings/` + the registry;
    the dashboard editor (`[websiteId]/page.tsx`) already inlines its own
@@ -252,7 +255,8 @@ Delete the local `WebsiteData` interfaces in `dashboard/page.tsx` and
 `@/components/dashboard` and use it:
 
 ```tsx
-import { WebsiteCard, type WebsiteCardData } from "@/components/dashboard";
+import { WebsiteCard, type WebsiteCardData } from '@/components/dashboard';
+
 const [servers, setServers] = useState<WebsiteCardData[]>([]);
 ```
 
@@ -282,11 +286,13 @@ Extract a `useWebsites()` hook into `src/lib/hooks/use-websites.ts`:
 
 ```ts
 export function useWebsites() {
-  const [servers, setServers] = useState<WebsiteCardData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => { /* one source of truth */ }, []);
-  return { servers, isLoading, error };
+	const [servers, setServers] = useState<WebsiteCardData[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	useEffect(() => {
+		/* one source of truth */
+	}, []);
+	return { servers, isLoading, error };
 }
 ```
 
@@ -317,21 +323,23 @@ Extract `loadServers` from the effect into a callable and reuse it:
 
 ```tsx
 const loadServers = useCallback(async () => {
-  setIsLoading(true);
-  setError(null);
-  try {
-    const response = await fetch("/api/websites");
-    if (!response.ok) throw new Error("Failed to load servers");
-    setServers(await response.json());
-  } catch (err) {
-    setError(err instanceof Error ? err.message : "Failed to load servers");
-  } finally {
-    setIsLoading(false);
-  }
+	setIsLoading(true);
+	setError(null);
+	try {
+		const response = await fetch('/api/websites');
+		if (!response.ok) throw new Error('Failed to load servers');
+		setServers(await response.json());
+	} catch (err) {
+		setError(err instanceof Error ? err.message : 'Failed to load servers');
+	} finally {
+		setIsLoading(false);
+	}
 }, []);
-useEffect(() => { loadServers(); }, [loadServers]);
+useEffect(() => {
+	loadServers();
+}, [loadServers]);
 // ...
-<button onClick={loadServers}>Retry</button>
+<button onClick={loadServers}>Retry</button>;
 ```
 
 ---
@@ -466,6 +474,7 @@ unmount), and the subsequent `fetch(`/api/websites/${websiteId}`)` will hit
 "Failed to load server data" with no diagnostic.
 
 **Fix:**
+
 ```tsx
 const params = useParams<{ websiteId: string }>();
 if (!params?.websiteId) return null; // or throw / redirect
@@ -499,6 +508,7 @@ the first connected server's live status here.
 **File:** `src/app/(dashboard)/dashboard/page.tsx:58-60`
 **Severity:** INFO
 **Issue:**
+
 ```tsx
 // WR-09: formatRelativeTime was previously defined here as dead code (never
 // called in this file). The shared implementation lives in src/lib/utils.ts;

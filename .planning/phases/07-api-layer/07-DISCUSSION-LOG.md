@@ -23,6 +23,7 @@ User selected all four proposed gray areas:
 **Q:** How should /api/servers/ → /api/websites/ migrate?
 
 **Options presented:**
+
 - (Selected) Hard rename in Phase 7 — move directory, delete old, update every client fetch call.
 - Stand up new alongside old — duplicate routes; Phase 8 deletes old.
 - Keep URLs, rename internals only — defer URL prefix to Phase 8.
@@ -30,6 +31,7 @@ User selected all four proposed gray areas:
 **Decision:** Hard rename. Ship Phase 7 in a working state. No duplicate routes.
 
 **Sub-decisions noted (not separately asked):**
+
 - Route param name: `[websiteId]` (matches model name).
 - Dashboard route `(dashboard)/dashboard/[serverId]` keeps its param name in Phase 7 — that rename is Phase 8.
 - Server actions (`createServer`/etc.) rename is deferred to Area 4.
@@ -41,6 +43,7 @@ User selected all four proposed gray areas:
 **Q1:** How should the MinecraftServer connection endpoints work?
 
 **Options presented:**
+
 - (Selected) Per-record CRUD — `POST /api/websites/[id]/servers`, `PUT/DELETE /api/websites/[id]/servers/[serverId]`.
 - Bulk replace — single PUT replaces full array (mirrors section save).
 - Hybrid — bulk PUT + DELETE on id.
@@ -50,6 +53,7 @@ User selected all four proposed gray areas:
 **Q2:** How strict should the MinecraftServer IP field validation be?
 
 **Options presented:**
+
 - (Selected) Loose — `string` max length only.
 - Hostname or IPv4 regex.
 - Loose IP + separate port, no embedded port in IP.
@@ -63,6 +67,7 @@ User selected all four proposed gray areas:
 **Q1:** Where should the minecraftServerId reference live inside section settings?
 
 **Options presented:**
+
 - (Selected) Top-level convention — `settings.minecraftServerId` across all server-specific section types.
 - Nested per section type — `settings.live.minecraftServerId` / `settings.info.minecraftServerId`.
 - Real foreign-key column on Section.
@@ -72,6 +77,7 @@ User selected all four proposed gray areas:
 **Q2:** How should dangling minecraftServerId references be handled?
 
 **Options presented:**
+
 - (Selected) Soft — renderer shows placeholder; API does nothing on dangle.
 - Cascade null on delete — DELETE handler scans sections, nulls matching ids.
 - Block delete if referenced — return 409 with referenced sections listed.
@@ -85,6 +91,7 @@ User selected all four proposed gray areas:
 **Q:** Which legacy items should Phase 7 also clean up? (multiSelect)
 
 **Options selected:**
+
 - ✓ Delete `src/lib/validations/server.ts`
 - ✓ Rename `createServer`/`updateServer`/`deleteServer` actions → `createWebsite`/`updateWebsite`/`deleteWebsite`
 - ✓ Remove unused `serverIp`/`serverPort` fields from editor state
@@ -107,6 +114,7 @@ User selected all four proposed gray areas:
 ## Carry-Forward Items (do not regress)
 
 Reminded from Phase 6 fix pass:
+
 - Subdomain uniqueness + zod validation in PUT (CR-01).
 - Freemium section limit in PUT (CR-03), sourced from `src/lib/plan.ts` if possible.
 - P2002 catch in `actions.ts` (WR-05).
@@ -115,4 +123,4 @@ Reminded from Phase 6 fix pass:
 
 ---
 
-*End of log.*
+_End of log._

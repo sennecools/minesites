@@ -5,6 +5,7 @@
 **Goal:** Decouple websites from individual servers — a website belongs to a user, has its own custom subdomain, and can showcase multiple Minecraft servers. Server-specific sections choose which connected server to pull data from.
 
 **Target features:**
+
 - New `Website` model with custom subdomain, belonging to User (free: 1 website; paid: multiple)
 - Lightweight `MinecraftServer` connection records linked to a Website (name, IP, port)
 - Server-specific sections pick which connected server they display
@@ -63,6 +64,7 @@ Phase 6 (Schema Reset) completed the v1.1 data model: `Server` model replaced by
 Phase 7 (API Layer) rebuilt the API surface around the new model: `/api/websites` replaces `/api/servers`; nested `/api/websites/[websiteId]/servers` provides MinecraftServer CRUD with double-ownership chain; section save passes `minecraftServerId` through `section.settings` so server-scoped sections can reference a connection. Old `/api/servers/*` and `validations/server.ts` deleted; zero stale references. Dashboard action exports renamed to `createWebsite/updateWebsite/deleteWebsite` (D-14). Code review surfaced 6 advisory blockers (validation hardening, error-mapping) for follow-up; verification confirms all 4 success criteria met.
 
 Key technical context:
+
 - Next.js 16 App Router, TypeScript, Tailwind CSS
 - Prisma + PostgreSQL for persistence
 - NextAuth (beta) for auth
@@ -77,21 +79,22 @@ Key technical context:
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Poll Minecraft API by IP (not plugin) | Lower barrier to entry; no server-side install required | — Pending |
-| Free/paid gating at section count + effects | Simple enough to enforce without complex entitlement system | — Pending |
-| Full theme system (palette + font) | Lets servers look unique without per-element design work | — Pending |
-| Keep dashboard design separate from website output | Core UX problem — same styles bleed into server pages | — Pending |
-| Website model decoupled from Server model (v1.1) | Original 1-server-per-website assumption is too limiting; user-centric websites enable multi-server showcases | Decided — clean break, no migration |
-| Free tier: 1 website max (v1.1) | Simplest gating; MVP focus before adding multi-website paid tier | Decided |
-| Server-specific sections pick a connected server (v1.1) | Natural UX when a website has multiple Minecraft servers to choose from | Decided |
+| Decision                                                | Rationale                                                                                                     | Outcome                             |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Poll Minecraft API by IP (not plugin)                   | Lower barrier to entry; no server-side install required                                                       | — Pending                           |
+| Free/paid gating at section count + effects             | Simple enough to enforce without complex entitlement system                                                   | — Pending                           |
+| Full theme system (palette + font)                      | Lets servers look unique without per-element design work                                                      | — Pending                           |
+| Keep dashboard design separate from website output      | Core UX problem — same styles bleed into server pages                                                         | — Pending                           |
+| Website model decoupled from Server model (v1.1)        | Original 1-server-per-website assumption is too limiting; user-centric websites enable multi-server showcases | Decided — clean break, no migration |
+| Free tier: 1 website max (v1.1)                         | Simplest gating; MVP focus before adding multi-website paid tier                                              | Decided                             |
+| Server-specific sections pick a connected server (v1.1) | Natural UX when a website has multiple Minecraft servers to choose from                                       | Decided                             |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
 **After each phase transition** (via `/gsd-transition`):
+
 1. Requirements invalidated? → Move to Out of Scope with reason
 2. Requirements validated? → Move to Validated with phase reference
 3. New requirements emerged? → Add to Active
@@ -99,10 +102,12 @@ This document evolves at phase transitions and milestone boundaries.
 5. "What This Is" still accurate? → Update if drifted
 
 **After each milestone** (via `/gsd-complete-milestone`):
+
 1. Full review of all sections
 2. Core Value check — still the right priority?
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-12 — Phase 7 complete (API Layer: /api/websites surface live, legacy /api/servers removed)*
+
+_Last updated: 2026-05-12 — Phase 7 complete (API Layer: /api/websites surface live, legacy /api/servers removed)_

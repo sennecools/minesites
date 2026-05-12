@@ -87,67 +87,69 @@
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
+| Feature                                | Reason                                                                        |
+| -------------------------------------- | ----------------------------------------------------------------------------- |
 | Plugin/mod integration for server data | IP polling is sufficient for v1; plugins add server-side complexity for users |
-| In-site store (like Tebex) | Tebex is the established standard; CTA link-out covers it |
-| Player stats from plugins | Requires server-side install, out of scope |
-| Forums / blog CMS | Discord has won; simple text/announcements covers 95% of cases |
-| Mobile app | Web-first, mobile later |
-| Multi-language support | English only for v1 |
-| SEO settings panel | Too advanced for target users in v1 |
-| Real-time server data (WebSocket) | Polling with cache is sufficient |
+| In-site store (like Tebex)             | Tebex is the established standard; CTA link-out covers it                     |
+| Player stats from plugins              | Requires server-side install, out of scope                                    |
+| Forums / blog CMS                      | Discord has won; simple text/announcements covers 95% of cases                |
+| Mobile app                             | Web-first, mobile later                                                       |
+| Multi-language support                 | English only for v1                                                           |
+| SEO settings panel                     | Too advanced for target users in v1                                           |
+| Real-time server data (WebSocket)      | Polling with cache is sufficient                                              |
 
 ## Traceability
 
 ### v1.1
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| WEB-01 | Phase 6 (schema) + Phase 7 (API) | Pending |
-| WEB-02 | Phase 7 | Pending |
-| WEB-03 | Phase 7 | Pending |
-| CONN-01 | Phase 6 (schema) + Phase 7 (API) | Pending |
-| CONN-02 | Phase 7 | Pending |
-| CONN-03 | Phase 7 | Pending |
-| CONN-04 | Phase 7 | Pending |
-| DASH-01 | Phase 8 | Pending |
-| DASH-02 | Phase 8 | Pending |
-| DASH-03 | Phase 8 | Pending |
-| DASH-04 | Phase 8 | Pending |
+| Requirement | Phase                            | Status  |
+| ----------- | -------------------------------- | ------- |
+| WEB-01      | Phase 6 (schema) + Phase 7 (API) | Pending |
+| WEB-02      | Phase 7                          | Pending |
+| WEB-03      | Phase 7                          | Pending |
+| CONN-01     | Phase 6 (schema) + Phase 7 (API) | Pending |
+| CONN-02     | Phase 7                          | Pending |
+| CONN-03     | Phase 7                          | Pending |
+| CONN-04     | Phase 7                          | Pending |
+| DASH-01     | Phase 8                          | Pending |
+| DASH-02     | Phase 8                          | Pending |
+| DASH-03     | Phase 8                          | Pending |
+| DASH-04     | Phase 8                          | Pending |
 
 ### v1.0
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| VISUAL-01 | Phase 2 | Pending |
-| VISUAL-02 | Phase 2 | Pending |
-| SECT-01 | Phase 3 | Pending |
-| SECT-02 | Phase 3 | Pending |
-| SECT-03 | Phase 3 | Pending |
-| SECT-04 | Phase 3 | Pending |
-| SECT-05 | Phase 3 | Pending |
-| SECT-06 | Phase 3 | Pending |
-| SECT-07 | Phase 3 | Pending |
-| SECT-08 | Phase 3 | Pending |
-| SECT-09 | Phase 3 | Pending |
-| THEME-01 | Phase 2 | Pending |
-| THEME-02 | Phase 2 | Pending |
-| THEME-03 | Phase 2 | Pending |
-| THEME-04 | Phase 2 | Pending |
-| FREE-01 | Phase 4 | Pending |
-| FREE-02 | Phase 4 | Pending |
-| FREE-03 | Phase 4 | Pending |
-| FREE-04 | Phase 4 | Pending |
-| FX-01 | Phase 5 | Pending |
-| FX-02 | Phase 5 | Pending |
-| FX-03 | Phase 5 | Pending |
-| FX-04 | Phase 5 | Pending |
+| Requirement | Phase   | Status  |
+| ----------- | ------- | ------- |
+| VISUAL-01   | Phase 2 | Pending |
+| VISUAL-02   | Phase 2 | Pending |
+| SECT-01     | Phase 3 | Pending |
+| SECT-02     | Phase 3 | Pending |
+| SECT-03     | Phase 3 | Pending |
+| SECT-04     | Phase 3 | Pending |
+| SECT-05     | Phase 3 | Pending |
+| SECT-06     | Phase 3 | Pending |
+| SECT-07     | Phase 3 | Pending |
+| SECT-08     | Phase 3 | Pending |
+| SECT-09     | Phase 3 | Pending |
+| THEME-01    | Phase 2 | Pending |
+| THEME-02    | Phase 2 | Pending |
+| THEME-03    | Phase 2 | Pending |
+| THEME-04    | Phase 2 | Pending |
+| FREE-01     | Phase 4 | Pending |
+| FREE-02     | Phase 4 | Pending |
+| FREE-03     | Phase 4 | Pending |
+| FREE-04     | Phase 4 | Pending |
+| FX-01       | Phase 5 | Pending |
+| FX-02       | Phase 5 | Pending |
+| FX-03       | Phase 5 | Pending |
+| FX-04       | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1.1 requirements: 11 total | Mapped to phases: 11 (3 phases)
 - v1.0 requirements: 23 total | Mapped to phases: 23
 
 ---
-*Requirements defined: 2026-05-07*
-*Last updated: 2026-05-08 — v1.1 requirements added*
+
+_Requirements defined: 2026-05-07_
+_Last updated: 2026-05-08 — v1.1 requirements added_

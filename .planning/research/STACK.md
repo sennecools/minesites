@@ -16,21 +16,23 @@ Use **mcstatus.io** as the upstream API. Call it from a **Next.js Route Handler*
 
 ### Why mcstatus.io over mcsrvstat.us
 
-| Criterion | mcstatus.io | mcsrvstat.us |
-|-----------|-------------|--------------|
-| Cache TTL | ~60 seconds (X-Cache-Time-Remaining header) | Unknown (opaque) |
-| Rate limit | 5 req/s per IP | Unknown |
-| API token | Yes (dashboard) | None |
+| Criterion       | mcstatus.io                                    | mcsrvstat.us               |
+| --------------- | ---------------------------------------------- | -------------------------- |
+| Cache TTL       | ~60 seconds (X-Cache-Time-Remaining header)    | Unknown (opaque)           |
+| Rate limit      | 5 req/s per IP                                 | Unknown                    |
+| API token       | Yes (dashboard)                                | None                       |
 | Response schema | Versioned, consistent (`/v2/status/java/<ip>`) | `/3/<ip>`, less documented |
-| Self-hostable | Yes (open source Go) | No |
-| Bedrock support | Yes | Yes |
+| Self-hostable   | Yes (open source Go)                           | No                         |
+| Bedrock support | Yes                                            | Yes                        |
 
 mcsrvstat.us is fine for one-off lookups but has opaque caching, no rate limit documentation, and no API token system. mcstatus.io is designed for developer integration and publishes its limits.
 
 **Endpoint to use:**
+
 ```
 GET https://api.mcstatus.io/v2/status/java/<address>
 ```
+
 Returns: `online`, `players.online`, `players.max`, `version.name_clean`, `motd.clean`.
 
 ### Caching Strategy
@@ -39,17 +41,17 @@ Use Next.js 16's stable `'use cache'` directive (enabled via `cacheComponents: t
 
 ```ts
 // src/lib/mc-status.ts
-import { cacheLife } from 'next/cache'
+import { cacheLife } from 'next/cache';
 
 export async function fetchServerStatus(ip: string) {
-  'use cache'
-  cacheLife({ revalidate: 60, stale: 30 })  // 60s server revalidation
+	'use cache';
+	cacheLife({ revalidate: 60, stale: 30 }); // 60s server revalidation
 
-  const res = await fetch(`https://api.mcstatus.io/v2/status/java/${ip}`, {
-    headers: { 'User-Agent': 'minesites.net/1.0' },
-  })
-  if (!res.ok) return null
-  return res.json()
+	const res = await fetch(`https://api.mcstatus.io/v2/status/java/${ip}`, {
+		headers: { 'User-Agent': 'minesites.net/1.0' },
+	});
+	if (!res.ok) return null;
+	return res.json();
 }
 ```
 
@@ -99,15 +101,15 @@ Framer Motion's `whileInView` + `initial`/`animate` covers all standard entrance
 Use **`@tsparticles/react` v3.0.0** with **`@tsparticles/slim` v3.9.1** (slim preset = ~40kb vs full 200kb). The `@tsparticles/react` package is a Client Component that must be wrapped in `'use client'`. It is not SSR-capable by itself — render it conditionally after mount or use Next.js `dynamic()` with `ssr: false`.
 
 ```ts
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
-const ParticlesBackground = dynamic(
-  () => import('@/components/sections/ParticlesBackground'),
-  { ssr: false }
-)
+const ParticlesBackground = dynamic(() => import('@/components/sections/ParticlesBackground'), {
+	ssr: false,
+});
 ```
 
 **Install:**
+
 ```bash
 pnpm add @tsparticles/react @tsparticles/slim
 ```
@@ -145,57 +147,57 @@ Use Tailwind's `animate-*` utilities for simple looping effects (pulse, bounce, 
 
 /* 1. Register semantic tokens as @theme inline — Tailwind generates utilities */
 @theme inline {
-  --color-accent: var(--theme-accent);
-  --color-accent-foreground: var(--theme-accent-foreground);
-  --color-site-bg: var(--theme-bg);
-  --color-site-surface: var(--theme-surface);
-  --font-display: var(--theme-font-display);
+	--color-accent: var(--theme-accent);
+	--color-accent-foreground: var(--theme-accent-foreground);
+	--color-site-bg: var(--theme-bg);
+	--color-site-surface: var(--theme-surface);
+	--font-display: var(--theme-font-display);
 }
 
 /* 2. Default (fallback) values */
 @layer base {
-  :root {
-    --theme-accent: oklch(0.6 0.2 145);          /* green */
-    --theme-accent-foreground: oklch(1 0 0);
-    --theme-bg: oklch(0.13 0.01 240);            /* near-black */
-    --theme-surface: oklch(0.18 0.01 240);
-    --theme-font-display: 'Rajdhani', sans-serif;
-  }
+	:root {
+		--theme-accent: oklch(0.6 0.2 145); /* green */
+		--theme-accent-foreground: oklch(1 0 0);
+		--theme-bg: oklch(0.13 0.01 240); /* near-black */
+		--theme-surface: oklch(0.18 0.01 240);
+		--theme-font-display: 'Rajdhani', sans-serif;
+	}
 
-  /* 3. Per-palette overrides via data-theme */
-  [data-theme='crimson'] {
-    --theme-accent: oklch(0.55 0.22 25);
-    --theme-accent-foreground: oklch(1 0 0);
-    --theme-bg: oklch(0.10 0.02 25);
-    --theme-surface: oklch(0.15 0.02 25);
-  }
+	/* 3. Per-palette overrides via data-theme */
+	[data-theme='crimson'] {
+		--theme-accent: oklch(0.55 0.22 25);
+		--theme-accent-foreground: oklch(1 0 0);
+		--theme-bg: oklch(0.1 0.02 25);
+		--theme-surface: oklch(0.15 0.02 25);
+	}
 
-  [data-theme='ocean'] {
-    --theme-accent: oklch(0.60 0.18 220);
-    --theme-accent-foreground: oklch(1 0 0);
-    --theme-bg: oklch(0.10 0.02 220);
-    --theme-surface: oklch(0.15 0.02 220);
-  }
+	[data-theme='ocean'] {
+		--theme-accent: oklch(0.6 0.18 220);
+		--theme-accent-foreground: oklch(1 0 0);
+		--theme-bg: oklch(0.1 0.02 220);
+		--theme-surface: oklch(0.15 0.02 220);
+	}
 
-  /* 4. Per-font overrides via data-font */
-  [data-font='orbitron'] {
-    --theme-font-display: 'Orbitron', sans-serif;
-  }
+	/* 4. Per-font overrides via data-font */
+	[data-font='orbitron'] {
+		--theme-font-display: 'Orbitron', sans-serif;
+	}
 
-  [data-font='cinzel'] {
-    --theme-font-display: 'Cinzel', serif;
-  }
+	[data-font='cinzel'] {
+		--theme-font-display: 'Cinzel', serif;
+	}
 }
 ```
 
 ```tsx
 // src/app/[subdomain]/page.tsx (Server Component)
 <div
-  data-theme={server.settings.palette ?? 'default'}
-  data-font={server.settings.font ?? 'rajdhani'}
-  className="min-h-screen bg-site-bg"
+	data-theme={server.settings.palette ?? 'default'}
+	data-font={server.settings.font ?? 'rajdhani'}
+	className="bg-site-bg min-h-screen"
 >
-  <PreviewClient sections={server.sections} />
+	<PreviewClient sections={server.sections} />
 </div>
 ```
 
@@ -207,11 +209,15 @@ Use `next/font/google` to load display fonts. Register all available fonts at th
 
 ```ts
 // src/app/layout.tsx
-import { Rajdhani, Orbitron, Cinzel } from 'next/font/google'
+import { Cinzel, Orbitron, Rajdhani } from 'next/font/google';
 
-const rajdhani = Rajdhani({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-rajdhani' })
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron' })
-const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel' })
+const rajdhani = Rajdhani({
+	subsets: ['latin'],
+	weight: ['600', '700'],
+	variable: '--font-rajdhani',
+});
+const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron' });
+const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel' });
 
 // Apply all variables to <html>; individual data-font selectors activate the right one
 ```
@@ -263,21 +269,21 @@ No additional tables. When a payment is processed (future milestone), flip this 
 
 ```ts
 // src/lib/plan.ts
-export type Plan = 'free' | 'paid'
+export type Plan = 'free' | 'paid';
 
 export const PLAN_LIMITS = {
-  free: {
-    maxSectionsPerPage: 5,
-    visualEffects: false,
-  },
-  paid: {
-    maxSectionsPerPage: Infinity,
-    visualEffects: true,
-  },
-} satisfies Record<Plan, { maxSectionsPerPage: number; visualEffects: boolean }>
+	free: {
+		maxSectionsPerPage: 5,
+		visualEffects: false,
+	},
+	paid: {
+		maxSectionsPerPage: Infinity,
+		visualEffects: true,
+	},
+} satisfies Record<Plan, { maxSectionsPerPage: number; visualEffects: boolean }>;
 
 export function getPlanLimits(plan: Plan) {
-  return PLAN_LIMITS[plan] ?? PLAN_LIMITS.free
+	return PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
 }
 ```
 
@@ -290,14 +296,14 @@ There are two places to enforce limits. Both are required.
 ```ts
 // src/app/(dashboard)/dashboard/actions.ts
 export async function saveSections(serverId: string, sections: Section[]) {
-  const session = await auth()
-  const user = await db.user.findUnique({ where: { id: session.user.id } })
-  const limits = getPlanLimits(user.plan as Plan)
+	const session = await auth();
+	const user = await db.user.findUnique({ where: { id: session.user.id } });
+	const limits = getPlanLimits(user.plan as Plan);
 
-  if (sections.length > limits.maxSectionsPerPage) {
-    throw new Error(`Free plan is limited to ${limits.maxSectionsPerPage} sections.`)
-  }
-  // ... proceed with save
+	if (sections.length > limits.maxSectionsPerPage) {
+		throw new Error(`Free plan is limited to ${limits.maxSectionsPerPage} sections.`);
+	}
+	// ... proceed with save
 }
 ```
 
@@ -349,13 +355,13 @@ pnpm add @tsparticles/react @tsparticles/slim
 
 ### Existing packages already covering the work
 
-| Need | Existing Package | Version |
-|------|-----------------|---------|
-| Parallax, entrance animations | framer-motion | ^12.29.2 |
-| CSS animation utilities | Tailwind CSS | ^4 |
-| Theme CSS variables | Tailwind CSS | ^4 |
-| Gating logic | Prisma + custom helper | — |
-| Minecraft API caching | Next.js `'use cache'` | built-in (Next 16) |
+| Need                          | Existing Package       | Version            |
+| ----------------------------- | ---------------------- | ------------------ |
+| Parallax, entrance animations | framer-motion          | ^12.29.2           |
+| CSS animation utilities       | Tailwind CSS           | ^4                 |
+| Theme CSS variables           | Tailwind CSS           | ^4                 |
+| Gating logic                  | Prisma + custom helper | —                  |
+| Minecraft API caching         | Next.js `'use cache'`  | built-in (Next 16) |
 
 Only one new production package is required. Everything else is served by what is already installed.
 
@@ -363,8 +369,8 @@ Only one new production package is required. Everything else is served by what i
 
 ```ts
 const nextConfig: NextConfig = {
-  cacheComponents: true,   // enables 'use cache' directive
-}
+	cacheComponents: true, // enables 'use cache' directive
+};
 ```
 
 ---

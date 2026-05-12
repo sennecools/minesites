@@ -7,6 +7,7 @@
 ---
 
 <user_constraints>
+
 ## User Constraints (from CONTEXT.md)
 
 ### Locked Decisions
@@ -50,16 +51,16 @@ The existing codebase has a clear god-component problem (`src/app/(dashboard)/da
 
 ## Architectural Responsibility Map
 
-| Capability | Primary Tier | Secondary Tier | Rationale |
-|------------|-------------|----------------|-----------|
-| Section registry definition | Shared lib (`src/lib/`) | — | Pure data structure, no framework dependency; usable by both editor and public renderer |
-| Hero render component | UI/Component | — | Presentational; should be a standalone React component imported where needed |
-| Hero settings panel | UI/Component | — | Editor-only presentational component; belongs in `src/components/sections/settings/` |
-| Section settings types | Shared types (`src/types/`) | — | Consumed by editor, public renderer, and registry — must be framework-agnostic |
-| `SiteTheme` interface | Shared types (`src/types/`) | — | Stub for Phase 2; shared across CSS layer and API |
-| `getPlanLimits()` | Shared lib (`src/lib/`) | — | Business logic stub; will be called by API and editor in later phases |
-| Mock data removal / real API load | Frontend (editor page) | API layer | `fetch('/api/servers/[serverId]')` exists; editor page wires it on mount |
-| Registry dispatch in `preview-client.tsx` | Frontend (public renderer) | — | Replace switch-case with registry lookup; keeps public renderer thin |
+| Capability                                | Primary Tier                | Secondary Tier | Rationale                                                                               |
+| ----------------------------------------- | --------------------------- | -------------- | --------------------------------------------------------------------------------------- |
+| Section registry definition               | Shared lib (`src/lib/`)     | —              | Pure data structure, no framework dependency; usable by both editor and public renderer |
+| Hero render component                     | UI/Component                | —              | Presentational; should be a standalone React component imported where needed            |
+| Hero settings panel                       | UI/Component                | —              | Editor-only presentational component; belongs in `src/components/sections/settings/`    |
+| Section settings types                    | Shared types (`src/types/`) | —              | Consumed by editor, public renderer, and registry — must be framework-agnostic          |
+| `SiteTheme` interface                     | Shared types (`src/types/`) | —              | Stub for Phase 2; shared across CSS layer and API                                       |
+| `getPlanLimits()`                         | Shared lib (`src/lib/`)     | —              | Business logic stub; will be called by API and editor in later phases                   |
+| Mock data removal / real API load         | Frontend (editor page)      | API layer      | `fetch('/api/servers/[serverId]')` exists; editor page wires it on mount                |
+| Registry dispatch in `preview-client.tsx` | Frontend (public renderer)  | —              | Replace switch-case with registry lookup; keeps public renderer thin                    |
 
 ---
 
@@ -68,12 +69,13 @@ The existing codebase has a clear god-component problem (`src/app/(dashboard)/da
 No new dependencies are introduced in Phase 1. The work uses only what is already installed.
 
 ### Core (already installed)
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| TypeScript | ^5 | All type definitions | Already in use; `strict: true` enforced |
-| React 19 | 19.2.3 | Component extraction | Already in use |
-| Next.js | 16.1.6 | App Router, dynamic imports | Already in use |
-| lucide-react | ^0.563.0 | Icons for registry `icon` field | Already in use for all existing icons |
+
+| Library      | Version  | Purpose                         | Why Standard                            |
+| ------------ | -------- | ------------------------------- | --------------------------------------- |
+| TypeScript   | ^5       | All type definitions            | Already in use; `strict: true` enforced |
+| React 19     | 19.2.3   | Component extraction            | Already in use                          |
+| Next.js      | 16.1.6   | App Router, dynamic imports     | Already in use                          |
+| lucide-react | ^0.563.0 | Icons for registry `icon` field | Already in use for all existing icons   |
 
 **No installation step needed for Phase 1.**
 
@@ -223,7 +225,7 @@ function PlaceholderRender({ section }: SectionRenderProps) {
 }
 ```
 
-**Decision:** For Phase 1, only Hero needs real render/settings components. All other section types in the registry get placeholder implementations that are still valid `ComponentType<SectionRenderProps>` components. The preview-client.tsx switch-case for non-Hero types can continue to use inline Preview* functions until Phase 3 — OR the switch can be replaced entirely with the registry pattern where non-Hero types fall back to the existing inline functions re-exported as stubs. Both are valid; the cleanest approach for Phase 1 is to keep the switch-case for non-Hero types inside the stub components (import them from preview-client.tsx or inline them in the stub). [ASSUMED] The simplest correct approach: update only the Hero case in preview-client.tsx to use the registry; leave the other cases as-is in the switch for now.
+**Decision:** For Phase 1, only Hero needs real render/settings components. All other section types in the registry get placeholder implementations that are still valid `ComponentType<SectionRenderProps>` components. The preview-client.tsx switch-case for non-Hero types can continue to use inline Preview\* functions until Phase 3 — OR the switch can be replaced entirely with the registry pattern where non-Hero types fall back to the existing inline functions re-exported as stubs. Both are valid; the cleanest approach for Phase 1 is to keep the switch-case for non-Hero types inside the stub components (import them from preview-client.tsx or inline them in the stub). [ASSUMED] The simplest correct approach: update only the Hero case in preview-client.tsx to use the registry; leave the other cases as-is in the switch for now.
 
 ### Pattern 3: API Load with Null Initial State
 
@@ -241,24 +243,29 @@ const [sections, setSections] = useState<Section[]>([]);
 const [isLoading, setIsLoading] = useState(true);
 
 useEffect(() => {
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/servers/${serverId}`);
-      if (!res.ok) throw new Error('Failed to load server');
-      const data = await res.json();
-      setServerData({ id: data.id, name: data.name, subdomain: data.subdomain,
-                      description: data.description || '', serverIp: data.serverIp || '',
-                      published: data.published || false });
-      if (data.navbar) setNavbarSettings(data.navbar);
-      setSections(data.sections?.map(mapApiSectionToEditorSection) ?? []);
-      setSelectedSection(data.sections?.[0]?.id ?? null);
-    } catch (err) {
-      setLoadError(err instanceof Error ? err.message : 'Failed to load');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  load();
+	const load = async () => {
+		try {
+			const res = await fetch(`/api/servers/${serverId}`);
+			if (!res.ok) throw new Error('Failed to load server');
+			const data = await res.json();
+			setServerData({
+				id: data.id,
+				name: data.name,
+				subdomain: data.subdomain,
+				description: data.description || '',
+				serverIp: data.serverIp || '',
+				published: data.published || false,
+			});
+			if (data.navbar) setNavbarSettings(data.navbar);
+			setSections(data.sections?.map(mapApiSectionToEditorSection) ?? []);
+			setSelectedSection(data.sections?.[0]?.id ?? null);
+		} catch (err) {
+			setLoadError(err instanceof Error ? err.message : 'Failed to load');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	load();
 }, [serverId]);
 ```
 
@@ -271,12 +278,12 @@ useEffect(() => {
 ```typescript
 // When adding a new section in the editor
 const newSection: Section = {
-  id: crypto.randomUUID(),
-  type,
-  title: config.defaultTitle ?? '',
-  subtitle: '',
-  visible: true,
-  settings: SECTION_REGISTRY[type].defaultSettings(),
+	id: crypto.randomUUID(),
+	type,
+	title: config.defaultTitle ?? '',
+	subtitle: '',
+	visible: true,
+	settings: SECTION_REGISTRY[type].defaultSettings(),
 };
 ```
 
@@ -292,12 +299,12 @@ const newSection: Section = {
 
 ## Don't Hand-Roll
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
+| Problem                           | Don't Build                                  | Use Instead                                                       | Why                                  |
+| --------------------------------- | -------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------ |
 | TypeScript exhaustive union check | Custom `assertNever()` or runtime type guard | TypeScript `Record<SectionType, RegistryEntry>` with literal type | Compile-time exhaustiveness for free |
-| Skeleton loader UI | Custom animated divs | Tailwind `animate-pulse` utility classes | Already in use in the project |
-| UUID generation | Custom ID utility | `crypto.randomUUID()` | Browser/Node built-in, no dependency |
-| Icon JSX in `.ts` file | String literals or complex workarounds | Make the registry file `.tsx` | Trivial fix |
+| Skeleton loader UI                | Custom animated divs                         | Tailwind `animate-pulse` utility classes                          | Already in use in the project        |
+| UUID generation                   | Custom ID utility                            | `crypto.randomUUID()`                                             | Browser/Node built-in, no dependency |
+| Icon JSX in `.ts` file            | String literals or complex workarounds       | Make the registry file `.tsx`                                     | Trivial fix                          |
 
 **Key insight:** This phase is pure TypeScript plumbing. Every "clever" custom solution adds complexity; the standard TypeScript type system handles registry exhaustiveness for free.
 
@@ -324,6 +331,7 @@ const newSection: Section = {
 **How to avoid:** Put shared prop types (`SectionRenderProps`, `SectionSettingsProps`) in `src/types/sections.ts`, not in `section-registry.tsx`. Both the registry and the components import from `src/types/sections.ts`. The registry imports components; components NEVER import from the registry.
 
 **Import chain (safe):**
+
 ```
 src/types/sections.ts          ← no internal imports
 src/components/preview/types.ts ← no internal imports
@@ -381,79 +389,79 @@ preview-client.tsx              ← imports section-registry, preview/types.ts
 // src/types/sections.ts
 
 export type SectionType =
-  | 'hero'
-  | 'stats'
-  | 'features'
-  | 'gamemodes'
-  | 'discord'
-  | 'gallery'
-  | 'staff'
-  | 'text'
-  | 'rules'
-  | 'voting'
-  | 'store'
-  | 'reviews'
-  | 'faq'
-  | 'video';
+	| 'hero'
+	| 'stats'
+	| 'features'
+	| 'gamemodes'
+	| 'discord'
+	| 'gallery'
+	| 'staff'
+	| 'text'
+	| 'rules'
+	| 'voting'
+	| 'store'
+	| 'reviews'
+	| 'faq'
+	| 'video';
 
 // Full definition — extracted from page.tsx lines 70-85
 export interface HeroSettings {
-  alignment?: 'left' | 'center' | 'right';
-  backgroundType?: 'solid' | 'gradient' | 'image';
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-  playerBadge?: 'top' | 'bottom' | 'hidden';
-  badgeStyle?: 'pill' | 'minimal' | 'card' | 'glow';
-  showDiscordButton?: boolean;
-  discordButtonText?: string;
-  showCopyIpButton?: boolean;
-  copyIpButtonText?: string;
+	alignment?: 'left' | 'center' | 'right';
+	backgroundType?: 'solid' | 'gradient' | 'image';
+	backgroundColor?: string;
+	gradientFrom?: string;
+	gradientTo?: string;
+	backgroundImage?: string;
+	imageBlur?: number;
+	imageDarken?: number;
+	playerBadge?: 'top' | 'bottom' | 'hidden';
+	badgeStyle?: 'pill' | 'minimal' | 'card' | 'glow';
+	showDiscordButton?: boolean;
+	discordButtonText?: string;
+	showCopyIpButton?: boolean;
+	copyIpButtonText?: string;
 }
 
 // Minimal stubs for non-extracted types — enough to satisfy the registry
 export interface GamemodesSettings {
-  layout?: 'single' | 'grid-2x2' | 'grid-4' | 'list';
-  cardStyle?: 'default' | 'compact' | 'minimal';
-  alignment?: 'left' | 'center' | 'right';
-  headerAlignment?: 'left' | 'center' | 'right';
-  backgroundType?: 'solid' | 'gradient' | 'image';
-  backgroundColor?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  backgroundImage?: string;
-  imageBlur?: number;
-  imageDarken?: number;
-  showPlayerCount?: boolean;
-  showModpack?: boolean;
-  showDescription?: boolean;
-  showBadge?: boolean;
-  showViewAllButton?: boolean;
+	layout?: 'single' | 'grid-2x2' | 'grid-4' | 'list';
+	cardStyle?: 'default' | 'compact' | 'minimal';
+	alignment?: 'left' | 'center' | 'right';
+	headerAlignment?: 'left' | 'center' | 'right';
+	backgroundType?: 'solid' | 'gradient' | 'image';
+	backgroundColor?: string;
+	gradientFrom?: string;
+	gradientTo?: string;
+	backgroundImage?: string;
+	imageBlur?: number;
+	imageDarken?: number;
+	showPlayerCount?: boolean;
+	showModpack?: boolean;
+	showDescription?: boolean;
+	showBadge?: boolean;
+	showViewAllButton?: boolean;
 }
 
 // ... (remaining stubs match existing inline shapes from page.tsx lines 87-264)
 
 export interface SectionSettings {
-  alignment?: 'left' | 'center' | 'right';
-  layout?: 'grid' | 'list' | 'cards';
-  colorScheme?: 'default' | 'dark' | 'accent'; // Legacy — retained for stub compatibility
-  showBackground?: boolean;
-  content?: {
-    features?: Array<{ title: string; description: string; icon: string }>;
-    modes?: string[];
-    [key: string]: unknown;
-  };
-  hero?: HeroSettings;
-  gamemodes?: GamemodesSettings;
-  features?: FeaturesSettings;
-  discord?: DiscordSettings;
-  stats?: StatsSettings;
-  gallery?: GallerySettings;
-  staff?: StaffSettings;
-  text?: TextSettings;
+	alignment?: 'left' | 'center' | 'right';
+	layout?: 'grid' | 'list' | 'cards';
+	colorScheme?: 'default' | 'dark' | 'accent'; // Legacy — retained for stub compatibility
+	showBackground?: boolean;
+	content?: {
+		features?: Array<{ title: string; description: string; icon: string }>;
+		modes?: string[];
+		[key: string]: unknown;
+	};
+	hero?: HeroSettings;
+	gamemodes?: GamemodesSettings;
+	features?: FeaturesSettings;
+	discord?: DiscordSettings;
+	stats?: StatsSettings;
+	gallery?: GallerySettings;
+	staff?: StaffSettings;
+	text?: TextSettings;
 }
 ```
 
@@ -464,17 +472,17 @@ export interface SectionSettings {
 // src/lib/plan.ts
 
 export interface PlanLimits {
-  maxSections: number;
+	maxSections: number;
 }
 
 export function getPlanLimits(plan: 'free' | 'paid'): PlanLimits {
-  switch (plan) {
-    case 'paid':
-      return { maxSections: 15 };
-    case 'free':
-    default:
-      return { maxSections: 5 };
-  }
+	switch (plan) {
+		case 'paid':
+			return { maxSections: 15 };
+		case 'free':
+		default:
+			return { maxSections: 5 };
+	}
 }
 ```
 
@@ -485,12 +493,12 @@ export function getPlanLimits(plan: 'free' | 'paid'): PlanLimits {
 // src/types/site-theme.ts
 
 export interface SiteTheme {
-  // Stub — fully defined in Phase 2
-  primaryColor?: string;
-  accentColor?: string;
-  backgroundColor?: string;
-  textColor?: string;
-  fontFamily?: string;
+	// Stub — fully defined in Phase 2
+	primaryColor?: string;
+	accentColor?: string;
+	backgroundColor?: string;
+	textColor?: string;
+	fontFamily?: string;
 }
 ```
 
@@ -520,14 +528,15 @@ export interface SiteTheme {
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| `switch (section.type)` dispatch | Registry lookup `SECTION_REGISTRY[type]` | Phase 1 (this phase) | Adding a new section type requires 0 edits to dispatch logic |
-| Types defined inline in page components | Shared `src/types/sections.ts` | Phase 1 (this phase) | Single source of truth for all settings shapes |
-| `Date.now().toString()` as section ID | `crypto.randomUUID()` | Phase 1 (this phase) | Collision-safe, format-consistent with DB cuid()s |
-| `mockServer` + `initialSections` | Real API fetch on mount | Phase 1 (this phase) | Editor shows real data; save/load cycle is correct |
+| Old Approach                            | Current Approach                         | When Changed         | Impact                                                       |
+| --------------------------------------- | ---------------------------------------- | -------------------- | ------------------------------------------------------------ |
+| `switch (section.type)` dispatch        | Registry lookup `SECTION_REGISTRY[type]` | Phase 1 (this phase) | Adding a new section type requires 0 edits to dispatch logic |
+| Types defined inline in page components | Shared `src/types/sections.ts`           | Phase 1 (this phase) | Single source of truth for all settings shapes               |
+| `Date.now().toString()` as section ID   | `crypto.randomUUID()`                    | Phase 1 (this phase) | Collision-safe, format-consistent with DB cuid()s            |
+| `mockServer` + `initialSections`        | Real API fetch on mount                  | Phase 1 (this phase) | Editor shows real data; save/load cycle is correct           |
 
 **What already exists and is correct:**
+
 - `GET /api/servers/[serverId]` — works, authenticated, returns `{ ...server, sections: Section[] }` ordered by `order` asc
 - `PUT /api/servers/[serverId]` — works, delete-all-then-recreate, handles sections array
 - Partial `useEffect` in `page.tsx` (lines 4315-4371) — the API call is already wired; `initialSections` is only used as fallback when `data.sections.length === 0`. The fix is to remove `initialSections` and `mockServer` entirely and handle empty-section state explicitly.
@@ -538,44 +547,44 @@ export interface SiteTheme {
 
 ### What to Extract from `page.tsx`
 
-| Block | Location in page.tsx | Destination |
-|-------|---------------------|-------------|
-| `type HeroSettings` | lines 70-85 | `src/types/sections.ts` (as `interface HeroSettings`) |
-| `type GamemodesSettings` | lines 87-105 | `src/types/sections.ts` stub |
-| `type FeaturesSettings` | lines 106-117 | `src/types/sections.ts` stub |
-| `type DiscordSettings` | lines 121-140 | `src/types/sections.ts` stub |
-| `type GallerySettings` | lines 157-170 | `src/types/sections.ts` stub |
-| `type StatsSettings` | lines 172-190 | `src/types/sections.ts` stub |
-| `type StaffSettings` | lines 197-210 | `src/types/sections.ts` stub |
-| `type TextSettings` | lines 212-223 | `src/types/sections.ts` stub |
-| `type SectionSettings` | lines 236-255 | `src/types/sections.ts` |
-| `function PreviewHero` | lines 689-871 (183 lines) | `src/components/sections/render/hero-render.tsx` |
-| Hero settings block in `SettingsPanel` | lines 2676-2883 (208 lines) | `src/components/sections/settings/hero-settings.tsx` |
-| `const mockServer` | lines 58-68 | DELETE — replace with null initial state |
-| `const initialSections` | lines 554-740 | DELETE — replace with `useState<Section[]>([])` |
+| Block                                  | Location in page.tsx        | Destination                                           |
+| -------------------------------------- | --------------------------- | ----------------------------------------------------- |
+| `type HeroSettings`                    | lines 70-85                 | `src/types/sections.ts` (as `interface HeroSettings`) |
+| `type GamemodesSettings`               | lines 87-105                | `src/types/sections.ts` stub                          |
+| `type FeaturesSettings`                | lines 106-117               | `src/types/sections.ts` stub                          |
+| `type DiscordSettings`                 | lines 121-140               | `src/types/sections.ts` stub                          |
+| `type GallerySettings`                 | lines 157-170               | `src/types/sections.ts` stub                          |
+| `type StatsSettings`                   | lines 172-190               | `src/types/sections.ts` stub                          |
+| `type StaffSettings`                   | lines 197-210               | `src/types/sections.ts` stub                          |
+| `type TextSettings`                    | lines 212-223               | `src/types/sections.ts` stub                          |
+| `type SectionSettings`                 | lines 236-255               | `src/types/sections.ts`                               |
+| `function PreviewHero`                 | lines 689-871 (183 lines)   | `src/components/sections/render/hero-render.tsx`      |
+| Hero settings block in `SettingsPanel` | lines 2676-2883 (208 lines) | `src/components/sections/settings/hero-settings.tsx`  |
+| `const mockServer`                     | lines 58-68                 | DELETE — replace with null initial state              |
+| `const initialSections`                | lines 554-740               | DELETE — replace with `useState<Section[]>([])`       |
 
 ### What to Keep in `page.tsx`
 
-| Block | Reason |
-|-------|--------|
-| `type NavbarSettings` | Editor-only type; not needed by registry or public renderer |
+| Block                              | Reason                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| `type NavbarSettings`              | Editor-only type; not needed by registry or public renderer                              |
 | `function BackgroundSettingsPanel` | Shared UI primitive within the editor; could be extracted later but out of Phase 1 scope |
-| `function HeaderSettingsPanel` | Same as above |
-| `function SectionBackground` | Same as above |
-| `function isColorDark` | Utility used across many inline preview functions within page.tsx |
-| `function isLightColor` | Same |
-| `function SectionPreview` (switch) | Keeps all non-Hero cases; Hero case points to registry |
-| `function SettingsPanel` | Keeps all non-Hero cases; Hero case renders `<HeroSettings .../>` from registry |
-| All other `Preview*` functions | Not in Phase 1 scope |
+| `function HeaderSettingsPanel`     | Same as above                                                                            |
+| `function SectionBackground`       | Same as above                                                                            |
+| `function isColorDark`             | Utility used across many inline preview functions within page.tsx                        |
+| `function isLightColor`            | Same                                                                                     |
+| `function SectionPreview` (switch) | Keeps all non-Hero cases; Hero case points to registry                                   |
+| `function SettingsPanel`           | Keeps all non-Hero cases; Hero case renders `<HeroSettings .../>` from registry          |
+| All other `Preview*` functions     | Not in Phase 1 scope                                                                     |
 
 ### What to Update (not extract)
 
-| File | Change |
-|------|--------|
-| `preview-client.tsx` | Replace Hero case in switch with `SECTION_REGISTRY['hero'].render`; import `SECTION_REGISTRY` |
-| `src/components/sections/index.ts` | Add barrel exports for `render/` and `settings/` subdirectories |
-| `page.tsx` `SettingsPanel` | Replace `{section.type === "hero" && (<> ... </>)}` with `<HeroSettings section={section} onUpdate={onUpdate} />` imported from settings/ |
-| `page.tsx` `SectionPreview` | Replace `case "hero": return <PreviewHero ...>` with `case "hero": const Entry = SECTION_REGISTRY['hero']; return <Entry.render ...>` |
+| File                               | Change                                                                                                                                    |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `preview-client.tsx`               | Replace Hero case in switch with `SECTION_REGISTRY['hero'].render`; import `SECTION_REGISTRY`                                             |
+| `src/components/sections/index.ts` | Add barrel exports for `render/` and `settings/` subdirectories                                                                           |
+| `page.tsx` `SettingsPanel`         | Replace `{section.type === "hero" && (<> ... </>)}` with `<HeroSettings section={section} onUpdate={onUpdate} />` imported from settings/ |
+| `page.tsx` `SectionPreview`        | Replace `case "hero": return <PreviewHero ...>` with `case "hero": const Entry = SECTION_REGISTRY['hero']; return <Entry.render ...>`     |
 
 ---
 
@@ -586,30 +595,30 @@ export interface SiteTheme {
 ```typescript
 // Verified from src/app/api/servers/[serverId]/route.ts lines 19-37
 {
-  id: string;
-  name: string;
-  subdomain: string;
-  description: string | null;
-  serverIp: string | null;
-  serverPort: number | null;
-  logo: string | null;
-  banner: string | null;
-  navbar: JsonValue | null;    // NavbarSettings shape
-  theme: JsonValue | null;     // SiteTheme shape (stub in Phase 1)
-  published: boolean;
-  userId: string;
-  sections: Array<{
-    id: string;              // cuid() from DB
-    type: string;            // SectionType value
-    title: string | null;
-    subtitle: string | null;
-    settings: JsonValue;     // SectionSettings shape
-    order: number;
-    visible: boolean;
-    serverId: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
+	id: string;
+	name: string;
+	subdomain: string;
+	description: string | null;
+	serverIp: string | null;
+	serverPort: number | null;
+	logo: string | null;
+	banner: string | null;
+	navbar: JsonValue | null; // NavbarSettings shape
+	theme: JsonValue | null; // SiteTheme shape (stub in Phase 1)
+	published: boolean;
+	userId: string;
+	sections: Array<{
+		id: string; // cuid() from DB
+		type: string; // SectionType value
+		title: string | null;
+		subtitle: string | null;
+		settings: JsonValue; // SectionSettings shape
+		order: number;
+		visible: boolean;
+		serverId: string;
+		createdAt: string;
+		updatedAt: string;
+	}>;
 }
 ```
 
@@ -619,25 +628,25 @@ export interface SiteTheme {
 
 ## Assumptions Log
 
-| # | Claim | Section | Risk if Wrong |
-|---|-------|---------|---------------|
-| A1 | For Phase 1, only the Hero case in `preview-client.tsx` needs to use the registry; other types can stay in the existing switch | Architecture Patterns (registry dispatch example) | Minor: if all cases must use registry, stub PlaceholderRender components needed for each type — adds ~30 lines of boilerplate |
-| A2 | `hero-section.tsx` (the existing partial scaffold) should be superseded by `render/hero-render.tsx`; the old file can be deleted or left | Project Structure | Minor: if kept, both files export a hero component and the barrel may export two different hero renders |
-| A3 | The `SectionType` literal union should include all types currently in `sectionTypeConfig` in page.tsx (including `navbar`, `video`, `store`, `reviews`, `faq`) | sections.ts type | If some types are excluded, the registry `Record<SectionType, RegistryEntry>` won't cover them and the type check may pass incorrectly |
+| #   | Claim                                                                                                                                                          | Section                                           | Risk if Wrong                                                                                                                          |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| A1  | For Phase 1, only the Hero case in `preview-client.tsx` needs to use the registry; other types can stay in the existing switch                                 | Architecture Patterns (registry dispatch example) | Minor: if all cases must use registry, stub PlaceholderRender components needed for each type — adds ~30 lines of boilerplate          |
+| A2  | `hero-section.tsx` (the existing partial scaffold) should be superseded by `render/hero-render.tsx`; the old file can be deleted or left                       | Project Structure                                 | Minor: if kept, both files export a hero component and the barrel may export two different hero renders                                |
+| A3  | The `SectionType` literal union should include all types currently in `sectionTypeConfig` in page.tsx (including `navbar`, `video`, `store`, `reviews`, `faq`) | sections.ts type                                  | If some types are excluded, the registry `Record<SectionType, RegistryEntry>` won't cover them and the type check may pass incorrectly |
 
 ---
 
 ## Open Questions
 
 1. **Should `SectionType` include `navbar`?**
-   - What we know: `sectionTypeConfig` in `page.tsx` lists `navbar` as a type, but it's marked `locked: true`. The preview-client switch has no `navbar` case. It appears navbar is special-cased and not a section in the traditional sense.
-   - What's unclear: Whether `navbar` should be in `SectionType` union or handled separately.
-   - Recommendation: Exclude `navbar` from `SectionType`. It's a server-level config (stored in `Server.navbar Json`), not a `Section` record. The registry should cover only Section types.
+    - What we know: `sectionTypeConfig` in `page.tsx` lists `navbar` as a type, but it's marked `locked: true`. The preview-client switch has no `navbar` case. It appears navbar is special-cased and not a section in the traditional sense.
+    - What's unclear: Whether `navbar` should be in `SectionType` union or handled separately.
+    - Recommendation: Exclude `navbar` from `SectionType`. It's a server-level config (stored in `Server.navbar Json`), not a `Section` record. The registry should cover only Section types.
 
 2. **The existing `preview-client.tsx` has its own duplicate `Section`, `ServerData`, `StatsServer`, `FeatureItem`, `GalleryImage` interface definitions (lines 22-55). Should these be replaced with imports from `preview/types.ts` in Phase 1?**
-   - What we know: `src/components/preview/types.ts` already exports these same shapes. The decision D-08 says to keep them in `preview/types.ts`.
-   - What's unclear: Whether Phase 1 scope includes cleaning up the duplicates inside `preview-client.tsx`.
-   - Recommendation: Yes, remove the local duplicates in `preview-client.tsx` and import from `@/components/preview/types`. This is a straightforward cleanup that prevents future drift and is implied by D-08. The types are identical so there are no compatibility issues.
+    - What we know: `src/components/preview/types.ts` already exports these same shapes. The decision D-08 says to keep them in `preview/types.ts`.
+    - What's unclear: Whether Phase 1 scope includes cleaning up the duplicates inside `preview-client.tsx`.
+    - Recommendation: Yes, remove the local duplicates in `preview-client.tsx` and import from `@/components/preview/types`. This is a straightforward cleanup that prevents future drift and is implied by D-08. The types are identical so there are no compatibility issues.
 
 ---
 
@@ -663,20 +672,21 @@ No ASVS categories are newly applicable to this phase.
 
 ## Project Constraints (from CLAUDE.md)
 
-| Directive | How it Applies to Phase 1 |
-|-----------|--------------------------|
-| Never grow the god-component (`page.tsx`, ~5171 lines) | Phase 1 MUST reduce line count; success criterion 2 says "has not grown" |
+| Directive                                                                                         | How it Applies to Phase 1                                                            |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Never grow the god-component (`page.tsx`, ~5171 lines)                                            | Phase 1 MUST reduce line count; success criterion 2 says "has not grown"             |
 | New section types go in `src/components/sections/render/` and `src/components/sections/settings/` | Hero render → `render/hero-render.tsx`, Hero settings → `settings/hero-settings.tsx` |
-| CSS isolation is mandatory — server website styles under `.site-root` | N/A — Phase 1 delivers no public-facing CSS; no risk |
-| Freemium enforcement is server-side | N/A — Phase 1 only creates the `getPlanLimits()` stub; no enforcement logic yet |
-| Player count is non-blocking — never await Minecraft status API in SSR critical path | N/A — Phase 1 does not touch player count APIs |
-| Visual effects are `ssr: false` | N/A — Phase 1 introduces no new visual effects |
+| CSS isolation is mandatory — server website styles under `.site-root`                             | N/A — Phase 1 delivers no public-facing CSS; no risk                                 |
+| Freemium enforcement is server-side                                                               | N/A — Phase 1 only creates the `getPlanLimits()` stub; no enforcement logic yet      |
+| Player count is non-blocking — never await Minecraft status API in SSR critical path              | N/A — Phase 1 does not touch player count APIs                                       |
+| Visual effects are `ssr: false`                                                                   | N/A — Phase 1 introduces no new visual effects                                       |
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - Direct codebase inspection — `src/app/(dashboard)/dashboard/[serverId]/page.tsx` (all grep and line reads)
 - Direct codebase inspection — `src/app/[subdomain]/preview-client.tsx` (all grep and line reads)
 - Direct codebase inspection — `src/components/sections/hero-section.tsx`, `src/components/preview/types.ts`
@@ -685,6 +695,7 @@ No ASVS categories are newly applicable to this phase.
 - `.planning/phases/01-foundation-extraction/01-CONTEXT.md` — locked decisions D-01 through D-10
 
 ### Secondary (MEDIUM confidence)
+
 - `.planning/codebase/ARCHITECTURE.md`, `CONCERNS.md`, `CONVENTIONS.md`, `STRUCTURE.md`, `STACK.md` — project analysis documents dated 2026-05-07
 
 ---
@@ -692,11 +703,12 @@ No ASVS categories are newly applicable to this phase.
 ## Metadata
 
 **Confidence breakdown:**
+
 - Extraction targets (which code to move): HIGH — verified by direct source file reads with line numbers
 - Registry pattern design: HIGH — locked by CONTEXT.md decisions D-01/D-02
 - API response shape: HIGH — verified from route.ts source
 - Pitfall identification: HIGH — verified from multiple source files showing the exact issues
-- Stub type completeness: MEDIUM — all 8 settings types are listed but stubs for 7 non-Hero types are minimal; may need additional fields visible only in section-specific Preview* functions
+- Stub type completeness: MEDIUM — all 8 settings types are listed but stubs for 7 non-Hero types are minimal; may need additional fields visible only in section-specific Preview\* functions
 
 **Research date:** 2026-05-07
 **Valid until:** 2026-06-07 (stable codebase, no external moving parts)

@@ -16,6 +16,7 @@ status: partial
 **Iteration:** 1
 
 **Summary:**
+
 - Findings in scope: 8 (1 Critical + 7 Warning)
 - Fixed: 7
 - Skipped: 1
@@ -46,6 +47,7 @@ Visit anchor and `MoreHorizontal` button were preserved; a
 ### WR-01: Form `<label>` elements have no association with their inputs (a11y)
 
 **Files modified:**
+
 - `src/components/dashboard/connections-modal.tsx`
 - `src/app/(dashboard)/dashboard/create-website-dialog.tsx`
 - `src/app/(dashboard)/dashboard/[websiteId]/server-settings.tsx`
@@ -67,6 +69,7 @@ opportunistically — react-hook-form ignores `valueAsNumber` when
 ### WR-03: Type definitions for `WebsiteData` are triplicated (dashboard list shape)
 
 **Files modified:**
+
 - `src/app/(dashboard)/dashboard/page.tsx`
 - `src/app/(dashboard)/dashboard/servers/page.tsx`
 
@@ -84,6 +87,7 @@ version?`) and is intentionally untouched. Future additions to
 ### WR-04: Two list pages duplicate `loadServers` + error UI verbatim
 
 **Files modified:**
+
 - `src/components/dashboard/use-websites.ts` (new, 64 lines)
 - `src/components/dashboard/index.ts` (+1 export line)
 - `src/app/(dashboard)/dashboard/page.tsx`
@@ -95,6 +99,7 @@ version?`) and is intentionally untouched. Future additions to
 hook lives in the established dashboard barrel rather than spawning a
 new `src/lib/hooks/` directory). The hook returns
 `{ websites, isLoading, error, refetch }`. The implementation:
+
 - Wraps the fetch in `useCallback` with an `AbortController` so
   unmount + rapid re-mount cannot race a stale response into state.
 - Swallows `AbortError` (DOMException with `name === "AbortError"`)
@@ -110,6 +115,7 @@ hardening that wasn't in the original).
 ### WR-05: `Retry` button uses `window.location.reload()` instead of refetching
 
 **Files modified:**
+
 - `src/app/(dashboard)/dashboard/page.tsx`
 - `src/app/(dashboard)/dashboard/servers/page.tsx`
 
@@ -160,6 +166,7 @@ pattern is not unwound by a future contributor pulling in `Button`.
 ### WR-02: Dead modules `server-actions.tsx` and `server-settings.tsx` — never imported
 
 **Files:**
+
 - `src/app/(dashboard)/dashboard/[websiteId]/server-actions.tsx`
 - `src/app/(dashboard)/dashboard/[websiteId]/server-settings.tsx`
 

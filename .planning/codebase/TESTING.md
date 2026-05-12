@@ -22,13 +22,13 @@ Not applicable — no tests exist.
 
 ## Types of Tests Present
 
-| Type | Present |
-|------|---------|
-| Unit tests | No |
-| Integration tests | No |
-| E2E tests | No |
-| API tests | No |
-| Component tests | No |
+| Type              | Present |
+| ----------------- | ------- |
+| Unit tests        | No      |
+| Integration tests | No      |
+| E2E tests         | No      |
+| API tests         | No      |
+| Component tests   | No      |
 
 ## Test Coverage
 
@@ -61,13 +61,16 @@ Not applicable — no tests exist to observe patterns from.
 Given the current stack (Next.js 16, React 19, TypeScript), the natural choices for this codebase would be:
 
 **Unit/Integration testing:**
+
 - **Vitest** — compatible with the ESM/bundler module resolution used (`moduleResolution: "bundler"`) and aligns with the Vite ecosystem; lighter than Jest for TypeScript projects
 - **Jest** — alternative if Vitest is not preferred; requires additional config for ESM
 
 **Component testing:**
+
 - **React Testing Library** — pairs with either Vitest or Jest for rendering and interaction testing
 
 **E2E testing:**
+
 - **Playwright** — recommended for testing authentication flows (OAuth redirects, credential login), subdomain routing logic in middleware, and the server editor page
 
 **Highest-priority areas to test first:**
@@ -83,4 +86,4 @@ Co-locate test files alongside source files using the pattern `[filename].test.t
 
 ---
 
-*Testing analysis: 2026-05-07*
+_Testing analysis: 2026-05-07_

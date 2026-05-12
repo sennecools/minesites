@@ -16,6 +16,7 @@ status: all_fixed
 **Iteration:** 1
 
 **Summary:**
+
 - Findings in scope: 15 (6 Blockers + 9 Warnings)
 - Fixed: 15
 - Skipped: 0
@@ -43,6 +44,7 @@ Carry-forward guards from Phase 6 are preserved: D-17 (Zod), D-18 (freemium limi
 **Files modified:** `src/lib/validations/website.ts`, `src/app/api/websites/[websiteId]/route.ts`
 **Commit:** `bfb9c0e` (combined with BL-04 + WR-05 since they share the same schema)
 **Applied fix:** Introduced `updateWebsiteFullSchema` extending `updateWebsiteSchema` with:
+
 - `logo`/`banner`: `httpUrlSchema` — `.url()` + max 2048 chars + http(s)-only scheme allowlist (rejects `javascript:`, `data:`).
 - `navbar`: strict schema mirroring the runtime `NavbarSettings` type (links array max 20, label/href length caps, enum for `style`).
 - `theme`: strict schema mirroring `SiteTheme` (enums sourced from `site-theme.ts`).
@@ -54,6 +56,7 @@ The PUT handler now runs the entire body through one `safeParse` instead of vali
 **Files modified:** `src/lib/validations/website.ts`, `src/app/api/websites/[websiteId]/route.ts`
 **Commit:** `bfb9c0e` (combined with BL-03 + WR-05)
 **Applied fix:** Added `sectionsArraySchema` with:
+
 - `id`: alphanumeric `_-` only, 8-60 chars (accepts UUID v4 and cuid/cuid2).
 - `type`: `z.enum(SECTION_TYPES)` listing the 14 registered section keys; rejects unknown types.
 - `title`/`subtitle`: nullable, max 200/500 chars.
@@ -74,6 +77,7 @@ The PUT handler now runs the entire body through one `safeParse` instead of vali
 **Files modified:** `src/lib/validations/website.ts`, `src/app/(dashboard)/dashboard/actions.ts`, `src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx`
 **Commit:** `8d4d8e9`
 **Applied fix:**
+
 - Schema: `description` is now `z.string().max(500).optional().nullable()` so clients can submit `null` to clear.
 - Server action: `formData.has("description")` distinguishes "field absent" (do not change → `undefined`) from "field empty" (clear → `null`).
 - Settings form: always submits the `description` field (empty string allowed); other fields keep their existing "drop empty" behavior.
@@ -85,6 +89,7 @@ The PUT handler now runs the entire body through one `safeParse` instead of vali
 **Files modified:** `src/lib/api-error.ts` (new), `src/app/api/websites/route.ts`, `src/app/api/websites/[websiteId]/route.ts`, `src/app/api/websites/[websiteId]/servers/route.ts`, `src/app/api/websites/[websiteId]/servers/[serverId]/route.ts`
 **Commit:** `c2c6a1c`
 **Applied fix:** Extracted `apiErrorResponse(error, { fallback, context })` into `src/lib/api-error.ts`. It pattern-matches:
+
 - `ZodError` → 400 with flatten()ed details
 - Prisma P2002 → 409 (subdomain-specific message if target matches)
 - Prisma P2025 → 404

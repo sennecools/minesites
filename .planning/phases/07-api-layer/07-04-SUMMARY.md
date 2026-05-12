@@ -6,39 +6,39 @@ tags: [server-actions, rename, dashboard, importers, d-14]
 
 # Dependency graph
 requires:
-  - phase: 07-api-layer
-    plan: 01
-    provides: "createWebsiteSchema, updateWebsiteSchema in @/lib/validations/website (consumed by renamed actions)"
+    - phase: 07-api-layer
+      plan: 01
+      provides: 'createWebsiteSchema, updateWebsiteSchema in @/lib/validations/website (consumed by renamed actions)'
 provides:
-  - "createWebsite / updateWebsite / deleteWebsite server actions (renamed from createServer/updateServer/deleteServer per D-14)"
-  - "dashboard list pages fetching /api/websites (renamed from /api/servers)"
+    - 'createWebsite / updateWebsite / deleteWebsite server actions (renamed from createServer/updateServer/deleteServer per D-14)'
+    - 'dashboard list pages fetching /api/websites (renamed from /api/servers)'
 affects: [07-02-website-routes, 07-05-editor-fetches, 07-06-cleanup]
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns:
-    - "Server-action filename stays the same (actions.ts); only exported names track the website-centric vocabulary (D-14)"
-    - "Editor route param `[serverId]` and its corresponding action parameter `serverId` are NOT renamed in this phase — that is deferred to Phase 8 (D-02)"
+    added: []
+    patterns:
+        - 'Server-action filename stays the same (actions.ts); only exported names track the website-centric vocabulary (D-14)'
+        - 'Editor route param `[serverId]` and its corresponding action parameter `serverId` are NOT renamed in this phase — that is deferred to Phase 8 (D-02)'
 
 key-files:
-  created: []
-  modified:
-    - "src/app/(dashboard)/dashboard/actions.ts"
-    - "src/app/(dashboard)/dashboard/create-server-dialog.tsx"
-    - "src/app/(dashboard)/dashboard/[serverId]/server-actions.tsx"
-    - "src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx"
-    - "src/app/(dashboard)/dashboard/page.tsx"
-    - "src/app/(dashboard)/dashboard/servers/page.tsx"
+    created: []
+    modified:
+        - 'src/app/(dashboard)/dashboard/actions.ts'
+        - 'src/app/(dashboard)/dashboard/create-server-dialog.tsx'
+        - 'src/app/(dashboard)/dashboard/[serverId]/server-actions.tsx'
+        - 'src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx'
+        - 'src/app/(dashboard)/dashboard/page.tsx'
+        - 'src/app/(dashboard)/dashboard/servers/page.tsx'
 
 key-decisions:
-  - "D-14: rename exported action names only; keep filenames and `serverId` parameter names until Phase 8"
-  - "D-19 P2002 catches preserved verbatim across the create + update flows after rename"
-  - "D-20 session-user existence check preserved verbatim before db.website.create"
+    - 'D-14: rename exported action names only; keep filenames and `serverId` parameter names until Phase 8'
+    - 'D-19 P2002 catches preserved verbatim across the create + update flows after rename'
+    - 'D-20 session-user existence check preserved verbatim before db.website.create'
 
 patterns-established:
-  - "Renames inside actions.ts touched only the function-name token; bodies are byte-identical to the pre-plan version"
-  - "Importer files use direct named-import renames (no aliasing) to keep the call sites self-documenting"
+    - 'Renames inside actions.ts touched only the function-name token; bodies are byte-identical to the pre-plan version'
+    - 'Importer files use direct named-import renames (no aliasing) to keep the call sites self-documenting'
 
 requirements-completed: [WEB-01, WEB-02, WEB-03]
 
@@ -49,7 +49,7 @@ completed: 2026-05-12
 
 # Phase 7 Plan 04: Rename Server Actions and Dashboard Fetch URLs Summary
 
-**Rename the three dashboard server actions (createServer/updateServer/deleteServer → *Website) per D-14, retarget every importer, and switch dashboard list pages to fetch `/api/websites` instead of `/api/servers` — with D-19 (P2002) and D-20 (session-user existence) guards preserved verbatim.**
+**Rename the three dashboard server actions (createServer/updateServer/deleteServer → \*Website) per D-14, retarget every importer, and switch dashboard list pages to fetch `/api/websites` instead of `/api/servers` — with D-19 (P2002) and D-20 (session-user existence) guards preserved verbatim.**
 
 ## Performance
 
@@ -61,24 +61,24 @@ completed: 2026-05-12
 ## Accomplishments
 
 - Three exported server actions in `src/app/(dashboard)/dashboard/actions.ts` renamed in place:
-  - `createServer` → `createWebsite` (line 10)
-  - `updateServer` → `updateWebsite` (line 68)
-  - `deleteServer` → `deleteWebsite` (line 115)
-  - `togglePublished` (line 137) intentionally untouched.
+    - `createServer` → `createWebsite` (line 10)
+    - `updateServer` → `updateWebsite` (line 68)
+    - `deleteServer` → `deleteWebsite` (line 115)
+    - `togglePublished` (line 137) intentionally untouched.
 - All three importer files updated to call the renamed actions:
-  - `src/app/(dashboard)/dashboard/create-server-dialog.tsx` — `import { createWebsite }` + `await createWebsite(formData)`.
-  - `src/app/(dashboard)/dashboard/[serverId]/server-actions.tsx` — `import { togglePublished, deleteWebsite }` + `await deleteWebsite(serverId)`.
-  - `src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx` — `import { updateWebsite }` + `await updateWebsite(server.id, formData)`.
+    - `src/app/(dashboard)/dashboard/create-server-dialog.tsx` — `import { createWebsite }` + `await createWebsite(formData)`.
+    - `src/app/(dashboard)/dashboard/[serverId]/server-actions.tsx` — `import { togglePublished, deleteWebsite }` + `await deleteWebsite(serverId)`.
+    - `src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx` — `import { updateWebsite }` + `await updateWebsite(server.id, formData)`.
 - Dashboard list pages retargeted to the new endpoint:
-  - `src/app/(dashboard)/dashboard/page.tsx` — `fetch("/api/websites")` (was `/api/servers`).
-  - `src/app/(dashboard)/dashboard/servers/page.tsx` — `fetch("/api/websites")` (was `/api/servers`).
+    - `src/app/(dashboard)/dashboard/page.tsx` — `fetch("/api/websites")` (was `/api/servers`).
+    - `src/app/(dashboard)/dashboard/servers/page.tsx` — `fetch("/api/websites")` (was `/api/servers`).
 - `npx tsc --noEmit` exits **0** after each task — even the editor god-component compiled cleanly in this worktree (no `[serverId]/page.tsx` action calls intercept the rename).
 
 ## Task Commits
 
 Each task was committed atomically:
 
-1. **Task 1: Rename three server actions in actions.ts (createServer/updateServer/deleteServer → *Website)** — `6afb462` (refactor)
+1. **Task 1: Rename three server actions in actions.ts (createServer/updateServer/deleteServer → \*Website)** — `6afb462` (refactor)
 2. **Task 2: Update three action importers to the renamed exports (create-server-dialog, [serverId]/server-actions, [serverId]/server-settings)** — `bfa4987` (refactor)
 3. **Task 3: Switch dashboard and servers list pages to fetch /api/websites** — `e36ffb4` (refactor)
 
@@ -147,6 +147,7 @@ None — no external service configuration, env vars, or migration steps introdu
 - `npx tsc --noEmit` — clean (0 errors, exit code 0) after all three tasks
 
 ---
-*Phase: 07-api-layer*
-*Plan: 04*
-*Completed: 2026-05-12*
+
+_Phase: 07-api-layer_
+_Plan: 04_
+_Completed: 2026-05-12_

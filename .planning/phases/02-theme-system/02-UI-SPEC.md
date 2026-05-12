@@ -16,13 +16,13 @@ created: 2026-05-07
 
 ## Design System
 
-| Property | Value |
-|----------|-------|
-| Tool | none (custom component library in `src/components/ui/`) |
-| Preset | not applicable |
-| Component library | Custom — Button, Input, Label, Select, Card, Modal, Badge, Textarea, Toast, Dropdown |
-| Icon library | lucide-react v0.563 |
-| Font (dashboard) | Inter (sans) + Jakarta (display) — existing, do not change |
+| Property           | Value                                                                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tool               | none (custom component library in `src/components/ui/`)                                                                                            |
+| Preset             | not applicable                                                                                                                                     |
+| Component library  | Custom — Button, Input, Label, Select, Card, Modal, Badge, Textarea, Toast, Dropdown                                                               |
+| Icon library       | lucide-react v0.563                                                                                                                                |
+| Font (dashboard)   | Inter (sans) + Jakarta (display) — existing, do not change                                                                                         |
 | Font (public site) | Rajdhani (default), Orbitron, Cinzel, Exo 2, Bebas Neue — via `next/font/google`, toggled by `--site-font-display` CSS variable under `.site-root` |
 
 Source: CONTEXT.md D-07, D-08; `globals.css`; `package.json`
@@ -33,9 +33,9 @@ Source: CONTEXT.md D-07, D-08; `globals.css`; `package.json`
 
 This phase delivers UI for **two separate surfaces**. Each has its own design contract.
 
-| Surface | Scope | CSS Boundary |
-|---------|-------|-------------|
-| Public site (`.site-root`) | Gaming-styled server website visible to visitors | Under `.site-root` class — isolated from dashboard |
+| Surface                           | Scope                                                  | CSS Boundary                                            |
+| --------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| Public site (`.site-root`)        | Gaming-styled server website visible to visitors       | Under `.site-root` class — isolated from dashboard      |
 | Editor sidebar ("Appearance" tab) | Dashboard controls for server owner to configure theme | Inside existing dashboard styles — no change to `:root` |
 
 ---
@@ -44,22 +44,22 @@ This phase delivers UI for **two separate surfaces**. Each has its own design co
 
 Declared values (must be multiples of 4):
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| xs | 4px | Icon gaps, badge padding |
-| sm | 8px | Compact element spacing, swatch gaps |
-| md | 16px | Default element spacing, sidebar control groups |
-| lg | 24px | Section padding, card inner padding |
-| xl | 32px | Layout gaps, sidebar section breaks |
-| 2xl | 48px | Major section breaks on public site |
-| 3xl | 64px | Page-level vertical rhythm on public site |
-| nav-height | 56px | Layout dimension — fixed height of `SiteNav`. 56 / 4 = 14 (grid-aligned). |
+| Token      | Value | Usage                                                                     |
+| ---------- | ----- | ------------------------------------------------------------------------- |
+| xs         | 4px   | Icon gaps, badge padding                                                  |
+| sm         | 8px   | Compact element spacing, swatch gaps                                      |
+| md         | 16px  | Default element spacing, sidebar control groups                           |
+| lg         | 24px  | Section padding, card inner padding                                       |
+| xl         | 32px  | Layout gaps, sidebar section breaks                                       |
+| 2xl        | 48px  | Major section breaks on public site                                       |
+| 3xl        | 64px  | Page-level vertical rhythm on public site                                 |
+| nav-height | 56px  | Layout dimension — fixed height of `SiteNav`. 56 / 4 = 14 (grid-aligned). |
 
 Exceptions (documented with justification):
 
-| Value | Context | Justification |
-|-------|---------|---------------|
-| 44px | Minimum tap zone for color swatch circles (`.color-picker`) | WCAG 2.5.5 minimum interactive target size — accessibility exception. The visual circle is 28px (existing pattern); the invisible touch target extends to 44px via padding. |
+| Value | Context                                                     | Justification                                                                                                                                                               |
+| ----- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 44px  | Minimum tap zone for color swatch circles (`.color-picker`) | WCAG 2.5.5 minimum interactive target size — accessibility exception. The visual circle is 28px (existing pattern); the invisible touch target extends to 44px via padding. |
 
 **Nav vertical padding note:** Nav height is fixed at `56px` (grid-aligned, 56 / 4 = 14). Vertical padding is implementation-derived to center a 28px content block — not a declared spacing token. Do not hardcode `14px` as a spacing value; let the browser center the content within the `h-14` (56px) container.
 
@@ -73,12 +73,12 @@ Source: Standard 8pt scale; existing `.color-picker` (28px) from `globals.css`; 
 
 **Maximum 2 weights declared.** Body text always uses the legible fallback font regardless of the active gaming font.
 
-| Role | Size | Weight | Line Height | Font |
-|------|------|--------|-------------|------|
-| Body | 16px | 400 (regular) | 1.6 | system-ui / Inter (legible fallback — never the gaming font) |
-| Label / UI copy | 14px | 400 (regular) | 1.4 | system-ui / Inter |
-| Heading | 24px | 700 (bold) | 1.2 | `--site-font-display` (active gaming font) |
-| Display / Hero | 40px | 700 (bold) | 1.1 | `--site-font-display` (active gaming font) |
+| Role            | Size | Weight        | Line Height | Font                                                         |
+| --------------- | ---- | ------------- | ----------- | ------------------------------------------------------------ |
+| Body            | 16px | 400 (regular) | 1.6         | system-ui / Inter (legible fallback — never the gaming font) |
+| Label / UI copy | 14px | 400 (regular) | 1.4         | system-ui / Inter                                            |
+| Heading         | 24px | 700 (bold)    | 1.2         | `--site-font-display` (active gaming font)                   |
+| Display / Hero  | 40px | 700 (bold)    | 1.1         | `--site-font-display` (active gaming font)                   |
 
 Weights used: **400** (regular — body and labels) and **700** (bold — headings and display). No other weights.
 
@@ -90,11 +90,11 @@ Source: CONTEXT.md D-09 — body always uses legible fallback regardless of them
 
 Inherits existing dashboard typography — do not introduce new sizes. Reference existing:
 
-| Role | Size | Weight | Line Height |
-|------|------|--------|-------------|
-| Section label | 11px | 500 | 1.3 (`.settings-label` pattern from `globals.css`) |
-| Control text | 13px | 400 | 1.4 |
-| Tab label | 13px | 500 | 1.4 |
+| Role          | Size | Weight | Line Height                                        |
+| ------------- | ---- | ------ | -------------------------------------------------- |
+| Section label | 11px | 500    | 1.3 (`.settings-label` pattern from `globals.css`) |
+| Control text  | 13px | 400    | 1.4                                                |
+| Tab label     | 13px | 500    | 1.4                                                |
 
 Source: `globals.css` `.settings-label`; `button.tsx` size=sm (12px/13px pattern)
 
@@ -104,14 +104,14 @@ Source: `globals.css` `.settings-label`; `button.tsx` size=sm (12px/13px pattern
 
 ### Public Site (`.site-root`) — Fixed Dark Palette
 
-| Role | Value | Usage |
-|------|-------|-------|
-| Dominant (60%) | `#0e0e10` | Page background, section default background |
-| Secondary (30%) | `#1a1a1f` | Card surfaces, elevated elements, nav background |
-| Accent (10%) | Per-preset (see table below) | Reserved for: primary CTA buttons, active nav indicator, link hover, selected swatch ring, section divider highlights |
-| Destructive | `#ef4444` | Destructive actions only (no destructive actions in Phase 2 — declared for completeness) |
-| Text primary | `#f4f4f5` | All body text on public site |
-| Text muted | `#a1a1aa` | Secondary labels, metadata on public site |
+| Role            | Value                        | Usage                                                                                                                 |
+| --------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Dominant (60%)  | `#0e0e10`                    | Page background, section default background                                                                           |
+| Secondary (30%) | `#1a1a1f`                    | Card surfaces, elevated elements, nav background                                                                      |
+| Accent (10%)    | Per-preset (see table below) | Reserved for: primary CTA buttons, active nav indicator, link hover, selected swatch ring, section divider highlights |
+| Destructive     | `#ef4444`                    | Destructive actions only (no destructive actions in Phase 2 — declared for completeness)                              |
+| Text primary    | `#f4f4f5`                    | All body text on public site                                                                                          |
+| Text muted      | `#a1a1aa`                    | Secondary labels, metadata on public site                                                                             |
 
 Accent reserved for: **primary CTA button fills, active nav indicator underline, interactive element hover/focus rings, selected swatch outline, section break accent lines.** Never used for body text or generic card backgrounds.
 
@@ -119,16 +119,16 @@ Source: CONTEXT.md D-01, D-04
 
 ### Accent Color Presets
 
-| Key | Hex | Target Server Type |
-|-----|-----|--------------------|
-| `cyan` | `#06b6d4` | Water / sky / aquatic |
+| Key       | Hex       | Target Server Type          |
+| --------- | --------- | --------------------------- |
+| `cyan`    | `#06b6d4` | Water / sky / aquatic       |
 | `emerald` | `#10b981` | Survival / nature / farming |
-| `violet` | `#8b5cf6` | Magic / RPG |
-| `orange` | `#f97316` | Creative / build |
-| `red` | `#ef4444` | PvP / faction / war |
-| `gold` | `#eab308` | Prison / economy / SMP |
-| `pink` | `#ec4899` | Skyblock / casual |
-| `white` | `#f4f4f5` | Clean / minimalist |
+| `violet`  | `#8b5cf6` | Magic / RPG                 |
+| `orange`  | `#f97316` | Creative / build            |
+| `red`     | `#ef4444` | PvP / faction / war         |
+| `gold`    | `#eab308` | Prison / economy / SMP      |
+| `pink`    | `#ec4899` | Skyblock / casual           |
+| `white`   | `#f4f4f5` | Clean / minimalist          |
 
 Source: CONTEXT.md D-05
 
@@ -142,14 +142,14 @@ Inherits existing dashboard colors from `globals.css` `:root`. No new dashboard 
 
 Variables injected inline on `.site-root` by the Server Component on initial render (no FOUC):
 
-| Variable | Value Source | Example |
-|----------|-------------|---------|
-| `--site-accent` | Lookup from palette key | `#06b6d4` |
-| `--site-bg` | Fixed | `#0e0e10` |
-| `--site-card` | Fixed | `#1a1a1f` |
-| `--site-text` | Fixed | `#f4f4f5` |
-| `--site-text-muted` | Fixed | `#a1a1aa` |
-| `--site-font-display` | Active font name | `Rajdhani` |
+| Variable              | Value Source            | Example    |
+| --------------------- | ----------------------- | ---------- |
+| `--site-accent`       | Lookup from palette key | `#06b6d4`  |
+| `--site-bg`           | Fixed                   | `#0e0e10`  |
+| `--site-card`         | Fixed                   | `#1a1a1f`  |
+| `--site-text`         | Fixed                   | `#f4f4f5`  |
+| `--site-text-muted`   | Fixed                   | `#a1a1aa`  |
+| `--site-font-display` | Active font name        | `Rajdhani` |
 
 The `data-theme` attribute on `.site-root` holds the palette key (e.g., `data-theme="cyan"`) for CSS selectors that need named variants.
 
@@ -161,31 +161,31 @@ Source: CONTEXT.md D-13, D-14
 
 ### New Components — Public Site
 
-| Component | File | Notes |
-|-----------|------|-------|
-| `SiteNav` | `src/components/site/nav.tsx` | Sticky, 56px tall (use `h-14` / `nav-height` token), server name left + IP copy button right. Uses `Button` for copy. Lucide `Copy`/`Check` for copy feedback. Vertical padding is implementation-derived — do not hardcode `14px`. |
-| `SiteRoot` (layout wrapper) | `src/app/[subdomain]/layout.tsx` | Adds `.site-root` class and injects CSS vars inline. Declares all 5 Google Fonts statically. |
-| `ThemePresetMap` | `src/lib/theme-presets.ts` | Static map of palette key → hex value. Used by server component for CSS var injection. |
+| Component                   | File                             | Notes                                                                                                                                                                                                                               |
+| --------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SiteNav`                   | `src/components/site/nav.tsx`    | Sticky, 56px tall (use `h-14` / `nav-height` token), server name left + IP copy button right. Uses `Button` for copy. Lucide `Copy`/`Check` for copy feedback. Vertical padding is implementation-derived — do not hardcode `14px`. |
+| `SiteRoot` (layout wrapper) | `src/app/[subdomain]/layout.tsx` | Adds `.site-root` class and injects CSS vars inline. Declares all 5 Google Fonts statically.                                                                                                                                        |
+| `ThemePresetMap`            | `src/lib/theme-presets.ts`       | Static map of palette key → hex value. Used by server component for CSS var injection.                                                                                                                                              |
 
 ### New Components — Editor Sidebar
 
-| Component | File | Notes |
-|-----------|------|-------|
-| `AppearanceTab` | `src/components/editor/appearance-tab.tsx` | Color swatches (8 circles, 3-3-2 layout) + font picker (5 labeled options). Live preview via CSS vars. |
+| Component           | File                                            | Notes                                                                                                                                                                                                                                           |
+| ------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AppearanceTab`     | `src/components/editor/appearance-tab.tsx`      | Color swatches (8 circles, 3-3-2 layout) + font picker (5 labeled options). Live preview via CSS vars.                                                                                                                                          |
 | `ColorSwatchPicker` | `src/components/editor/color-swatch-picker.tsx` | Grid of 28px circles with 44px tap zone. Selected state: 2px ring in accent color, scale(1.1). Framer Motion `whileHover` + `whileTap`. Each swatch circle must include `aria-label={colorName}` (e.g., `aria-label="Cyan"`) for accessibility. |
-| `FontPicker` | `src/components/editor/font-picker.tsx` | 5 named clickable labels. Active state: accent-colored underline. Preview: label renders in the chosen font. |
-| `SectionBgOverride` | In each section's settings panel | Color input under "Background" control group. Stores `section.settings.backgroundColor`. |
+| `FontPicker`        | `src/components/editor/font-picker.tsx`         | 5 named clickable labels. Active state: accent-colored underline. Preview: label renders in the chosen font.                                                                                                                                    |
+| `SectionBgOverride` | In each section's settings panel                | Color input under "Background" control group. Stores `section.settings.backgroundColor`.                                                                                                                                                        |
 
 ### Existing Components to Reuse
 
-| Component | Reuse |
-|-----------|-------|
-| `src/components/ui/button.tsx` | IP copy button in nav (variant="secondary", size="sm") |
-| `src/components/ui/button.tsx` | Save button in Appearance tab (variant="primary") |
-| Lucide `Copy`, `Check` | Copy button feedback — existing import pattern |
-| `cn()` from `src/lib/utils.ts` | Conditional class merging |
-| Zustand store | Active sidebar tab state (Sections vs Appearance) |
-| Framer Motion `whileHover`, `whileTap` | Swatch animation |
+| Component                              | Reuse                                                  |
+| -------------------------------------- | ------------------------------------------------------ |
+| `src/components/ui/button.tsx`         | IP copy button in nav (variant="secondary", size="sm") |
+| `src/components/ui/button.tsx`         | Save button in Appearance tab (variant="primary")      |
+| Lucide `Copy`, `Check`                 | Copy button feedback — existing import pattern         |
+| `cn()` from `src/lib/utils.ts`         | Conditional class merging                              |
+| Zustand store                          | Active sidebar tab state (Sections vs Appearance)      |
+| Framer Motion `whileHover`, `whileTap` | Swatch animation                                       |
 
 Source: CONTEXT.md code_context section
 
@@ -233,20 +233,20 @@ Source: CONTEXT.md D-12
 
 ## Copywriting Contract
 
-| Element | Copy |
-|---------|------|
-| Primary CTA (nav) | "Copy IP" |
-| Copy success state | "Copied!" (shown while Check icon is visible, 2s) |
-| Appearance tab label | "Appearance" |
-| Sections tab label | "Sections" |
-| Color swatches section heading | "Color" |
-| Font picker section heading | "Font" |
-| Save button (Appearance tab) | "Save Appearance" |
-| Per-section background label | "Section Background" |
-| Per-section reset action | "Reset Background" |
-| Empty state (no sections, public site) | Heading: "Nothing here yet" / Body: "The server owner is still setting things up." |
-| Error state (theme load failure) | "Could not load theme — using defaults." (silent fallback, no user action required) |
-| Destructive actions | None in Phase 2 |
+| Element                                | Copy                                                                                |
+| -------------------------------------- | ----------------------------------------------------------------------------------- |
+| Primary CTA (nav)                      | "Copy IP"                                                                           |
+| Copy success state                     | "Copied!" (shown while Check icon is visible, 2s)                                   |
+| Appearance tab label                   | "Appearance"                                                                        |
+| Sections tab label                     | "Sections"                                                                          |
+| Color swatches section heading         | "Color"                                                                             |
+| Font picker section heading            | "Font"                                                                              |
+| Save button (Appearance tab)           | "Save Appearance"                                                                   |
+| Per-section background label           | "Section Background"                                                                |
+| Per-section reset action               | "Reset Background"                                                                  |
+| Empty state (no sections, public site) | Heading: "Nothing here yet" / Body: "The server owner is still setting things up."  |
+| Error state (theme load failure)       | "Could not load theme — using defaults." (silent fallback, no user action required) |
+| Destructive actions                    | None in Phase 2                                                                     |
 
 Source: CONTEXT.md D-02, D-10, D-11, D-12; REQUIREMENTS.md success criteria
 
@@ -256,14 +256,14 @@ Source: CONTEXT.md D-02, D-10, D-11, D-12; REQUIREMENTS.md success criteria
 
 All animations use Framer Motion (already in stack at v12.29.2).
 
-| Interaction | Animation | Duration |
-|-------------|-----------|----------|
-| Swatch hover | `whileHover: { scale: 1.05 }` | spring default |
-| Swatch select | `animate: { scale: 1.1, ring: 2px }` | 150ms ease-out |
-| Font option hover | `whileHover: { x: 2 }` | spring default |
-| Copy icon swap | opacity crossfade | 200ms ease |
-| Tab switch (Sections ↔ Appearance) | `AnimatePresence` fade | 150ms ease |
-| Theme preview update | Instant (CSS var swap, no animation) | 0ms |
+| Interaction                        | Animation                            | Duration       |
+| ---------------------------------- | ------------------------------------ | -------------- |
+| Swatch hover                       | `whileHover: { scale: 1.05 }`        | spring default |
+| Swatch select                      | `animate: { scale: 1.1, ring: 2px }` | 150ms ease-out |
+| Font option hover                  | `whileHover: { x: 2 }`               | spring default |
+| Copy icon swap                     | opacity crossfade                    | 200ms ease     |
+| Tab switch (Sections ↔ Appearance) | `AnimatePresence` fade               | 150ms ease     |
+| Theme preview update               | Instant (CSS var swap, no animation) | 0ms            |
 
 Source: CONTEXT.md established Framer Motion patterns; existing `initial/animate/exit` + `whileHover` usage in editor
 
@@ -271,10 +271,10 @@ Source: CONTEXT.md established Framer Motion patterns; existing `initial/animate
 
 ## Registry Safety
 
-| Registry | Blocks Used | Safety Gate |
-|----------|-------------|-------------|
+| Registry        | Blocks Used                                  | Safety Gate    |
+| --------------- | -------------------------------------------- | -------------- |
 | shadcn official | none — project uses custom component library | not applicable |
-| third-party | none | not applicable |
+| third-party     | none                                         | not applicable |
 
 No shadcn, no third-party registries. All components are custom-built in `src/components/`.
 

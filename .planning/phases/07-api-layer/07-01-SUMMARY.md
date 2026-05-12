@@ -6,35 +6,35 @@ tags: [zod, validation, typescript, types, minecraft-server]
 
 # Dependency graph
 requires:
-  - phase: 06-schema-reset
-    provides: "Website + MinecraftServer Prisma models; section.settings as canonical home"
+    - phase: 06-schema-reset
+      provides: 'Website + MinecraftServer Prisma models; section.settings as canonical home'
 provides:
-  - "createMcserverSchema / updateMcserverSchema zod schemas for MinecraftServer payloads"
-  - "CreateMcserverInput / UpdateMcserverInput inferred TypeScript types"
-  - "ServerScopedSettings interface fragment ({ minecraftServerId?: string }) for shared reuse"
+    - 'createMcserverSchema / updateMcserverSchema zod schemas for MinecraftServer payloads'
+    - 'CreateMcserverInput / UpdateMcserverInput inferred TypeScript types'
+    - 'ServerScopedSettings interface fragment ({ minecraftServerId?: string }) for shared reuse'
 affects: [07-02-website-routes, 07-03-mcserver-routes, deferred-sect-02, deferred-sect-03]
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns:
-    - "Validation schemas mirror website.ts style: base create -> .partial() update -> z.infer types"
-    - "Shared section-settings type fragments live in src/types/sections.ts"
+    added: []
+    patterns:
+        - 'Validation schemas mirror website.ts style: base create -> .partial() update -> z.infer types'
+        - 'Shared section-settings type fragments live in src/types/sections.ts'
 
 key-files:
-  created:
-    - "src/lib/validations/mcserver.ts"
-  modified:
-    - "src/types/sections.ts"
+    created:
+        - 'src/lib/validations/mcserver.ts'
+    modified:
+        - 'src/types/sections.ts'
 
 key-decisions:
-  - "Loose IP validation (string min 1, max 253, no regex) — mcstatus.io validates at poll time (D-07)"
-  - "Port is integer 1-65535, optional because Prisma schema provides @default(25565) (D-08)"
-  - "ServerScopedSettings is a top-level fragment, not nested under per-type key (D-10, D-11)"
+    - 'Loose IP validation (string min 1, max 253, no regex) — mcstatus.io validates at poll time (D-07)'
+    - 'Port is integer 1-65535, optional because Prisma schema provides @default(25565) (D-08)'
+    - 'ServerScopedSettings is a top-level fragment, not nested under per-type key (D-10, D-11)'
 
 patterns-established:
-  - "Validation file shape: base create schema -> .partial() update -> z.infer<typeof> types"
-  - "Server-scoped section types extend or include ServerScopedSettings rather than redefining minecraftServerId"
+    - 'Validation file shape: base create schema -> .partial() update -> z.infer<typeof> types'
+    - 'Server-scoped section types extend or include ServerScopedSettings rather than redefining minecraftServerId'
 
 requirements-completed: [CONN-01, CONN-03, CONN-04]
 
@@ -77,27 +77,18 @@ Each task was committed atomically:
 `src/lib/validations/mcserver.ts`:
 
 ```typescript
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createMcserverSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(50, "Name must be less than 50 characters"),
-  ip: z
-    .string()
-    .min(1, "IP is required")
-    .max(253, "IP must be less than 253 characters"),
-  port: z
-    .number()
-    .int("Port must be an integer")
-    .min(1, "Port must be at least 1")
-    .max(65535, "Port must be at most 65535")
-    .optional(),
-  description: z
-    .string()
-    .max(200, "Description must be less than 200 characters")
-    .optional(),
+	name: z.string().min(1, 'Name is required').max(50, 'Name must be less than 50 characters'),
+	ip: z.string().min(1, 'IP is required').max(253, 'IP must be less than 253 characters'),
+	port: z
+		.number()
+		.int('Port must be an integer')
+		.min(1, 'Port must be at least 1')
+		.max(65535, 'Port must be at most 65535')
+		.optional(),
+	description: z.string().max(200, 'Description must be less than 200 characters').optional(),
 });
 
 export const updateMcserverSchema = createMcserverSchema.partial();
@@ -107,6 +98,7 @@ export type UpdateMcserverInput = z.infer<typeof updateMcserverSchema>;
 ```
 
 Notes on field choices:
+
 - `ip` is a loose string (1–253 chars, no regex). Accepts hostnames, IPv4, IPv6, embedded `:port` — per D-07, validation is deferred to mcstatus.io at poll time.
 - `port` is `optional()` so the Prisma `@default(25565)` applies when omitted (D-08).
 - `name` 1–50 chars, `description` ≤ 200 chars optional (D-09).
@@ -122,7 +114,7 @@ In `src/types/sections.ts`, between line 23 (end of `SectionType` union: `  | 'v
 // stored as a top-level key inside `section.settings`. Future section settings interfaces
 // extend or include this shape.
 export interface ServerScopedSettings {
-  minecraftServerId?: string;
+	minecraftServerId?: string;
 }
 ```
 
@@ -163,6 +155,7 @@ None — no external service configuration introduced.
 - `npx tsc --noEmit` — clean (0 errors, exit code 0)
 
 ---
-*Phase: 07-api-layer*
-*Plan: 01*
-*Completed: 2026-05-12*
+
+_Phase: 07-api-layer_
+_Plan: 01_
+_Completed: 2026-05-12_

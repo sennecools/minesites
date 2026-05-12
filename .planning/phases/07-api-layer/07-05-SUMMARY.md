@@ -4,33 +4,33 @@ plan: 05
 subsystem: editor
 tags: [refactor, editor, api-layer]
 requires:
-  - 07-02 (GET/PUT /api/websites/[websiteId])
-  - 07-04 (or parallel: 07-06 removal of /api/servers)
+    - 07-02 (GET/PUT /api/websites/[websiteId])
+    - 07-04 (or parallel: 07-06 removal of /api/servers)
 provides:
-  - editor-fetches-websites-api
-  - editor-no-serverip-state
+    - editor-fetches-websites-api
+    - editor-no-serverip-state
 affects:
-  - src/app/(dashboard)/dashboard/[serverId]/page.tsx
+    - src/app/(dashboard)/dashboard/[serverId]/page.tsx
 tech_stack_added: []
 patterns_used:
-  - "Narrow-scope deletion (D-15): editor only, types.ts untouched"
+    - 'Narrow-scope deletion (D-15): editor only, types.ts untouched'
 key_files:
-  modified:
-    - src/app/(dashboard)/dashboard/[serverId]/page.tsx
-  created: []
-  deleted: []
+    modified:
+        - src/app/(dashboard)/dashboard/[serverId]/page.tsx
+    created: []
+    deleted: []
 key_decisions:
-  - "SectionPreview now receives serverIp: null literal — preview/types.ts WebsiteData stays serverIp: string | null until renderer phase"
-  - "Copy icon import removed; Check retained (still used by plan rank UI at line ~1942)"
+    - 'SectionPreview now receives serverIp: null literal — preview/types.ts WebsiteData stays serverIp: string | null until renderer phase'
+    - 'Copy icon import removed; Check retained (still used by plan rank UI at line ~1942)'
 metrics:
-  duration: "~2 minutes"
-  completed: "2026-05-12"
-  tasks_total: 2
-  tasks_completed: 2
-  files_changed: 1
-  line_count_before: 3202
-  line_count_after: 3172
-  line_count_delta: -30
+    duration: '~2 minutes'
+    completed: '2026-05-12'
+    tasks_total: 2
+    tasks_completed: 2
+    files_changed: 1
+    line_count_before: 3202
+    line_count_after: 3172
+    line_count_delta: -30
 ---
 
 # Phase 07 Plan 05: Editor Wired to /api/websites Summary
@@ -46,42 +46,42 @@ Two atomic refactor commits applied to `src/app/(dashboard)/dashboard/[serverId]
 
 ### Task 1: fetch URL swap
 
-| Location | Before | After |
-|---|---|---|
-| Load (line 2282) | `fetch(\`/api/servers/${serverId}\`)` | `fetch(\`/api/websites/${serverId}\`)` |
+| Location         | Before                                                        | After                                                          |
+| ---------------- | ------------------------------------------------------------- | -------------------------------------------------------------- |
+| Load (line 2282) | `fetch(\`/api/servers/${serverId}\`)`                         | `fetch(\`/api/websites/${serverId}\`)`                         |
 | Save (line 2375) | `fetch(\`/api/servers/${serverId}\`, { method: "PUT", ... })` | `fetch(\`/api/websites/${serverId}\`, { method: "PUT", ... })` |
 
 `grep -c "/api/servers" src/app/(dashboard)/dashboard/[serverId]/page.tsx` → `0`.
-`grep -c "fetch(\`/api/websites/" src/app/(dashboard)/dashboard/[serverId]/page.tsx` → `2`.
+`grep -c "fetch(\`/api/websites/" src/app/(dashboard)/dashboard/[serverId]/page.tsx`→`2`.
 
 ### Task 2: the seven edits
 
-| Edit | Region (original line) | Action |
-|---|---|---|
-| A — lucide imports | line 15 | Removed `  Copy,` (kept `  Check,` — still used at line 1942 in the plan rank UI) |
-| B — ServerDataState type | line ~2251 | Removed `serverIp: string;` field |
-| C — useState | line 2267 | Removed `const [copied, setCopied] = useState(false);` |
-| D — setServerData initializer | line ~2294 | Removed `serverIp: data.serverIp || "",` |
-| E — handleCopyIP callback | lines ~2480-2484 | Removed entire 5-line function |
-| F — Server Info IP JSX | lines ~2760-2779 | Removed the entire IP code + copy button block (20 JSX lines) |
-| G — SectionPreview prop | line ~2935 | Changed `serverIp: serverData.serverIp` → `serverIp: null` |
+| Edit                          | Region (original line) | Action                                                                            |
+| ----------------------------- | ---------------------- | --------------------------------------------------------------------------------- | --- | ---- |
+| A — lucide imports            | line 15                | Removed `  Copy,` (kept `  Check,` — still used at line 1942 in the plan rank UI) |
+| B — ServerDataState type      | line ~2251             | Removed `serverIp: string;` field                                                 |
+| C — useState                  | line 2267              | Removed `const [copied, setCopied] = useState(false);`                            |
+| D — setServerData initializer | line ~2294             | Removed `serverIp: data.serverIp                                                  |     | "",` |
+| E — handleCopyIP callback     | lines ~2480-2484       | Removed entire 5-line function                                                    |
+| F — Server Info IP JSX        | lines ~2760-2779       | Removed the entire IP code + copy button block (20 JSX lines)                     |
+| G — SectionPreview prop       | line ~2935             | Changed `serverIp: serverData.serverIp` → `serverIp: null`                        |
 
 ## Verification
 
-| Check | Result |
-|---|---|
-| `! grep -nE "^  Copy," page.tsx` | PASS |
-| `grep -q "Check," page.tsx` (still imported) | PASS |
-| `! grep -q "serverIp: string;" page.tsx` | PASS |
-| `! grep -q "serverIp: data.serverIp" page.tsx` | PASS |
-| `! grep -q "handleCopyIP" page.tsx` | PASS |
-| `! grep -q "const \[copied" page.tsx` | PASS |
-| `! grep -q "serverData.serverIp" page.tsx` | PASS |
-| `grep -q "serverIp: null" page.tsx` | PASS |
-| `npx tsc --noEmit` exit code | `0` (zero new errors) |
-| line count strictly decreased | 3172 < 3202 (−30 lines, exceeds 25-line floor) |
-| `/api/servers` references in page.tsx | `0` (none) |
-| references to `lib/validations/server` in page.tsx | `0` (clean for parallel 07-06 deletion merge) |
+| Check                                              | Result                                         |
+| -------------------------------------------------- | ---------------------------------------------- |
+| `! grep -nE "^  Copy," page.tsx`                   | PASS                                           |
+| `grep -q "Check," page.tsx` (still imported)       | PASS                                           |
+| `! grep -q "serverIp: string;" page.tsx`           | PASS                                           |
+| `! grep -q "serverIp: data.serverIp" page.tsx`     | PASS                                           |
+| `! grep -q "handleCopyIP" page.tsx`                | PASS                                           |
+| `! grep -q "const \[copied" page.tsx`              | PASS                                           |
+| `! grep -q "serverData.serverIp" page.tsx`         | PASS                                           |
+| `grep -q "serverIp: null" page.tsx`                | PASS                                           |
+| `npx tsc --noEmit` exit code                       | `0` (zero new errors)                          |
+| line count strictly decreased                      | 3172 < 3202 (−30 lines, exceeds 25-line floor) |
+| `/api/servers` references in page.tsx              | `0` (none)                                     |
+| references to `lib/validations/server` in page.tsx | `0` (clean for parallel 07-06 deletion merge)  |
 
 ## Confirmation of Out-of-Scope Files
 
@@ -90,6 +90,7 @@ Two atomic refactor commits applied to `src/app/(dashboard)/dashboard/[serverId]
 ## Parallel-Wave Compatibility
 
 Plan 07-06 is removing `src/app/api/servers/` and `src/lib/validations/server.ts` in a sibling worktree. The editor no longer imports or references either:
+
 - No `import` from `validations/server` exists in the file.
 - No `/api/servers` URL string remains.
 
@@ -105,10 +106,10 @@ None.
 
 ## Commits
 
-| Hash | Type | Summary |
-|---|---|---|
+| Hash      | Type            | Summary                                                   |
+| --------- | --------------- | --------------------------------------------------------- |
 | `6d40d33` | refactor(07-05) | Swap editor fetch URLs from /api/servers to /api/websites |
-| `b30fca7` | refactor(07-05) | Drop serverIp from editor state and remove IP copy UI |
+| `b30fca7` | refactor(07-05) | Drop serverIp from editor state and remove IP copy UI     |
 
 ## Known Stubs
 

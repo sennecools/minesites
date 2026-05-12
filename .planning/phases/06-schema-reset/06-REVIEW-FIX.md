@@ -16,6 +16,7 @@ status: all_fixed
 **Iteration:** 1
 
 **Summary:**
+
 - Findings in scope: 10 (4 Critical + 6 Warning; Info excluded per default fix scope)
 - Fixed: 10
 - Skipped: 0

@@ -1,4 +1,5 @@
 <!-- refreshed: 2026-05-07 -->
+
 # Architecture
 
 **Analysis Date:** 2026-05-07
@@ -38,26 +39,27 @@
 
 ## Component Responsibilities
 
-| Component | Responsibility | File |
-|-----------|----------------|------|
-| Root Layout | Global fonts, ToastProvider | `src/app/layout.tsx` |
-| Middleware | Subdomain routing + auth guard | `src/middleware.ts` |
-| Auth Config | JWT strategy, OAuth providers | `src/lib/auth.config.ts` |
-| Auth Full | Credentials provider + DB adapter | `src/lib/auth.ts` |
-| DB Client | Singleton Prisma+pg pool | `src/lib/db.ts` |
-| Dashboard Layout | Sidebar, sticky header shell | `src/app/(dashboard)/layout.tsx` |
-| Auth Layout | Animated split-panel auth page shell | `src/app/(auth)/layout.tsx` |
-| Server Editor | Full-page drag-and-drop section builder | `src/app/(dashboard)/dashboard/[serverId]/page.tsx` |
-| Server Actions | Server-side mutations (create/update/delete/publish) | `src/app/(dashboard)/dashboard/actions.ts` |
-| PreviewClient | Public-facing rendered section components | `src/app/[subdomain]/preview-client.tsx` |
-| UI Library | Reusable primitive components | `src/components/ui/` |
-| Layout Components | Header, Footer, Sidebar | `src/components/layout/` |
+| Component         | Responsibility                                       | File                                                |
+| ----------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| Root Layout       | Global fonts, ToastProvider                          | `src/app/layout.tsx`                                |
+| Middleware        | Subdomain routing + auth guard                       | `src/middleware.ts`                                 |
+| Auth Config       | JWT strategy, OAuth providers                        | `src/lib/auth.config.ts`                            |
+| Auth Full         | Credentials provider + DB adapter                    | `src/lib/auth.ts`                                   |
+| DB Client         | Singleton Prisma+pg pool                             | `src/lib/db.ts`                                     |
+| Dashboard Layout  | Sidebar, sticky header shell                         | `src/app/(dashboard)/layout.tsx`                    |
+| Auth Layout       | Animated split-panel auth page shell                 | `src/app/(auth)/layout.tsx`                         |
+| Server Editor     | Full-page drag-and-drop section builder              | `src/app/(dashboard)/dashboard/[serverId]/page.tsx` |
+| Server Actions    | Server-side mutations (create/update/delete/publish) | `src/app/(dashboard)/dashboard/actions.ts`          |
+| PreviewClient     | Public-facing rendered section components            | `src/app/[subdomain]/preview-client.tsx`            |
+| UI Library        | Reusable primitive components                        | `src/components/ui/`                                |
+| Layout Components | Header, Footer, Sidebar                              | `src/components/layout/`                            |
 
 ## Pattern Overview
 
 **Overall:** Component-based Next.js App Router with route groups, Server Actions for mutations, and REST API for client-side data fetching.
 
 **Key Characteristics:**
+
 - Route groups `(auth)`, `(dashboard)`, `(marketing)` share layouts without affecting URL paths
 - Subdomain routing via Next.js middleware rewrite: `myserver.minesites.net` → `/myserver`
 - Server Actions (`"use server"`) handle create/update/delete mutations; REST API routes handle reads from client components
@@ -67,6 +69,7 @@
 ## Layers
 
 **Routing Layer:**
+
 - Purpose: Map URLs to page components and handle auth guards + subdomain rewrites
 - Location: `src/middleware.ts`, `src/app/**/page.tsx`, `src/app/**/layout.tsx`
 - Contains: Route group layouts, middleware logic
@@ -74,6 +77,7 @@
 - Used by: All browser requests
 
 **API Layer:**
+
 - Purpose: REST endpoints for client-side data access
 - Location: `src/app/api/`
 - Contains: Route handlers for servers CRUD, file upload, Discord invite lookup, and auth
@@ -81,6 +85,7 @@
 - Used by: Client components making `fetch()` calls, NextAuth internals
 
 **Server Actions Layer:**
+
 - Purpose: Form mutations triggered from client components without a separate API endpoint
 - Location: `src/app/(dashboard)/dashboard/actions.ts`
 - Contains: `createServer`, `updateServer`, `deleteServer`, `togglePublished`
@@ -88,6 +93,7 @@
 - Used by: Dashboard page components
 
 **UI / Component Layer:**
+
 - Purpose: Presentational React components
 - Location: `src/components/ui/`, `src/components/layout/`, `src/components/sections/`
 - Contains: Primitive UI components, layout chrome, section preview renderers
@@ -95,6 +101,7 @@
 - Used by: Page components
 
 **Data / Persistence Layer:**
+
 - Purpose: Database access via Prisma ORM
 - Location: `src/lib/db.ts`, `prisma/schema.prisma`
 - Contains: Singleton PrismaClient with pg connection pool
@@ -133,6 +140,7 @@
 4. Middleware reads `req.auth` to protect `/dashboard/**` routes
 
 **State Management:**
+
 - Server site data: local React `useState` in the editor page; synced to DB on explicit Save
 - Sidebar collapsed state: Zustand store (`useSidebarStore` in `src/components/layout/sidebar.tsx`), persisted to `localStorage` via `zustand/middleware/persist`
 - Toast notifications: React Context provider (`ToastProvider`) wrapped at root layout
@@ -141,16 +149,19 @@
 ## Key Abstractions
 
 **Server + Section model:**
+
 - Purpose: A `Server` record owns many `Section` records. Each section has a `type` string (e.g., `"hero"`, `"stats"`, `"discord"`) and a JSON `settings` blob holding all visual configuration.
 - Schema: `prisma/schema.prisma` — `Server`, `Section`
 - Pattern: Flexible JSON column (`settings: Json`) avoids migrations for every new section option; trade-off is no DB-level validation on section settings.
 
 **Route Groups:**
+
 - Purpose: Separate layout shells for marketing, auth, and dashboard without adding path segments
 - Examples: `src/app/(auth)/`, `src/app/(dashboard)/`, `src/app/(marketing)/`
 - Pattern: Next.js App Router parenthetical route groups
 
 **Preview Components:**
+
 - Purpose: Self-contained React components that render a section type from its DB data
 - Location: Inline within `src/app/[subdomain]/preview-client.tsx`
 - Pattern: Switch-case dispatch on `section.type`, each case renders a `Preview*` function component
@@ -158,21 +169,25 @@
 ## Entry Points
 
 **Root Layout:**
+
 - Location: `src/app/layout.tsx`
 - Triggers: Every page request
 - Responsibilities: Font variables, global CSS, ToastProvider
 
 **Middleware:**
+
 - Location: `src/middleware.ts`
 - Triggers: Every non-static request (per `config.matcher`)
 - Responsibilities: Subdomain rewrite, `/dashboard` auth guard
 
 **Public Server Page:**
+
 - Location: `src/app/[subdomain]/page.tsx`
 - Triggers: Request to a registered subdomain path
 - Responsibilities: DB fetch of server+sections, passes to PreviewClient
 
 **Dashboard Editor Page:**
+
 - Location: `src/app/(dashboard)/dashboard/[serverId]/page.tsx`
 - Triggers: Authenticated user navigating to `/dashboard/[serverId]`
 - Responsibilities: Full section builder UI (client component with heavy local state)
@@ -204,6 +219,7 @@
 **Strategy:** Try/catch in API route handlers returns JSON error responses with appropriate HTTP status codes. Server Actions throw `Error` objects that client components catch and display inline.
 
 **Patterns:**
+
 - API routes: `try/catch` → `NextResponse.json({ error: "..." }, { status: N })`
 - Server Actions: `throw new Error("Unauthorized" | "Subdomain is already taken" | ...)`, caught in client `onSubmit` handlers
 - Client pages: `useState<string | null>(null)` for error messages, displayed inline
@@ -216,4 +232,4 @@
 
 ---
 
-*Architecture analysis: 2026-05-07*
+_Architecture analysis: 2026-05-07_

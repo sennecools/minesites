@@ -16,6 +16,7 @@ status: all_fixed
 **Iteration:** 1
 
 **Summary:**
+
 - Findings in scope: 8 (CR-01, CR-02, CR-03, WR-01, WR-02, WR-03, WR-04, WR-05)
 - Fixed: 8
 - Skipped: 0

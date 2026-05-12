@@ -83,27 +83,32 @@ CSS variables over the root ones, scoped to that subtree.
 
 ```tsx
 // src/app/[subdomain]/layout.tsx
-import { SiteThemeProvider } from "@/components/site/theme-provider";
+import { SiteThemeProvider } from '@/components/site/theme-provider';
 
-export default function SubdomainLayout({ children, theme }: { children: React.ReactNode; theme: SiteTheme }) {
-  return (
-    <SiteThemeProvider theme={theme}>
-      <div className="site-root min-h-screen">
-        {children}
-      </div>
-    </SiteThemeProvider>
-  );
+export default function SubdomainLayout({
+	children,
+	theme,
+}: {
+	children: React.ReactNode;
+	theme: SiteTheme;
+}) {
+	return (
+		<SiteThemeProvider theme={theme}>
+			<div className="site-root min-h-screen">{children}</div>
+		</SiteThemeProvider>
+	);
 }
 ```
 
 `SiteThemeProvider` renders a `<style>` tag that sets CSS variables on `.site-root`:
+
 ```css
 .site-root {
-  --site-primary: #2563eb;       /* from SiteTheme.primaryColor */
-  --site-accent: #06b6d4;        /* from SiteTheme.accentColor */
-  --site-bg: #0f172a;            /* from SiteTheme.backgroundColor */
-  --site-text: #f1f5f9;          /* from SiteTheme.textColor */
-  --site-font: "Rajdhani", sans-serif;  /* from SiteTheme.fontFamily */
+	--site-primary: #2563eb; /* from SiteTheme.primaryColor */
+	--site-accent: #06b6d4; /* from SiteTheme.accentColor */
+	--site-bg: #0f172a; /* from SiteTheme.backgroundColor */
+	--site-text: #f1f5f9; /* from SiteTheme.textColor */
+	--site-font: 'Rajdhani', sans-serif; /* from SiteTheme.fontFamily */
 }
 ```
 
@@ -117,13 +122,13 @@ requires no new tooling, and is predictable to debug.
 
 ### Component Boundary Table
 
-| Component | Allowed to import from | Must NOT import from |
-|-----------|----------------------|---------------------|
-| `src/components/site/` | `src/components/preview/types.ts`, `src/lib/` | `src/components/ui/`, `src/components/layout/` |
-| `src/components/sections/render/` | `src/components/site/`, `src/components/preview/types.ts` | `src/components/ui/` (dashboard primitives) |
-| `src/components/sections/settings/` | `src/components/ui/`, `src/components/preview/types.ts` | `src/components/site/` |
-| `src/app/[subdomain]/` | `src/components/site/`, `src/components/sections/render/` | `src/components/ui/`, `src/components/layout/` |
-| `src/app/(dashboard)/` | `src/components/ui/`, `src/components/layout/`, `src/components/sections/settings/` | `src/components/site/` |
+| Component                           | Allowed to import from                                                              | Must NOT import from                           |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `src/components/site/`              | `src/components/preview/types.ts`, `src/lib/`                                       | `src/components/ui/`, `src/components/layout/` |
+| `src/components/sections/render/`   | `src/components/site/`, `src/components/preview/types.ts`                           | `src/components/ui/` (dashboard primitives)    |
+| `src/components/sections/settings/` | `src/components/ui/`, `src/components/preview/types.ts`                             | `src/components/site/`                         |
+| `src/app/[subdomain]/`              | `src/components/site/`, `src/components/sections/render/`                           | `src/components/ui/`, `src/components/layout/` |
+| `src/app/(dashboard)/`              | `src/components/ui/`, `src/components/layout/`, `src/components/sections/settings/` | `src/components/site/`                         |
 
 This boundary is enforced by convention (and optionally an ESLint import rule) — not
 tooling. It is simple enough for a solo developer to maintain.
@@ -144,21 +149,21 @@ route today but never read on the public render path — `page.tsx` does not ext
 
 ```typescript
 export interface SiteTheme {
-  primaryColor: string;     // hex, e.g. "#2563eb"
-  accentColor: string;      // hex, e.g. "#06b6d4"
-  backgroundColor: string;  // hex, e.g. "#0f172a"
-  surfaceColor: string;     // hex, e.g. "#1e293b" (cards/panels on the site)
-  textColor: string;        // hex, e.g. "#f1f5f9"
-  fontFamily: "inter" | "rajdhani" | "exo2" | "orbitron" | "press-start";
+	primaryColor: string; // hex, e.g. "#2563eb"
+	accentColor: string; // hex, e.g. "#06b6d4"
+	backgroundColor: string; // hex, e.g. "#0f172a"
+	surfaceColor: string; // hex, e.g. "#1e293b" (cards/panels on the site)
+	textColor: string; // hex, e.g. "#f1f5f9"
+	fontFamily: 'inter' | 'rajdhani' | 'exo2' | 'orbitron' | 'press-start';
 }
 
 export const defaultSiteTheme: SiteTheme = {
-  primaryColor: "#2563eb",
-  accentColor: "#06b6d4",
-  backgroundColor: "#0f172a",
-  surfaceColor: "#1e293b",
-  textColor: "#f1f5f9",
-  fontFamily: "inter",
+	primaryColor: '#2563eb',
+	accentColor: '#06b6d4',
+	backgroundColor: '#0f172a',
+	surfaceColor: '#1e293b',
+	textColor: '#f1f5f9',
+	fontFamily: 'inter',
 };
 ```
 
@@ -181,6 +186,7 @@ No schema migration is needed for v1. The `User` model has no `plan` field, but 
 enforcement logic for section count gating is simple enough to add as a constant check:
 
 **Free tier cap (5 sections):** Enforced in TWO places:
+
 - **Editor (client-side):** The "Add Section" button is disabled / shows an upgrade prompt
   when `sections.length >= FREE_TIER_MAX_SECTIONS`. This is UX feedback only.
 - **API (server-side):** The PUT handler in `src/app/api/servers/[serverId]/route.ts`
@@ -193,7 +199,7 @@ export const FREE_TIER_MAX_SECTIONS = 5;
 export const FREE_TIER_EFFECTS_ENABLED = false;
 
 export function isWithinFreeLimit(sectionCount: number): boolean {
-  return sectionCount <= FREE_TIER_MAX_SECTIONS;
+	return sectionCount <= FREE_TIER_MAX_SECTIONS;
 }
 ```
 
@@ -209,6 +215,7 @@ the effects layer. The editor sets this from the server's plan; the PUT route st
 
 New section types (live player count, server info, rules, Discord widget, etc.) are added
 by:
+
 1. Defining the settings interface in `src/components/preview/types.ts`
 2. Adding a Zod schema in `src/lib/validations/sections/[type].ts`
 3. Adding a renderer in `src/components/sections/render/[type]-section.tsx`
@@ -227,8 +234,8 @@ Player count must be fetched server-side and cached. Never block page render for
 ```typescript
 // src/app/[subdomain]/page.tsx
 const [serverRecord, minecraftStatus] = await Promise.allSettled([
-  db.server.findUnique({ where: { subdomain }, include: { sections: true } }),
-  server?.serverIp ? fetchMinecraftStatus(server.serverIp) : Promise.resolve(null),
+	db.server.findUnique({ where: { subdomain }, include: { sections: true } }),
+	server?.serverIp ? fetchMinecraftStatus(server.serverIp) : Promise.resolve(null),
 ]);
 ```
 
@@ -264,12 +271,12 @@ same component.
 ```typescript
 // src/components/sections/settings/hero-settings.tsx
 interface HeroSettingsPanelProps {
-  settings: HeroSettings;
-  onChange: (updated: HeroSettings) => void;
+	settings: HeroSettings;
+	onChange: (updated: HeroSettings) => void;
 }
 
 export function HeroSettingsPanel({ settings, onChange }: HeroSettingsPanelProps) {
-  // all the JSX that was inside `section.type === "hero"` in the god-component
+	// all the JSX that was inside `section.type === "hero"` in the god-component
 }
 ```
 
@@ -298,34 +305,36 @@ editing five files:
 
 ```typescript
 // src/lib/section-registry.ts
-import type { ComponentType } from "react";
-import type { Section } from "@/components/preview/types";
+import type { ComponentType } from 'react';
+
+import type { Section } from '@/components/preview/types';
 
 export interface SectionTypeEntry {
-  type: string;
-  label: string;
-  description: string;
-  icon: string;           // lucide icon name
-  category: "essential" | "engagement" | "info" | "media";
-  defaultSettings: Record<string, unknown>;
-  defaultTitle: string;
-  paidOnly: boolean;      // effects-gated or count-gated
-  SettingsPanel: ComponentType<{ settings: Record<string,unknown>; onChange: (s: Record<string,unknown>) => void }>;
-  Renderer: ComponentType<{ section: Section; theme: SiteTheme; serverStatus?: MinecraftStatus }>;
+	type: string;
+	label: string;
+	description: string;
+	icon: string; // lucide icon name
+	category: 'essential' | 'engagement' | 'info' | 'media';
+	defaultSettings: Record<string, unknown>;
+	defaultTitle: string;
+	paidOnly: boolean; // effects-gated or count-gated
+	SettingsPanel: ComponentType<{
+		settings: Record<string, unknown>;
+		onChange: (s: Record<string, unknown>) => void;
+	}>;
+	Renderer: ComponentType<{ section: Section; theme: SiteTheme; serverStatus?: MinecraftStatus }>;
 }
 
 export const SECTION_REGISTRY: SectionTypeEntry[] = [
-  {
-    type: "hero",
-    label: "Hero",
-    // ...
-  },
-  // one entry per section type
+	{
+		type: 'hero',
+		label: 'Hero',
+		// ...
+	},
+	// one entry per section type
 ];
 
-export const SECTION_REGISTRY_MAP = Object.fromEntries(
-  SECTION_REGISTRY.map(e => [e.type, e])
-);
+export const SECTION_REGISTRY_MAP = Object.fromEntries(SECTION_REGISTRY.map((e) => [e.type, e]));
 ```
 
 The god-component imports `SECTION_REGISTRY` for: the "Add Section" picker, the settings
@@ -375,12 +384,14 @@ dashboard. It does not require any settings panel changes.
 
 With the registry, renderer directory, and settings panel directory all in place, each
 new section type is:
+
 1. `src/components/sections/render/[type]-section.tsx` — the renderer
 2. `src/components/sections/settings/[type]-settings.tsx` — the settings panel
 3. One entry added to `SECTION_REGISTRY` in `src/lib/section-registry.ts`
 4. The public dispatch in `preview-client.tsx` is auto-resolved by the registry
 
 Build order within this step:
+
 - `server-info` (static, no external calls) — simplest, validates the pattern
 - `rules` (static content list) — second simplest
 - `discord-widget` (one external API call) — tests external fetch pattern
@@ -453,13 +464,13 @@ to a CSS class that Next.js generates.
 
 ## Scalability Considerations
 
-| Concern | At 7 section types (now) | At 20+ section types (later) |
-|---------|--------------------------|------------------------------|
-| Adding a new section type | Extract 2 files + 1 registry entry | Same — registry pattern scales linearly |
-| Editor page size | Import-only, no inline JSX | Same — god-component stays thin |
-| Public renderer size | One import per type | Same — dispatch is generated from registry |
-| Theme changes | One `SiteThemeProvider` update | Same |
-| New plan tiers | Update `src/lib/plan.ts` | One constant per limit |
+| Concern                   | At 7 section types (now)           | At 20+ section types (later)               |
+| ------------------------- | ---------------------------------- | ------------------------------------------ |
+| Adding a new section type | Extract 2 files + 1 registry entry | Same — registry pattern scales linearly    |
+| Editor page size          | Import-only, no inline JSX         | Same — god-component stays thin            |
+| Public renderer size      | One import per type                | Same — dispatch is generated from registry |
+| Theme changes             | One `SiteThemeProvider` update     | Same                                       |
+| New plan tiers            | Update `src/lib/plan.ts`           | One constant per limit                     |
 
 ---
 

@@ -1,48 +1,48 @@
 ---
 phase: 06-schema-reset
-plan: "02"
+plan: '02'
 subsystem: ui
 tags: [typescript, types, rename, refactor]
 
 dependency_graph:
-  requires:
-    - phase: 06-01
-      provides: prisma-website-model — schema established WebsiteData semantics; this plan propagates the name into TypeScript types
-  provides:
-    - websitedata-interface
-    - section-render-props-typed-to-websitedata
-  affects:
-    - 06-03
-    - 06-04
-    - all section render components importing SectionRenderProps
-    - preview-client.tsx
+    requires:
+        - phase: 06-01
+          provides: prisma-website-model — schema established WebsiteData semantics; this plan propagates the name into TypeScript types
+    provides:
+        - websitedata-interface
+        - section-render-props-typed-to-websitedata
+    affects:
+        - 06-03
+        - 06-04
+        - all section render components importing SectionRenderProps
+        - preview-client.tsx
 
 tech_stack:
-  added: []
-  patterns:
-    - ServerData renamed to WebsiteData in the high-fan-out type file (preview/types.ts) — all consumers must now use WebsiteData
-    - serverIp: string | null retained inside WebsiteData as Phase 6 compile bridge (Phase 7 will remove it when MinecraftServer lookup is introduced)
+    added: []
+    patterns:
+        - ServerData renamed to WebsiteData in the high-fan-out type file (preview/types.ts) — all consumers must now use WebsiteData
+        - serverIp: string | null retained inside WebsiteData as Phase 6 compile bridge (Phase 7 will remove it when MinecraftServer lookup is introduced)
 
 key_files:
-  created: []
-  modified:
-    - src/components/preview/types.ts
-    - src/types/sections.ts
+    created: []
+    modified:
+        - src/components/preview/types.ts
+        - src/types/sections.ts
 
 key_decisions:
-  - "serverIp: string | null kept inside WebsiteData intentionally — public layout.tsx and god-component still read this field; Phase 7 removes it when MinecraftServer model is wired"
-  - "Exactly one declaration site changed in types.ts (interface name only); field list and all other exports untouched"
-  - "Exactly two change sites in sections.ts (import token + SectionRenderProps.serverData type); all other interfaces unchanged"
+    - 'serverIp: string | null kept inside WebsiteData intentionally — public layout.tsx and god-component still read this field; Phase 7 removes it when MinecraftServer model is wired'
+    - 'Exactly one declaration site changed in types.ts (interface name only); field list and all other exports untouched'
+    - 'Exactly two change sites in sections.ts (import token + SectionRenderProps.serverData type); all other interfaces unchanged'
 
 patterns_established:
-  - "WebsiteData is the canonical type for website-level data passed to section render components — all section renders accept SectionRenderProps.serverData: WebsiteData"
+    - 'WebsiteData is the canonical type for website-level data passed to section render components — all section renders accept SectionRenderProps.serverData: WebsiteData'
 
 requirements_completed:
-  - WEB-01
-  - CONN-01
+    - WEB-01
+    - CONN-01
 
 duration: 4min
-completed: "2026-05-08"
+completed: '2026-05-08'
 ---
 
 # Phase 06 Plan 02: Type Rename Summary
@@ -112,5 +112,6 @@ None — no external service configuration required.
 ## Self-Check: PASSED
 
 ---
-*Phase: 06-schema-reset*
-*Completed: 2026-05-08*
+
+_Phase: 06-schema-reset_
+_Completed: 2026-05-08_

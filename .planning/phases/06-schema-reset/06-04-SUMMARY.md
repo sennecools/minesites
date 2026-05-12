@@ -1,63 +1,63 @@
 ---
 phase: 06-schema-reset
-plan: "04"
+plan: '04'
 subsystem: ui
 tags: [typescript, types, rename, refactor, zod, forms]
 
 # Dependency graph
 requires:
-  - phase: 06-01
-    provides: prisma-website-model + website validation schemas (createWebsiteSchema, updateWebsiteSchema)
-  - phase: 06-02
-    provides: WebsiteData interface in preview/types.ts; SectionRenderProps typed to WebsiteData
-  - phase: 06-03
-    provides: all Prisma call sites updated in api + action + subdomain files
+    - phase: 06-01
+      provides: prisma-website-model + website validation schemas (createWebsiteSchema, updateWebsiteSchema)
+    - phase: 06-02
+      provides: WebsiteData interface in preview/types.ts; SectionRenderProps typed to WebsiteData
+    - phase: 06-03
+      provides: all Prisma call sites updated in api + action + subdomain files
 provides:
-  - all-dashboard-files-use-WebsiteData
-  - god-component-imports-WebsiteData
-  - preview-client-accepts-WebsiteData
-  - typescript-compile-zero-errors
+    - all-dashboard-files-use-WebsiteData
+    - god-component-imports-WebsiteData
+    - preview-client-accepts-WebsiteData
+    - typescript-compile-zero-errors
 affects:
-  - Phase 07 (MinecraftServer lookup wiring)
-  - Any future dashboard component reading website data
+    - Phase 07 (MinecraftServer lookup wiring)
+    - Any future dashboard component reading website data
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns:
-    - "ServerData eliminated from all remaining consumer files — WebsiteData is the canonical type everywhere"
-    - "createWebsiteSchema/updateWebsiteSchema from validations/website.ts used in all form components"
-    - "db.server.* eliminated globally including prisma/seed.ts"
+    added: []
+    patterns:
+        - 'ServerData eliminated from all remaining consumer files — WebsiteData is the canonical type everywhere'
+        - 'createWebsiteSchema/updateWebsiteSchema from validations/website.ts used in all form components'
+        - 'db.server.* eliminated globally including prisma/seed.ts'
 
 key-files:
-  created: []
-  modified:
-    - src/app/(dashboard)/dashboard/create-server-dialog.tsx
-    - src/app/(dashboard)/dashboard/page.tsx
-    - src/app/(dashboard)/dashboard/servers/page.tsx
-    - src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx
-    - src/app/(dashboard)/dashboard/[serverId]/page.tsx
-    - src/app/[subdomain]/preview-client.tsx
-    - prisma/seed.ts
+    created: []
+    modified:
+        - src/app/(dashboard)/dashboard/create-server-dialog.tsx
+        - src/app/(dashboard)/dashboard/page.tsx
+        - src/app/(dashboard)/dashboard/servers/page.tsx
+        - src/app/(dashboard)/dashboard/[serverId]/server-settings.tsx
+        - src/app/(dashboard)/dashboard/[serverId]/page.tsx
+        - src/app/[subdomain]/preview-client.tsx
+        - prisma/seed.ts
 
 key-decisions:
-  - "local interface Server { serverIp, serverPort } in server-settings.tsx left unchanged per D-06/A3 — it is a runtime prop type not connected to Prisma, not imported from preview/types"
-  - "local ServerDataState type in god-component left unchanged per D-06 — standalone runtime state type, typed as any from response.json(), no TypeScript error"
-  - "serverIp/serverPort form fields removed from create-server-dialog.tsx and server-settings.tsx — createWebsiteSchema and updateWebsiteSchema have no such fields"
-  - "prisma/seed.ts included in this plan's fix scope — it was a missed db.server.* call site causing TS2339 error during the compile gate"
-  - "preview-client.tsx PreviewText.hasImage typed as boolean (!! coercion) — original unknown narrowing caused TS2322 error exposed during compile gate"
+    - 'local interface Server { serverIp, serverPort } in server-settings.tsx left unchanged per D-06/A3 — it is a runtime prop type not connected to Prisma, not imported from preview/types'
+    - 'local ServerDataState type in god-component left unchanged per D-06 — standalone runtime state type, typed as any from response.json(), no TypeScript error'
+    - 'serverIp/serverPort form fields removed from create-server-dialog.tsx and server-settings.tsx — createWebsiteSchema and updateWebsiteSchema have no such fields'
+    - "prisma/seed.ts included in this plan's fix scope — it was a missed db.server.* call site causing TS2339 error during the compile gate"
+    - 'preview-client.tsx PreviewText.hasImage typed as boolean (!! coercion) — original unknown narrowing caused TS2322 error exposed during compile gate'
 
 patterns-established:
-  - "All form components use validation schemas from @/lib/validations/website.ts — validations/server.ts is dead for UI"
-  - "npx tsc --noEmit exits 0 is the Phase 6 success gate"
+    - 'All form components use validation schemas from @/lib/validations/website.ts — validations/server.ts is dead for UI'
+    - 'npx tsc --noEmit exits 0 is the Phase 6 success gate'
 
 requirements-completed:
-  - WEB-01
-  - CONN-01
+    - WEB-01
+    - CONN-01
 
 # Metrics
 duration: ~15min
-completed: "2026-05-08"
+completed: '2026-05-08'
 ---
 
 # Phase 06 Plan 04: Final Type Cleanup + TypeScript Compile Gate Summary
@@ -111,6 +111,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed TypeScript compile errors not listed in plan: prisma/seed.ts and preview-client.tsx**
+
 - **Found during:** Task 2 (TypeScript compile gate)
 - **Issue 1:** `prisma/seed.ts` used `db.server.findFirst` and `db.server.create` — Plan 03 covered `src/` files only; seed.ts was missed. TypeScript reported `TS2339: Property 'server' does not exist on type 'PrismaClient'`
 - **Issue 2:** `preview-client.tsx:711` — `hasImage` was typed `string | false | unknown` because both `backgroundType` and `backgroundImage` come from `as Record<string, unknown>` destructuring. TypeScript reported `TS2322: Type 'unknown' is not assignable to type 'ReactNode'` when used in JSX conditional `{hasImage && (...)}`. Fixed with `!!backgroundImage` boolean coercion.
@@ -122,11 +123,12 @@ Each task was committed atomically:
 ---
 
 **Total deviations:** 1 auto-fixed (Rule 1 — bugs found during compile gate)
-**Impact on plan:** Both fixes necessary for the TypeScript zero-error gate to pass. No scope creep — seed.ts is an expected extension of the db.server.* cleanup, and the hasImage type narrowing is a correctness fix.
+**Impact on plan:** Both fixes necessary for the TypeScript zero-error gate to pass. No scope creep — seed.ts is an expected extension of the db.server.\* cleanup, and the hasImage type narrowing is a correctness fix.
 
 ## Issues Encountered
 
 `npx tsc --noEmit` found 3 errors on first run:
+
 1. `prisma/seed.ts(30,35)`: `Property 'server' does not exist on type 'PrismaClient'` — missed seed.ts in plan 03
 2. `prisma/seed.ts(41,27)`: same error for `db.server.create`
 3. `src/app/[subdomain]/preview-client.tsx(711,7)`: `Type 'unknown' is not assignable to type 'ReactNode'` — unknown→boolean narrowing issue in PreviewText
@@ -142,15 +144,15 @@ Exit code: 0
 
 ## Phase 6 Success Criteria Status
 
-| Criterion | Status |
-|-----------|--------|
-| prisma/schema.prisma defines Website + MinecraftServer; Server absent | PASS (Plan 01) |
-| Section model has websiteId FK | PASS (Plan 01) |
-| npx prisma db push ran to completion | PASS (Plan 01 — db push used; no migration history) |
-| TypeScript compiles with zero errors | PASS (this plan) |
-| Zero ServerData imports anywhere in src/ | PASS |
-| Zero validations/server imports in non-server-ts files | PASS |
-| Zero db.server.* or tx.server.* calls | PASS |
+| Criterion                                                             | Status                                              |
+| --------------------------------------------------------------------- | --------------------------------------------------- |
+| prisma/schema.prisma defines Website + MinecraftServer; Server absent | PASS (Plan 01)                                      |
+| Section model has websiteId FK                                        | PASS (Plan 01)                                      |
+| npx prisma db push ran to completion                                  | PASS (Plan 01 — db push used; no migration history) |
+| TypeScript compiles with zero errors                                  | PASS (this plan)                                    |
+| Zero ServerData imports anywhere in src/                              | PASS                                                |
+| Zero validations/server imports in non-server-ts files                | PASS                                                |
+| Zero db.server._ or tx.server._ calls                                 | PASS                                                |
 
 ## Known Stubs
 
@@ -172,8 +174,9 @@ None - no external service configuration required.
 - No blockers introduced
 
 ---
-*Phase: 06-schema-reset*
-*Completed: 2026-05-08*
+
+_Phase: 06-schema-reset_
+_Completed: 2026-05-08_
 
 ## Self-Check: PASSED
 

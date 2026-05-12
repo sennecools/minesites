@@ -2578,11 +2578,22 @@ export default function ServerEditorPage() {
               Unsaved changes
             </span>
           )}
+          {/*
+            WR-07: align the "Manage Servers" trigger with UI-SPEC §Interaction
+            Contracts ("secondary — white bg, zinc border, Server icon left of
+            label"). We deliberately keep the raw motion.button rather than
+            adopting the Button primitive — the surrounding Preview/Publish
+            buttons in this cluster are also raw motion.button carry-forwards,
+            and pulling in <Button> here would diverge from the established
+            pattern. Per UI-SPEC §Typography Phase 8 NEW components use
+            `font-normal` (the analog Preview/Publish carry-forward uses
+            `font-medium`).
+          */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setConnectionsOpen(true)}
-            className="flex items-center gap-2 px-3 py-2 text-zinc-600 hover:bg-zinc-100 rounded-xl text-sm font-normal transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900 shadow-sm rounded-xl text-sm font-normal transition-colors"
           >
             <Server className="w-4 h-4" />
             Manage Servers

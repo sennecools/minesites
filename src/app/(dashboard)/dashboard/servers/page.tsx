@@ -79,7 +79,7 @@ export default function ServersPage() {
       <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3 text-zinc-500">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span>Loading your servers...</span>
+          <span>Loading your websites...</span>
         </div>
       </div>
     );
@@ -109,13 +109,13 @@ export default function ServersPage() {
           Dashboard
         </Link>
         <ChevronRight className="w-4 h-4 text-zinc-300" />
-        <span className="text-zinc-900 font-medium">Servers</span>
+        <span className="text-zinc-900 font-medium">Websites</span>
       </div>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl font-bold text-zinc-900">Your Servers</h1>
+          <h1 className="font-display text-2xl font-bold text-zinc-900">Your Websites</h1>
           <p className="text-zinc-500 mt-1">Manage your Minecraft server websites</p>
         </div>
         <motion.button
@@ -125,7 +125,7 @@ export default function ServersPage() {
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
         >
           <Plus className="w-4 h-4" />
-          New Server
+          New Website
         </motion.button>
       </div>
 
@@ -135,7 +135,7 @@ export default function ServersPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input
             type="text"
-            placeholder="Search servers..."
+            placeholder="Search websites..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
@@ -264,8 +264,8 @@ export default function ServersPage() {
                 <Plus className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" />
               </div>
               <div className="text-center">
-                <p className="font-medium text-zinc-600 group-hover:text-cyan-600 transition-colors">Create new server</p>
-                <p className="text-xs text-zinc-400 mt-1">Add another website</p>
+                <p className="font-medium text-zinc-600 group-hover:text-cyan-600 transition-colors">Create a website</p>
+                <p className="text-xs text-zinc-400 mt-1">Add another Minecraft website</p>
               </div>
             </motion.button>
           </motion.div>
@@ -344,9 +344,9 @@ export default function ServersPage() {
           <div className="w-16 h-16 rounded-2xl bg-zinc-100 mx-auto mb-4 flex items-center justify-center">
             <Server className="w-8 h-8 text-zinc-300" />
           </div>
-          <h3 className="text-lg font-semibold text-zinc-900 mb-1">No servers found</h3>
+          <h3 className="text-lg font-semibold text-zinc-900 mb-1">No websites found</h3>
           <p className="text-zinc-500 mb-6">
-            {searchQuery ? "Try a different search term" : "Create your first server to get started"}
+            {searchQuery ? "Try a different search term" : "Create your first website to get started"}
           </p>
           {!searchQuery && (
             <motion.button
@@ -356,7 +356,7 @@ export default function ServersPage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
             >
               <Plus className="w-4 h-4" />
-              Create Server
+              Create Website
             </motion.button>
           )}
         </div>

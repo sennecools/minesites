@@ -13,6 +13,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { CreateServerDialog } from "./create-server-dialog";
 
 interface WebsiteData {
   id: string;
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   const [servers, setServers] = useState<WebsiteData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     async function loadServers() {
@@ -73,7 +75,7 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3 text-zinc-500">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span>Loading your servers...</span>
+          <span>Loading your websites...</span>
         </div>
       </div>
     );
@@ -112,7 +114,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.05 }}
           className="text-zinc-500 mt-1"
         >
-          Here's what's happening with your servers today
+          Here's what's happening with your websites today
         </motion.p>
       </div>
 
@@ -146,17 +148,10 @@ export default function DashboardPage() {
       {/* Servers Section */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-900">Your Servers</h2>
+          <h2 className="text-lg font-semibold text-zinc-900">Your Websites</h2>
           <p className="text-sm text-zinc-500">Manage your Minecraft server websites</p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.02, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
-        >
-          <Plus className="w-4 h-4" />
-          New Server
-        </motion.button>
+        <CreateServerDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
       </div>
 
       {/* Server Cards */}
@@ -239,6 +234,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.2 + servers.length * 0.1 }}
         >
           <motion.button
+            onClick={() => setCreateDialogOpen(true)}
             whileHover={{ y: -4, scale: 1.01, transition: { duration: 0.15 } }}
             className="w-full h-full min-h-[200px] p-5 rounded-2xl border-2 border-dashed border-zinc-200 hover:border-cyan-300 hover:bg-cyan-50/30 transition-all flex flex-col items-center justify-center gap-3 group"
           >
@@ -246,8 +242,8 @@ export default function DashboardPage() {
               <Plus className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" />
             </div>
             <div className="text-center">
-              <p className="font-medium text-zinc-600 group-hover:text-cyan-600 transition-colors">Create new server</p>
-              <p className="text-xs text-zinc-400 mt-1">Add another website</p>
+              <p className="font-medium text-zinc-600 group-hover:text-cyan-600 transition-colors">Create a website</p>
+              <p className="text-xs text-zinc-400 mt-1">Add another Minecraft website</p>
             </div>
           </motion.button>
         </motion.div>
@@ -263,15 +259,16 @@ export default function DashboardPage() {
           <div className="w-16 h-16 rounded-2xl bg-zinc-100 mx-auto mb-4 flex items-center justify-center">
             <Server className="w-8 h-8 text-zinc-300" />
           </div>
-          <h3 className="text-lg font-semibold text-zinc-900 mb-1">No servers yet</h3>
-          <p className="text-zinc-500 mb-6">Create your first server to get started</p>
+          <h3 className="text-lg font-semibold text-zinc-900 mb-1">No websites yet</h3>
+          <p className="text-zinc-500 mb-6">Create your first website to get started</p>
           <motion.button
+            onClick={() => setCreateDialogOpen(true)}
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-cyan-200/50 transition-shadow"
           >
             <Plus className="w-4 h-4" />
-            Create Server
+            Create Website
           </motion.button>
         </motion.div>
       )}

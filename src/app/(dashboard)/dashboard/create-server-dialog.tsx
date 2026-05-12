@@ -70,14 +70,14 @@ export function CreateServerDialog({ open, onOpenChange }: CreateServerDialogPro
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Create Server
+          Create Website
         </Button>
       )}
 
       <Modal isOpen={isOpen} onClose={handleClose}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader>
-            <ModalTitle>Create a new server</ModalTitle>
+            <ModalTitle>Create a website</ModalTitle>
           </ModalHeader>
           <ModalContent className="space-y-4">
             {error && (
@@ -88,7 +88,7 @@ export function CreateServerDialog({ open, onOpenChange }: CreateServerDialogPro
 
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-1.5">
-                Server Name
+                Website Name
               </label>
               <Input
                 {...register("name")}
@@ -141,7 +141,7 @@ export function CreateServerDialog({ open, onOpenChange }: CreateServerDialogPro
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Server"}
+              {isSubmitting ? "Creating..." : "Create Website"}
             </Button>
           </ModalFooter>
         </form>

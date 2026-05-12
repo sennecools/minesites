@@ -36,7 +36,7 @@ export default function DashboardLayout({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                 <input
                   type="text"
-                  placeholder="Search servers, settings..."
+                  placeholder="Search websites, settings..."
                   className="w-full pl-10 pr-4 py-2 bg-zinc-100/80 border-0 rounded-xl text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:bg-white transition-all"
                 />
               </div>

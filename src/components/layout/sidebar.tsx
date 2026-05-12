@@ -46,7 +46,7 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    label: "Servers",
+    label: "Websites",
     href: "/dashboard/servers",
     icon: Server,
   },
@@ -124,7 +124,7 @@ export function Sidebar() {
                 transition={{ duration: 0.15 }}
                 className="whitespace-nowrap overflow-hidden"
               >
-                New Server
+                New Website
               </motion.span>
             )}
           </AnimatePresence>

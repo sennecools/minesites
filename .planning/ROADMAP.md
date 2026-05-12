@@ -65,7 +65,7 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 **Plans:** 6 plans
 
 **Wave 1** *(foundations — schemas + types)*
-- [ ] 07-01-PLAN.md — Create src/lib/validations/mcserver.ts + ServerScopedSettings type in src/types/sections.ts
+- [x] 07-01-PLAN.md — Create src/lib/validations/mcserver.ts + ServerScopedSettings type in src/types/sections.ts
 
 **Wave 2** *(parallel — no file overlap between plans)*
 - [ ] 07-02-PLAN.md — New /api/websites + /api/websites/[websiteId] routes (GET/POST list+create, GET/PUT/DELETE single); preserves Phase 6 carry-forward guards (CR-01, CR-03, WR-05); section.settings minecraftServerId persistence

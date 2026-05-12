@@ -21,6 +21,14 @@ export async function createServer(formData: FormData) {
 
   const validated = createWebsiteSchema.parse(rawData);
 
+  const userRecord = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true },
+  });
+  if (!userRecord) {
+    throw new Error("Session expired. Please sign out and sign back in.");
+  }
+
   const existing = await db.website.findUnique({
     where: { subdomain: validated.subdomain },
   });

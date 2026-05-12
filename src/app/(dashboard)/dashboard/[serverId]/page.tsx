@@ -2298,8 +2298,8 @@ export default function ServerEditorPage() {
           version: "1.20.4",
         });
 
-        if (data.navbar) {
-          setNavbarSettings(data.navbar as NavbarSettings);
+        if (data.navbar && typeof data.navbar === "object") {
+          setNavbarSettings({ ...initialNavbarSettings, ...(data.navbar as Partial<NavbarSettings>) });
         }
 
         if (data.theme && typeof data.theme === "object") {

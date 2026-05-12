@@ -14,24 +14,16 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CreateWebsiteDialog } from "../create-website-dialog";
-import { WebsiteCard } from "@/components/dashboard";
+import { WebsiteCard, type WebsiteCardData } from "@/components/dashboard";
 import { formatRelativeTime } from "@/lib/utils";
-
-interface WebsiteData {
-  id: string;
-  name: string;
-  subdomain: string;
-  description: string | null;
-  published: boolean;
-  createdAt: string;
-  updatedAt: string;
-  _count: { sections: number };
-}
 
 export default function ServersPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [servers, setServers] = useState<WebsiteData[]>([]);
+  // WR-03: share WebsiteCardData from @/components/dashboard so the shape
+  // cannot drift between this page and /dashboard. (`WebsiteData` in
+  // src/components/preview/types.ts is a different shape and stays put.)
+  const [servers, setServers] = useState<WebsiteCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);

@@ -12,21 +12,15 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CreateWebsiteDialog } from "./create-website-dialog";
-import { WebsiteCard } from "@/components/dashboard";
-
-interface WebsiteData {
-  id: string;
-  name: string;
-  subdomain: string;
-  description: string | null;
-  published: boolean;
-  createdAt: string;
-  updatedAt: string;
-  _count: { sections: number };
-}
+import { WebsiteCard, type WebsiteCardData } from "@/components/dashboard";
 
 export default function DashboardPage() {
-  const [servers, setServers] = useState<WebsiteData[]>([]);
+  // WR-03: WebsiteCardData (from @/components/dashboard) is the single source
+  // of truth for the dashboard-list shape returned by GET /api/websites. The
+  // local `WebsiteData` interface previously declared here is gone; the
+  // similarly-named `WebsiteData` in src/components/preview/types.ts is a
+  // different shape (public-site render data) and is intentionally untouched.
+  const [servers, setServers] = useState<WebsiteCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);

@@ -72,6 +72,7 @@ import type { SiteTheme } from "@/types/site-theme";
 import { DEFAULT_THEME } from "@/types/site-theme";
 import { THEME_PRESETS, FONT_FAMILY_MAP } from "@/lib/theme-presets";
 import { AppearanceTab } from "@/components/editor/appearance-tab";
+import { ConnectionsModal } from "@/components/dashboard";
 
 // Local helper types not yet separately exported from @/types/sections
 type FeatureItem = { title: string; description: string; icon: string };
@@ -2271,6 +2272,7 @@ export default function ServerEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
 
   // Load server data on mount
   useEffect(() => {
@@ -2576,6 +2578,15 @@ export default function ServerEditorPage() {
               Unsaved changes
             </span>
           )}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setConnectionsOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 text-zinc-600 hover:bg-zinc-100 rounded-xl text-sm font-normal transition-colors"
+          >
+            <Server className="w-4 h-4" />
+            Manage Servers
+          </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -3182,6 +3193,7 @@ export default function ServerEditorPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <ConnectionsModal websiteId={websiteId} isOpen={connectionsOpen} onClose={() => setConnectionsOpen(false)} />
     </div>
   );
 }

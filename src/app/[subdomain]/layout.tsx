@@ -74,7 +74,6 @@ export default async function SubdomainLayout({
   const fontFamily = FONT_FAMILY_MAP[font] ?? FONT_FAMILY_MAP[DEFAULT_THEME.font];
 
   const serverName = server?.name ?? subdomain;
-  const serverIp = "";   // Phase 6 placeholder; Phase 7 adds MinecraftServer lookup
 
   // Apply all 5 font variable classNames so CSS vars cascade under .site-root.
   const fontClasses = [
@@ -103,7 +102,7 @@ export default async function SubdomainLayout({
       data-theme={palette}
       style={cssVars}
     >
-      <SiteNav serverName={serverName} serverIp={serverIp} />
+      <SiteNav serverName={serverName} />
       {children}
     </div>
   );

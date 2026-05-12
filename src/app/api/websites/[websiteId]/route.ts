@@ -97,13 +97,12 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // D-17 (CR-01): subdomain uniqueness check when subdomain is changing
-    if (subdomain && subdomain !== existingWebsite.subdomain) {
-      const conflict = await db.website.findUnique({ where: { subdomain } });
-      if (conflict) {
-        return NextResponse.json({ error: "Subdomain is already taken" }, { status: 409 });
-      }
-    }
+    // BL-05 / WR-06: the previous code did a non-transactional `findUnique` to
+    // pre-check the subdomain, which both (a) cost a round-trip on every PUT
+    // and (b) had a TOCTOU window where another request could claim the
+    // subdomain between the check and the transaction. Now that BL-02 fixed
+    // the P2002 catch to disambiguate by constraint target, the catch alone
+    // is both correct AND race-free.
 
     // D-18 (CR-03): freemium section count enforcement, sourced from src/lib/plan.ts.
     // BL-01: explicit null-check on the user lookup. Without it, a stale session

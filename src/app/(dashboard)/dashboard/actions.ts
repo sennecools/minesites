@@ -36,14 +36,9 @@ export async function createWebsite(formData: FormData) {
     throw new Error("Session expired. Please sign out and sign back in.");
   }
 
-  const existing = await db.website.findUnique({
-    where: { subdomain: validated.subdomain },
-  });
-
-  if (existing) {
-    throw new Error("Subdomain is already taken");
-  }
-
+  // BL-05: drop the non-transactional pre-check on subdomain — the P2002 catch
+  // below is the authoritative (race-free) backstop. The pre-check added a
+  // round-trip without providing any safety guarantee.
   let server;
   try {
     server = await db.website.create({
@@ -108,15 +103,8 @@ export async function updateWebsite(serverId: string, formData: FormData) {
 
   const validated = updateWebsiteSchema.parse(rawData);
 
-  if (validated.subdomain && validated.subdomain !== server.subdomain) {
-    const existing = await db.website.findUnique({
-      where: { subdomain: validated.subdomain },
-    });
-    if (existing) {
-      throw new Error("Subdomain is already taken");
-    }
-  }
-
+  // BL-05: drop the non-transactional pre-check on subdomain — the P2002 catch
+  // below covers the same case without a round-trip and without a TOCTOU window.
   try {
     await db.website.update({
       where: { id: serverId },

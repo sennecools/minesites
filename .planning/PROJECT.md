@@ -28,6 +28,7 @@ A Minecraft server website that looks and feels like a gaming site — not a das
 - ✓ Images can be uploaded to profiles — existing
 - ✓ Section registry pattern: new section type = 2 files + 1 registry entry (Phase 1)
 - ✓ Public site CSS isolation under `.site-root`, theme variables injected at layout (Phase 2)
+- ✓ API surface rebuilt to Website + MinecraftServer models: `/api/websites` (CRUD), `/api/websites/[id]/servers` (nested CRUD), section payloads carry `minecraftServerId` (Phase 7)
 
 ### Active (v1.1)
 
@@ -58,6 +59,8 @@ This is a brownfield project with existing working infrastructure: authenticatio
 Phase 1 (Foundation & Extraction) restructured the god-component: it was 5,171 lines; it's now ~3,200. New section types go in `src/components/sections/render/` and `src/components/sections/settings/` — adding one requires only 2 files + 1 registry entry in `src/lib/section-registry.tsx`, zero edits to `page.tsx` or `preview-client.tsx`. Zero test coverage remains an open concern.
 
 Phase 6 (Schema Reset) completed the v1.1 data model: `Server` model replaced by `Website` + `MinecraftServer`; `Section.serverId` renamed to `websiteId`; all TypeScript consumers updated; `npx tsc --noEmit` exits 0; migration history generated at `prisma/migrations/20260508111252_schema_reset/`.
+
+Phase 7 (API Layer) rebuilt the API surface around the new model: `/api/websites` replaces `/api/servers`; nested `/api/websites/[websiteId]/servers` provides MinecraftServer CRUD with double-ownership chain; section save passes `minecraftServerId` through `section.settings` so server-scoped sections can reference a connection. Old `/api/servers/*` and `validations/server.ts` deleted; zero stale references. Dashboard action exports renamed to `createWebsite/updateWebsite/deleteWebsite` (D-14). Code review surfaced 6 advisory blockers (validation hardening, error-mapping) for follow-up; verification confirms all 4 success criteria met.
 
 Key technical context:
 - Next.js 16 App Router, TypeScript, Tailwind CSS
@@ -102,4 +105,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-08 — Phase 6 complete (Schema Reset: Website + MinecraftServer models live)*
+*Last updated: 2026-05-12 — Phase 7 complete (API Layer: /api/websites surface live, legacy /api/servers removed)*

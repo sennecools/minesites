@@ -88,8 +88,8 @@ Starting from a working but visually inconsistent brownfield app, this milestone
 **Plans:** 4 plans (3 waves)
 
 **Wave 1** *(parallel — zero file overlap)*
-- [ ] 08-01-PLAN.md — Route directory rename `[serverId]` → `[websiteId]` + god-component param sweep + drop `serverIp`/`serverPort` from server-settings.tsx (D-12, D-14, D-15) — DASH-03
-- [ ] 08-03-PLAN.md — API `_count.sections` + shared `WebsiteCard` extraction + full `create-server-dialog.tsx` → `create-website-dialog.tsx` rename (DASH-01, DASH-02, DASH-04; D-08, D-09, D-10, D-13)
+- [x] 08-01-PLAN.md — Route directory rename `[serverId]` → `[websiteId]` + god-component param sweep + drop `serverIp`/`serverPort` from server-settings.tsx (D-12, D-14, D-15) — DASH-03
+- [x] 08-03-PLAN.md — API `_count.sections` + shared `WebsiteCard` extraction + full `create-server-dialog.tsx` → `create-website-dialog.tsx` rename (DASH-01, DASH-02, DASH-04; D-08, D-09, D-10, D-13)
 
 **Wave 2** *(blocked on 08-01)*
 - [ ] 08-02-PLAN.md — Public path cleanup: drop `serverIp` from WebsiteData/preview-client/layout/SiteNav/hero-section + god-component SectionPreview literal (D-14, D-17, D-18; success criterion 4 verification) — DASH-04
